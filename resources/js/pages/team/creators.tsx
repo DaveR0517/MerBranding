@@ -2,10 +2,11 @@ import { Head, useForm } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import * as team from '@/routes/team';
 import { opslaan as opslaanRoute } from '@/routes/team/creators';
-import { Kop, Label, Leeg, Pagina, Paneel, Veld, initialen, invoer } from './_onderdelen/basis';
+import { InloggenAls, Kop, Label, Leeg, Pagina, Paneel, Veld, initialen, invoer } from './_onderdelen/basis';
 
 type CreatorRij = {
     id: number;
+    user_id: number;
     name: string;
     email: string;
     level: string;
@@ -121,6 +122,9 @@ export default function Creators({ creators, levels, leads }: { creators: Creato
                                                         'Geen kanalen'}
                                                 </p>
                                                 <p className="mt-0.5">{c.jobs} {c.jobs === 1 ? 'klus' : 'klussen'}</p>
+                                                <div className="mt-2">
+                                                    <InloggenAls userId={c.user_id} naam={c.name} />
+                                                </div>
                                             </div>
                                         </li>
                                     ))}
@@ -136,6 +140,7 @@ export default function Creators({ creators, levels, leads }: { creators: Creato
                                                 <th className="px-4 py-3 font-semibold">Kanalen</th>
                                                 <th className="px-4 py-3 text-right font-semibold">Klussen</th>
                                                 <th className="px-4 py-3 font-semibold">Status</th>
+                                                <th className="px-4 py-3"><span className="sr-only">Acties</span></th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y">
@@ -158,6 +163,9 @@ export default function Creators({ creators, levels, leads }: { creators: Creato
                                                     <td className="px-4 py-3 text-right font-mono">{c.jobs}</td>
                                                     <td className="px-4 py-3">
                                                         <Label kleur={statusKleur[c.status] ?? 'grijs'}>{c.status}</Label>
+                                                    </td>
+                                                    <td className="px-4 py-3 text-right">
+                                                        <InloggenAls userId={c.user_id} naam={c.name} />
                                                     </td>
                                                 </tr>
                                             ))}

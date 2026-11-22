@@ -4,13 +4,13 @@ import { Button } from '@/components/ui/button';
 import { euro } from '@/lib/datum';
 import * as team from '@/routes/team';
 import { opslaan as opslaanRoute } from '@/routes/team/bedrijven';
-import { Kop, Label, Leeg, Pagina, Paneel, Veld, invoer } from './_onderdelen/basis';
+import { InloggenAls, Kop, Label, Leeg, Pagina, Paneel, Veld, invoer } from './_onderdelen/basis';
 
 type Bedrijf = {
     id: number;
     name: string;
     branche: string | null;
-    owner: { name: string; email: string } | null;
+    owner: { id: number; name: string; email: string } | null;
     locations: string[];
     plan: string | null;
     available_points: number;
@@ -101,6 +101,9 @@ export default function Bedrijven({ companies, plans, leads }: { companies: Bedr
                                                         <>
                                                             {b.owner.name}
                                                             <span className="block truncate text-muted-foreground">{b.owner.email}</span>
+                                                            <span className="mt-1 block">
+                                                                <InloggenAls userId={b.owner.id} naam={b.owner.name} />
+                                                            </span>
                                                         </>
                                                     ) : (
                                                         <span className="text-muted-foreground">Geen</span>

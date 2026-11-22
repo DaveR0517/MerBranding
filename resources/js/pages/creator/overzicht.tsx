@@ -152,7 +152,7 @@ export default function Overzicht({
                                             <span className="block text-sm text-muted-foreground">
                                                 {p.status === 'uitbetaald'
                                                     ? `Uitbetaald, betaalrun ${datum(p.run_on)}`
-                                                    : `Staat klaar, betaalrun vrijdag ${datum(p.run_on)}`}
+                                                    : `Staat klaar, betaalrun ${datum(p.run_on)}`}
                                             </span>
                                         </span>
                                         <span className="shrink-0 font-heading text-lg font-extrabold">

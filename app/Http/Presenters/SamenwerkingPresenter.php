@@ -37,6 +37,9 @@ class SamenwerkingPresenter
     {
         $c->loadMissing(['company', 'location.visitWindows', 'creator.user', 'versions.feedback.user', 'publications', 'review', 'payout', 'invitations.creator.user']);
 
+        // Bij een open uitnodiging is nog geen creator gekoppeld: toon wat de uitgenodigde creator zelf krijgt.
+        $fee = $c->creator_id || $voor !== 'creator' ? $c->fee_cents : ($kijker->creator?->feeCents() ?? 0);
+
         $data = self::kort($c) + [
             'briefing' => $c->briefing,
             'alcohol' => $c->alcohol,
@@ -50,8 +53,8 @@ class SamenwerkingPresenter
             'live_at' => $c->live_at?->toIso8601String(),
             'measure_until' => $c->measure_until?->toIso8601String(),
             'cancel_reason' => $c->cancel_reason,
-            'reward' => $c->fee_cents > 0 ? 'Gratis bezoek en € '.number_format($c->fee_cents / 100, 0, ',', '.') : 'Gratis bezoek',
-            'fee_cents' => $c->fee_cents,
+            'reward' => $fee > 0 ? 'Gratis bezoek en € '.number_format($fee / 100, 0, ',', '.') : 'Gratis bezoek',
+            'fee_cents' => $fee,
             'versions' => self::versies($c, $voor, $kijker),
             'publications' => $c->publications->map(fn ($p) => ['platform' => $p->platform, 'url' => $p->url, 'posted_at' => $p->posted_at->toIso8601String()])->values(),
             'review' => $c->review ? ['rating' => $c->review->rating, 'body' => $c->review->body] : null,

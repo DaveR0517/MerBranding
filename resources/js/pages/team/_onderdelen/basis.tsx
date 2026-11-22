@@ -1,6 +1,9 @@
-import { usePage } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
+import { LogIn } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
+import { inloggenAls } from '@/routes';
+import type { Auth } from '@/types/auth';
 
 /** Bouwstenen voor de teamschermen. Eén plek voor kop, paneel, velden en labels. */
 
@@ -180,4 +183,26 @@ export function initialen(naam: string): string {
         .slice(0, 2)
         .map((w) => w[0]?.toUpperCase())
         .join('');
+}
+
+/** Alleen voor de Super Admin: kijk mee als deze gebruiker. */
+export function InloggenAls({ userId, naam }: { userId: number; naam: string }) {
+    const { auth } = usePage().props as unknown as { auth: Auth };
+
+    if (!auth.is_super_admin) {
+        return null;
+    }
+
+    return (
+        <button
+            type="button"
+            onClick={() => router.post(inloggenAls.url(userId))}
+            className="inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs font-semibold text-violet hover:border-violet"
+            aria-label={`Inloggen als ${naam}`}
+            data-test="inloggen-als"
+        >
+            <LogIn className="size-3.5" aria-hidden />
+            Inloggen als
+        </button>
+    );
 }

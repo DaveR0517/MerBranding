@@ -8,7 +8,7 @@ import {
     MapPin,
     Star,
 } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { StatusBadge } from '@/components/samenwerking/status-badge';
 import { Tijdlijn } from '@/components/samenwerking/tijdlijn';
 import {
@@ -75,7 +75,7 @@ export default function Klus({
             <div className="mx-auto w-full max-w-3xl space-y-4 px-4 py-5 md:px-6">
                 {s.status.number !== null && (
                     <Kaart className="p-3 md:p-3">
-                        <Tijdlijn stappen={s.steps} />
+                        <TijdlijnInBeeld samenwerking={s} />
                     </Kaart>
                 )}
 
@@ -151,7 +151,11 @@ function Stap({
                         Je krijgt een melding zodra het team klaar is. Je hoeft
                         nu niets te doen.
                     </p>
-                    {laatste(s) && <VideoSpeler versie={laatste(s)!} />}
+                    {laatste(s) && (
+                        <div className={smalleVideo}>
+                            <VideoSpeler versie={laatste(s)!} />
+                        </div>
+                    )}
                     {laatste(s) && (
                         <p className="mt-3 rounded-xl bg-muted p-3 text-sm whitespace-pre-line">
                             {laatste(s)!.caption}
@@ -239,6 +243,38 @@ function Stap({
                 </Kaart>
             );
     }
+}
+
+/** Staande video niet schermvullend op de telefoon, zodat de knoppen eronder in zicht blijven. */
+const smalleVideo = 'mx-auto w-full max-w-[260px]';
+
+/** De gedeelde tijdlijn, met de huidige stap in beeld geschoven. */
+function TijdlijnInBeeld({
+    samenwerking: s,
+}: {
+    samenwerking: SamenwerkingVol;
+}) {
+    const doos = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const lijst = doos.current?.querySelector('ol');
+        const huidig = lijst?.querySelector<HTMLElement>(
+            '[aria-current="step"]',
+        );
+
+        if (lijst && huidig) {
+            lijst.scrollLeft =
+                huidig.offsetLeft -
+                lijst.offsetLeft -
+                (lijst.clientWidth - huidig.offsetWidth) / 2;
+        }
+    }, [s.status.value]);
+
+    return (
+        <div ref={doos}>
+            <Tijdlijn stappen={s.steps} />
+        </div>
+    );
 }
 
 function laatste(s: SamenwerkingVol) {
@@ -373,7 +409,7 @@ function ContentMaken({
                         punten={vorige.feedback}
                         onKlik={(t) => speler.current?.naar(t)}
                     />
-                    <div className="mt-4">
+                    <div className={`mt-4 ${smalleVideo}`}>
                         <VideoSpeler versie={vorige} ref={speler} />
                     </div>
                 </Kaart>
@@ -443,9 +479,11 @@ function Goedgekeurd({ samenwerking: s }: { samenwerking: SamenwerkingVol }) {
                 </p>
                 {versie && (
                     <div className="mt-4 space-y-4">
-                        <VideoSpeler
-                            versie={{ ...versie, download_url: null }}
-                        />
+                        <div className={smalleVideo}>
+                            <VideoSpeler
+                                versie={{ ...versie, download_url: null }}
+                            />
+                        </div>
                         {versie.download_url && (
                             <a
                                 href={versie.download_url}
@@ -602,7 +640,7 @@ function Vergoeding({ samenwerking: s }: { samenwerking: SamenwerkingVol }) {
                     </span>
                     {s.payout.status === 'uitbetaald'
                         ? `Uitbetaald in de betaalrun van ${datum(s.payout.run_on)}.`
-                        : `Staat klaar. Uitbetaling in de betaalrun van vrijdag ${datum(s.payout.run_on)}.`}
+                        : `Staat klaar. Uitbetaling in de betaalrun van ${datum(s.payout.run_on)}.`}
                 </Uitkomst>
             </div>
         );
@@ -610,7 +648,7 @@ function Vergoeding({ samenwerking: s }: { samenwerking: SamenwerkingVol }) {
 
     return (
         <p className="mt-4 rounded-xl bg-muted px-3 py-2 text-sm">
-            Je kreeg voor deze klus: <strong>{s.reward}</strong>.
+            Voor deze klus: <strong>{s.reward}</strong>.
         </p>
     );
 }

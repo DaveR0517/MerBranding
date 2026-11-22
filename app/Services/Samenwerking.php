@@ -251,7 +251,7 @@ class Samenwerking
 
         $controle = self::controleerReclame($bijschrift, $c->company->name, $bevestigd);
         if (! $controle['geslaagd']) {
-            throw ValidationException::withMessages(['bijschrift' => $controle['uitleg']]);
+            throw ValidationException::withMessages(['caption' => $controle['uitleg']]);
         }
 
         return DB::transaction(function () use ($c, $door, $video, $bijschrift, $controle) {
