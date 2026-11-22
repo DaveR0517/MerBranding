@@ -71,7 +71,7 @@ class SamenwerkingPresenter
 
         if ($voor === 'team') {
             $data['invitations'] = $c->invitations->map(fn ($i) => [
-                'id' => $i->id, 'creator' => $i->creator->user->name, 'answer' => $i->answer, 'expires_at' => $i->expires_at->toIso8601String(), 'open' => $i->isOpen(),
+                'id' => $i->id, 'creator_id' => $i->creator_id, 'creator' => $i->creator->user->name, 'answer' => $i->answer, 'expires_at' => $i->expires_at->toIso8601String(), 'open' => $i->isOpen(),
             ])->values();
             $data['log'] = $c->log()->with('user')->get()->map(fn ($l) => [
                 'at' => $l->created_at->toIso8601String(), 'user' => $l->user?->name ?? 'Systeem', 'event' => $l->event,

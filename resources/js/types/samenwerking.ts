@@ -65,7 +65,7 @@ export type SamenwerkingVol = SamenwerkingKort & {
     review: { rating: number; body: string | null } | null;
     steps: Stap[];
     payout?: { amount_cents: number; status: string; run_on: string } | null;
-    invitations?: { id: number; creator: string; answer: string | null; expires_at: string; open: boolean }[];
+    invitations?: { id: number; creator_id: number; creator: string; answer: string | null; expires_at: string; open: boolean }[];
     log?: { at: string; user: string; event: string; from: string | null; to: string | null; reason: string | null; data: Record<string, unknown> | null }[];
     ledger?: { at: string; kind: string; points: number; reason: string }[];
     company_id?: number;

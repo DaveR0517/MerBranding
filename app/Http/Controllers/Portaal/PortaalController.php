@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /** Gedeeld door alle omgevingen: startpunt, meldingen, video's en Inloggen als. */
@@ -54,7 +55,7 @@ class PortaalController extends Controller
     }
 
     /** Video afspelen of downloaden. Alleen voor wie bij de samenwerking hoort. */
-    public function video(Request $request, DeliverableVersion $versie): StreamedResponse
+    public function video(Request $request, DeliverableVersion $versie): BinaryFileResponse|StreamedResponse
     {
         $c = $versie->collaboration;
         $user = $request->user();
@@ -66,7 +67,18 @@ class PortaalController extends Controller
         $disk = Storage::disk($versie->disk);
         $naam = "{$c->number}-versie-{$versie->version}.".pathinfo($versie->path, PATHINFO_EXTENSION);
 
-        return $request->boolean('download') && ($user->isTeam() || $versie->outcome === 'goedgekeurd' || $c->creator?->user_id === $user->id)
+        $download = $request->boolean('download') && ($user->isTeam() || $versie->outcome === 'goedgekeurd' || $c->creator?->user_id === $user->id);
+
+        // Lokale opslag: bestandsantwoord met ondersteuning voor spoelen (Range). Andere opslag (R2, later): streamen.
+        if ($versie->disk === 'local') {
+            $pad = $disk->path($versie->path);
+
+            return $download
+                ? response()->download($pad, $naam)
+                : response()->file($pad, ['Content-Type' => $versie->mime ?? 'video/mp4', 'Cache-Control' => 'private, max-age=3600']);
+        }
+
+        return $download
             ? $disk->download($versie->path, $naam)
             : $disk->response($versie->path, $naam, ['Content-Type' => $versie->mime ?? 'video/mp4', 'Cache-Control' => 'private, max-age=3600']);
     }

@@ -18,7 +18,7 @@ type Bedrijf = {
 type Pakket = { id: number; name: string; points: number | null; price_cents: number | null };
 type Kennismaking = { id: number; name: string; email: string; phone: string | null; company: string | null; city: string | null };
 
-export default function Bedrijven({ companies, plans, leads }: { companies: Bedrijf[]; plans: Pakket[]; leads: Kennismaking[] }) {
+export default function Bedrijven({ companies, plans, leads, can }: { companies: Bedrijf[]; plans: Pakket[]; leads: Kennismaking[]; can: { beheren: boolean } }) {
     const form = useForm({
         name: '',
         branche: '',
@@ -153,6 +153,7 @@ export default function Bedrijven({ companies, plans, leads }: { companies: Bedr
                             </Paneel>
                         )}
 
+                        {can.beheren && (
                         <Paneel id="bedrijf-toevoegen" titel="Bedrijf toevoegen" sub="De eigenaar krijgt een uitnodiging per e-mail om zelf een wachtwoord te kiezen.">
                             {gekozenLead && (
                                 <p className="mb-3 flex items-center justify-between gap-2 rounded-xl bg-violet/5 p-3 text-sm">
@@ -217,6 +218,7 @@ export default function Bedrijven({ companies, plans, leads }: { companies: Bedr
                                 {form.recentlySuccessful && <p className="text-sm text-emerald-700">Bedrijf toegevoegd.</p>}
                             </form>
                         </Paneel>
+                        )}
                     </div>
                 </div>
             </Pagina>

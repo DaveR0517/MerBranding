@@ -57,7 +57,7 @@ test('de keten via de schermen: aanvraag, koppelen, uploaden, controleren, goedk
     // Sanne kijkt mee (met watermerk, niet downloadbaar)
     $versie = $c->fresh()->latestVersion;
     $this->actingAs($sanne)->get(APP."/video/{$versie->id}")->assertOk();
-    expect($this->actingAs($sanne)->get(APP."/video/{$versie->id}?download=1")->headers->get('content-disposition'))->toStartWith('inline');
+    expect((string) $this->actingAs($sanne)->get(APP."/video/{$versie->id}?download=1")->headers->get('content-disposition'))->not->toContain('attachment');
 
     // Ruben keurt goed met publicatiedatum
     $this->actingAs($ruben)->post(APP."/team/samenwerkingen/{$c->id}/goedkeuren", ['publish_on' => now()->addDay()->toDateString()])->assertSessionHasNoErrors();

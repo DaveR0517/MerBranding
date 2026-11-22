@@ -28,7 +28,7 @@ class RolesSeeder extends Seeder
     /** Rechtensjablonen voor medewerkers. */
     public const TEMPLATES = [
         'Accountmanager' => ['leads.bekijken', 'leads.beheren', 'bedrijven.bekijken', 'bedrijven.beheren', 'creators.bekijken', 'samenwerkingen.bekijken', 'samenwerkingen.koppelen', 'logboek.bekijken'],
-        'Contentcontrole' => ['creators.bekijken', 'creators.screenen', 'samenwerkingen.bekijken', 'content.controleren'],
+        'Contentcontrole' => ['creators.bekijken', 'creators.screenen', 'creators.beheren', 'samenwerkingen.bekijken', 'content.controleren'],
         'Planning' => ['bedrijven.bekijken', 'creators.bekijken', 'samenwerkingen.bekijken', 'samenwerkingen.plannen'],
         'Financieel' => ['bedrijven.bekijken', 'financieel.bekijken', 'financieel.beheren', 'tegoed.corrigeren', 'logboek.bekijken'],
         'Academybeheer' => ['creators.bekijken', 'academy.beheren'],

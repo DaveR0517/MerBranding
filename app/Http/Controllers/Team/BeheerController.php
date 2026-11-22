@@ -32,6 +32,7 @@ class BeheerController extends Controller
         Gate::authorize('bedrijven.bekijken');
 
         return Inertia::render('team/bedrijven', [
+            'can' => ['beheren' => Gate::allows('bedrijven.beheren')],
             'companies' => Company::with(['locations', 'owners', 'subscriptions.planVersion.plan'])->orderBy('name')->get()->map(fn (Company $b) => [
                 'id' => $b->id, 'name' => $b->name, 'branche' => $b->branche,
                 'owner' => $b->owners->first()?->only(['id', 'name', 'email']),
@@ -88,6 +89,7 @@ class BeheerController extends Controller
         Gate::authorize('creators.bekijken');
 
         return Inertia::render('team/creators', [
+            'can' => ['beheren' => Gate::allows('creators.beheren')],
             'creators' => Creator::with('user')->get()->map(fn (Creator $c) => [
                 'id' => $c->id, 'user_id' => $c->user_id, 'name' => $c->user->name, 'email' => $c->user->email, 'level' => $c->levelName(), 'city' => $c->city,
                 'instagram' => $c->instagram, 'tiktok' => $c->tiktok, 'status' => $c->status, 'age' => $c->age(),

@@ -43,7 +43,7 @@ function uitData(data: Record<string, unknown> | null, sleutel: string): string 
     return typeof waarde === 'string' ? waarde.trim() : '';
 }
 
-export default function Creators({ creators, levels, leads }: { creators: CreatorRij[]; levels: Niveau[]; leads: Aanmelding[] }) {
+export default function Creators({ creators, levels, leads, can }: { creators: CreatorRij[]; levels: Niveau[]; leads: Aanmelding[]; can: { beheren: boolean } }) {
     const form = useForm({
         name: '',
         email: '',
@@ -199,6 +199,7 @@ export default function Creators({ creators, levels, leads }: { creators: Creato
                             </Paneel>
                         )}
 
+                        {can.beheren && (
                         <Paneel id="creator-toevoegen" titel="Creator toevoegen" sub="De creator krijgt een uitnodiging per e-mail om zelf een wachtwoord te kiezen en staat daarna direct op actief.">
                             {gekozenLead && (
                                 <p className="mb-3 flex items-center justify-between gap-2 rounded-xl bg-violet/5 p-3 text-sm">
@@ -236,6 +237,7 @@ export default function Creators({ creators, levels, leads }: { creators: Creato
                                 {form.recentlySuccessful && <p className="text-sm text-emerald-700">Creator toegevoegd.</p>}
                             </form>
                         </Paneel>
+                        )}
                     </div>
                 </div>
             </Pagina>

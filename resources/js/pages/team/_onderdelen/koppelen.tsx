@@ -92,7 +92,7 @@ export function Matchlijst({ c, matches }: { c: SamenwerkingVol; matches: Match[
                         <li
                             key={m.id}
                             data-test="match"
-                            className={`flex flex-col gap-3 rounded-xl border p-3 sm:flex-row sm:items-center ${m.blocked ? 'bg-muted/50 text-muted-foreground' : 'bg-background'}`}
+                            className={`flex flex-wrap items-start gap-3 rounded-xl border p-3 sm:flex-nowrap sm:items-center ${m.blocked ? 'bg-muted/50 text-muted-foreground' : 'bg-background'}`}
                         >
                             <span
                                 aria-hidden
@@ -117,7 +117,6 @@ export function Matchlijst({ c, matches }: { c: SamenwerkingVol; matches: Match[
                                 </p>
                                 <p className="mt-1 text-sm">
                                     Krijgt: <span className="font-semibold">{m.reward}</span>
-                                    <span className="text-muted-foreground"> · kost {m.points} punten</span>
                                 </p>
                                 {m.blocked ? (
                                     <p className="mt-1.5 inline-flex items-center gap-1.5 text-sm font-semibold">

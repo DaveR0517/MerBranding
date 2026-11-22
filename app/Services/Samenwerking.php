@@ -18,6 +18,7 @@ use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -257,7 +258,7 @@ class Samenwerking
         return DB::transaction(function () use ($c, $door, $video, $bijschrift, $controle) {
             $versie = ($c->versions()->max('version') ?? 0) + 1;
             $disk = config('mebranding.video_disk');
-            $pad = $video->storeAs("videos/{$c->number}", "versie-{$versie}.".($video->getClientOriginalExtension() ?: 'mp4'), $disk);
+            $pad = $video->storeAs("videos/{$c->number}", "versie-{$versie}-".Str::random(8).'.'.($video->getClientOriginalExtension() ?: 'mp4'), $disk);
 
             $v = $c->versions()->create([
                 'version' => $versie, 'disk' => $disk, 'path' => $pad, 'mime' => $video->getMimeType(),
