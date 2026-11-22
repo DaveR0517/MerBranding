@@ -1,9 +1,12 @@
 <?php
 
+use App\Models\MessageTemplate;
 use App\Models\User;
+use Database\Seeders\DatabaseSeeder;
 use Database\Seeders\RolesSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 use Symfony\Component\Process\Process;
 
 uses(RefreshDatabase::class);
@@ -65,4 +68,15 @@ test('vaste accounts uit de env worden Super Admin, wachtwoord blijft bij bestaa
     config(['mebranding.accounts.0.wachtwoord' => 'Anders-456!']);
     $this->artisan('mebranding:accounts')->assertSuccessful();
     expect(Hash::check('Geheim-123!', $user->fresh()->password))->toBeTrue();
+});
+
+test('opnieuw seeden zet wijzigingen van het team niet terug', function () {
+    $this->seed(DatabaseSeeder::class);
+    Role::findByName('Sales')->revokePermissionTo('leads.beheren');
+    MessageTemplate::where('key', 'o-live')->update(['subject' => 'Eigen onderwerp']);
+
+    $this->seed(DatabaseSeeder::class);
+
+    expect(Role::findByName('Sales')->hasPermissionTo('leads.beheren'))->toBeFalse()
+        ->and(MessageTemplate::where('key', 'o-live')->value('subject'))->toBe('Eigen onderwerp');
 });

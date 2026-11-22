@@ -59,7 +59,11 @@ class RolesSeeder extends Seeder
     {
         app(PermissionRegistrar::class)->forgetCachedPermissions();
 
+        $nieuw = [];
         foreach (self::PERMISSIONS as $name) {
+            if (! Permission::where('name', $name)->where('guard_name', 'web')->exists()) {
+                $nieuw[] = $name;
+            }
             Permission::findOrCreate($name, 'web');
         }
 
@@ -67,8 +71,15 @@ class RolesSeeder extends Seeder
             Role::findOrCreate($name, 'web');
         }
 
+        // Nieuw sjabloon: alle rechten. Bestaand sjabloon: alleen rechten die net nieuw zijn in het platform,
+        // zodat wijzigingen van het team (Teambeheer) bij een deploy blijven staan.
         foreach (self::TEMPLATES as $name => $permissions) {
-            Role::findOrCreate($name, 'web')->syncPermissions($permissions);
+            $rol = Role::where('name', $name)->where('guard_name', 'web')->first();
+            if (! $rol) {
+                Role::create(['name' => $name, 'guard_name' => 'web'])->syncPermissions($permissions);
+            } elseif ($erbij = array_intersect($permissions, $nieuw)) {
+                $rol->givePermissionTo($erbij);
+            }
         }
     }
 }

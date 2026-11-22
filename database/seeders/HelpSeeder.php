@@ -124,7 +124,7 @@ MD,
         ];
 
         foreach ($artikelen as $i => $artikel) {
-            HelpArtikel::updateOrCreate(['slug' => $artikel['slug']], $artikel + ['position' => ($i + 1) * 10]);
+            HelpArtikel::firstOrCreate(['slug' => $artikel['slug']], $artikel + ['position' => ($i + 1) * 10]); // bestaande artikelen (bewerkt door het team) blijven staan
         }
     }
 }

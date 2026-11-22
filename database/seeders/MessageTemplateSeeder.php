@@ -5,7 +5,10 @@ namespace Database\Seeders;
 use App\Models\MessageTemplate;
 use Illuminate\Database\Seeder;
 
-/** Berichtsjablonen uit database/data/berichtsjablonen.json (concept 18-11-2026). Veilig om vaker te draaien. */
+/**
+ * Berichtsjablonen uit database/data/berichtsjablonen.json (concept 18-11-2026). Veilig om vaker te draaien:
+ * alleen ontbrekende sjablonen worden aangemaakt, zodat wijzigingen van het team (Instellingen, Berichtsjablonen) blijven staan.
+ */
 class MessageTemplateSeeder extends Seeder
 {
     /** Afwijkingen van het bestand, met reden. */
@@ -19,7 +22,7 @@ class MessageTemplateSeeder extends Seeder
         $data = json_decode(file_get_contents(database_path('data/berichtsjablonen.json')), true);
 
         foreach ($data['sjablonen'] as $s) {
-            MessageTemplate::updateOrCreate(['key' => $s['id']], [
+            MessageTemplate::firstOrCreate(['key' => $s['id']], [
                 'role' => $s['rol'],
                 'event' => $s['gebeurtenis'],
                 'channels' => self::KANALEN[$s['id']] ?? $s['kanalen'],
