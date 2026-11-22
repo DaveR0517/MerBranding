@@ -4,6 +4,16 @@ import { isActief, navigatie } from '@/lib/portaal';
 import { terug } from '@/routes';
 import type { Auth } from '@/types/auth';
 
+/** Lange woorden in de onderbalk breken op een vast punt af in plaats van afgekapt te worden. */
+const AFBREKEN: Record<string, string> = {
+    Samenwerkingen: 'Samen\u00ADwerkingen',
+    Werkvoorraad: 'Werk\u00ADvoorraad',
+};
+
+function afbreekbaar(titel: string): string {
+    return AFBREKEN[titel] ?? titel;
+}
+
 /** Onderbalk op de telefoon (de zijbalk is daar verborgen). */
 export function OnderBalk() {
     const page = usePage();
@@ -26,7 +36,7 @@ export function OnderBalk() {
                         className={`relative flex min-w-0 flex-1 flex-col items-center gap-1 py-2 text-[11px] font-semibold ${actief ? 'text-white' : 'text-white/65'}`}
                     >
                         <item.icon className="size-5" />
-                        <span className="max-w-full truncate px-1">{item.title}</span>
+                        <span className="max-w-full px-1 text-center leading-tight [hyphens:manual]">{afbreekbaar(item.title)}</span>
                         {item.title === 'Meldingen' && unread > 0 && (
                             <span className="absolute top-1 right-[calc(50%-18px)] min-w-4 rounded-full bg-rood px-1 text-[10px] leading-4 text-white">
                                 {unread}
