@@ -66,6 +66,7 @@ class PortaalController extends Controller
         abort_unless($magZien, 403);
 
         $disk = Storage::disk($versie->disk);
+        abort_unless($disk->exists($versie->path), 404, 'Deze video is niet meer beschikbaar.');
         $naam = "{$c->number}-versie-{$versie->version}.".pathinfo($versie->path, PATHINFO_EXTENSION);
 
         $download = $request->boolean('download') && ($user->isTeam() || $versie->outcome === 'goedgekeurd' || $c->creator?->user_id === $user->id);
