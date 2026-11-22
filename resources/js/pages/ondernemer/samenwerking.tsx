@@ -1,6 +1,6 @@
 import { Head, useForm } from '@inertiajs/react';
 import { CalendarClock, Clock, ExternalLink, Star, X } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import InputError from '@/components/input-error';
 import { StatusBadge } from '@/components/samenwerking/status-badge';
@@ -29,10 +29,21 @@ import { Blok, BlokKop, Gegeven, Kop, Tekstvak } from './_onderdelen/opmaak';
 type Props = { collaboration: SamenwerkingVol; can_cancel: boolean };
 
 const annuleerbaar = ['nieuw', 'creator_zoeken', 'creator_gevonden', 'bezoek_gepland'];
-const platformNaam: Record<string, string> = { instagram: 'Instagram', tiktok: 'TikTok', youtube: 'YouTube', facebook: 'Facebook' };
+const platformNaam: Record<string, string> = {
+    instagram: 'Instagram',
+    tiktok: 'TikTok',
+    youtube: 'YouTube',
+    facebook: 'Facebook',
+};
 
 function uur(iso: string | null): string {
-    return iso ? new Date(iso).toLocaleTimeString('nl-NL', { timeZone: 'Europe/Amsterdam', hour: '2-digit', minute: '2-digit' }) : '';
+    return iso
+        ? new Date(iso).toLocaleTimeString('nl-NL', {
+              timeZone: 'Europe/Amsterdam',
+              hour: '2-digit',
+              minute: '2-digit',
+          })
+        : '';
 }
 
 /** Wie er aan zet is en wat er nu gebeurt, per status. */
@@ -62,7 +73,7 @@ function nu(c: SamenwerkingVol, versie: Versie | undefined): { aanZet: string; t
             return {
                 aanZet: creator,
                 titel: `Bezoek staat vast: ${datumTijd(c.visit_at)}`,
-                tekst: `${creator} koos dit tijdvak zelf. Op de dag tikt ${creator} op Ik ben er, dan zie je hier dat het bezoek begonnen is.`,
+                tekst: `${creator} koos dit tijdvak zelf. Op de dag tikt de creator op Ik ben er, dan zie je hier dat het bezoek begonnen is.`,
             };
         case 'bezoek_geweest':
             return {
@@ -102,7 +113,11 @@ function nu(c: SamenwerkingVol, versie: Versie | undefined): { aanZet: string; t
             };
         case 'afgerond':
             return c.review
-                ? { aanZet: 'Niemand', titel: 'Afgerond', tekst: `De samenwerking is klaar. Je gaf ${creator} ${c.review.rating} van 5. Dank je wel.` }
+                ? {
+                      aanZet: 'Niemand',
+                      titel: 'Afgerond',
+                      tekst: `De samenwerking is klaar. Je gaf ${creator} ${c.review.rating} van 5. Dank je wel.`,
+                  }
                 : {
                       aanZet: 'Jij',
                       titel: 'Afgerond, geef een beoordeling',
@@ -131,6 +146,16 @@ export default function Samenwerking({ collaboration: c, can_cancel }: Props) {
     const status = c.status.value;
     const stand = nu(c, versie);
     const goedgekeurd = ['goedgekeurd', 'live', 'afgerond'].includes(status);
+    const tijdlijn = useRef<HTMLDivElement>(null);
+
+    // Op de telefoon scrolt de tijdlijn horizontaal: zet de huidige stap in beeld.
+    useEffect(() => {
+        const lijst = tijdlijn.current?.querySelector('ol');
+        const huidig = lijst?.querySelector<HTMLElement>('[aria-current=step]');
+        if (lijst && huidig) {
+            lijst.scrollLeft = huidig.offsetLeft - lijst.offsetLeft - (lijst.clientWidth - huidig.clientWidth) / 2;
+        }
+    }, [status]);
 
     return (
         <>
@@ -150,7 +175,9 @@ export default function Samenwerking({ collaboration: c, can_cancel }: Props) {
                 {c.steps.length > 0 && !['geannuleerd', 'niet_verschenen'].includes(status) && (
                     <Blok>
                         <BlokKop>Voortgang</BlokKop>
-                        <Tijdlijn stappen={c.steps} />
+                        <div ref={tijdlijn}>
+                            <Tijdlijn stappen={c.steps} />
+                        </div>
                     </Blok>
                 )}
 
@@ -159,7 +186,8 @@ export default function Samenwerking({ collaboration: c, can_cancel }: Props) {
                         <Blok className="border-l-4 border-l-violet" aria-labelledby="nu-titel" data-test="nu">
                             <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
                                 <span className="text-xs font-bold tracking-wide text-muted-foreground uppercase">
-                                    Nu{c.status.number ? ` · ${c.status.number}` : ''} {c.status.label}
+                                    Nu
+                                    {c.status.number ? ` · ${c.status.number}` : ''} {c.status.label}
                                 </span>
                                 <span className="rounded-full border px-2.5 py-0.5 text-xs">
                                     Aan zet: <strong>{stand.aanZet}</strong>
@@ -197,9 +225,7 @@ export default function Samenwerking({ collaboration: c, can_cancel }: Props) {
                                         ) : undefined
                                     }
                                 >
-                                    <span id="video-titel">
-                                        {goedgekeurd ? 'Je video' : `Versie ${versie.version}, meekijken`}
-                                    </span>
+                                    <span id="video-titel">{goedgekeurd ? 'Je video' : `Versie ${versie.version}, meekijken`}</span>
                                 </BlokKop>
                                 <div className={cn('grid gap-6', status === 'ter_controle' && 'md:grid-cols-[minmax(0,320px)_1fr]')}>
                                     <div className="mx-auto w-full max-w-[320px]">
@@ -265,9 +291,7 @@ export default function Samenwerking({ collaboration: c, can_cancel }: Props) {
                                     </Gegeven>
                                 )}
                                 {c.experience && <Gegeven label="Wat de creator ervaart">{c.experience}</Gegeven>}
-                                <Gegeven label="Alcohol in beeld">
-                                    {c.alcohol ? 'Ja: creator 25+, geen TikTok, NIX18 in beeld' : 'Nee'}
-                                </Gegeven>
+                                <Gegeven label="Alcohol in beeld">{c.alcohol ? 'Ja: creator 25+, geen TikTok, NIX18 in beeld' : 'Nee'}</Gegeven>
                             </dl>
                         </Blok>
 
@@ -285,19 +309,23 @@ export default function Samenwerking({ collaboration: c, can_cancel }: Props) {
 }
 
 function Opmerking({ id, speler }: { id: number; speler: React.RefObject<VideoSpelerHandle | null> }) {
-    const form = useForm<{ timecode: number | null; body: string }>({ timecode: null, body: '' });
+    const form = useForm<{ timecode: number | null; body: string }>({
+        timecode: null,
+        body: '',
+    });
 
     function versturen(e: FormEvent) {
         e.preventDefault();
-        form.post(opmerking.url(id), { preserveScroll: true, onSuccess: () => form.reset() });
+        form.post(opmerking.url(id), {
+            preserveScroll: true,
+            onSuccess: () => form.reset(),
+        });
     }
 
     return (
         <form onSubmit={versturen} className="space-y-3 rounded-xl bg-muted/60 p-4" data-test="opmerking">
             <h3 className="font-semibold">Opmerking voor het team</h3>
-            <p className="text-xs text-muted-foreground">
-                Alleen het team ziet je opmerking. Zij nemen hem mee in de feedback aan de creator.
-            </p>
+            <p className="text-xs text-muted-foreground">Alleen het team ziet je opmerking. Zij nemen hem mee in de feedback aan de creator.</p>
             <div className="flex flex-wrap items-center gap-2">
                 <Button type="button" variant="outline" size="sm" onClick={() => form.setData('timecode', speler.current?.tijd() ?? 0)}>
                     <Clock /> Gebruik huidige tijd
@@ -305,7 +333,12 @@ function Opmerking({ id, speler }: { id: number; speler: React.RefObject<VideoSp
                 {form.data.timecode !== null ? (
                     <span className="inline-flex items-center gap-1 rounded bg-violet/10 px-2 py-1 font-mono text-xs font-semibold text-violet">
                         Op {tijdcode(form.data.timecode)}
-                        <button type="button" onClick={() => form.setData('timecode', null)} aria-label="Tijd weghalen" className="rounded hover:bg-violet/20">
+                        <button
+                            type="button"
+                            onClick={() => form.setData('timecode', null)}
+                            aria-label="Tijd weghalen"
+                            className="rounded hover:bg-violet/20"
+                        >
                             <X className="size-3.5" />
                         </button>
                     </span>
@@ -339,7 +372,10 @@ function Opmerking({ id, speler }: { id: number; speler: React.RefObject<VideoSp
 }
 
 function Beoordelen({ id, creator }: { id: number; creator: string | null }) {
-    const form = useForm<{ rating: number; body: string }>({ rating: 0, body: '' });
+    const form = useForm<{ rating: number; body: string }>({
+        rating: 0,
+        body: '',
+    });
 
     function versturen(e: FormEvent) {
         e.preventDefault();
@@ -413,15 +449,17 @@ function Annuleren({ id, visitAt }: { id: number; visitAt: string | null }) {
 
     function versturen(e: FormEvent) {
         e.preventDefault();
-        form.post(annuleren.url(id), { preserveScroll: true, onSuccess: () => setOpen(false) });
+        form.post(annuleren.url(id), {
+            preserveScroll: true,
+            onSuccess: () => setOpen(false),
+        });
     }
 
     return (
         <Blok>
             <BlokKop>Annuleren</BlokKop>
             <p className="text-sm text-muted-foreground">
-                Annuleer je meer dan 48 uur voor het bezoek, dan krijg je je punten terug. Binnen 48 uur voor het bezoek zijn ze
-                verbruikt.
+                Annuleer je meer dan 48 uur voor het bezoek, dan krijg je je punten terug. Binnen 48 uur voor het bezoek zijn ze verbruikt.
             </p>
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
@@ -471,4 +509,6 @@ function Annuleren({ id, visitAt }: { id: number; visitAt: string | null }) {
     );
 }
 
-Samenwerking.layout = { breadcrumbs: [{ title: 'Overzicht', href: overzicht() }] };
+Samenwerking.layout = {
+    breadcrumbs: [{ title: 'Overzicht', href: overzicht() }],
+};

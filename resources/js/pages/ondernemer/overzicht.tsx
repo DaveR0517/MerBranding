@@ -9,14 +9,24 @@ import { Blok, BlokKop, Kop } from './_onderdelen/opmaak';
 import { Tegoed } from './_onderdelen/tegoed';
 
 type Props = {
-    company: { name: string; available_points: number; reserved_points: number };
+    company: {
+        name: string;
+        available_points: number;
+        reserved_points: number;
+    };
     collaborations: SamenwerkingKort[];
 };
 
 const afgesloten = ['afgerond', 'geannuleerd', 'niet_verschenen'];
 
 function uur(iso: string | null): string {
-    return iso ? new Date(iso).toLocaleTimeString('nl-NL', { timeZone: 'Europe/Amsterdam', hour: '2-digit', minute: '2-digit' }) : '';
+    return iso
+        ? new Date(iso).toLocaleTimeString('nl-NL', {
+              timeZone: 'Europe/Amsterdam',
+              hour: '2-digit',
+              minute: '2-digit',
+          })
+        : '';
 }
 
 /** Wat er onder "Bezoek" staat: het moment, of waar de samenwerking op wacht. */
@@ -100,9 +110,8 @@ export default function Overzicht({ company, collaborations }: Props) {
                     <Blok className="py-10 text-center">
                         <h2 className="font-heading text-xl font-bold">Nog geen samenwerkingen</h2>
                         <p className="mx-auto mt-2 max-w-md text-muted-foreground">
-                            Je tegoed staat klaar. Vraag je eerste samenwerking aan: jij vertelt wat je wilt laten zien, wij zoeken
-                            de creator die bij je zaak past. De creator komt langs, maakt een video en wij controleren hem voordat
-                            hij online gaat.
+                            Je tegoed staat klaar. Vraag je eerste samenwerking aan: jij vertelt wat je wilt laten zien, wij zoeken de creator die bij
+                            je zaak past. De creator komt langs, maakt een video en wij controleren hem voordat hij online gaat.
                         </p>
                         <Button asChild size="lg" className="mt-5">
                             <Link href={aanvragen()}>

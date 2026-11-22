@@ -14,6 +14,7 @@ return [
     /*
     | Pad van het portaal. Leeg op app.mebranding.nl. Alleen zolang website en portaal
     | hetzelfde testadres delen (Forge-testdomein, voor de DNS-overstap): APP_PREFIX=app.
+    | Let op: APP_URL dan zonder pad (https://host, niet https://host/app), anders staat /app dubbel in de links.
     */
     'app_prefix' => env('APP_PREFIX', ''),
 

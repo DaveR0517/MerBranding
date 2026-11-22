@@ -43,7 +43,9 @@ export default function Aanvragen({ available_points, locations, levels }: Props
     const { data, setData, errors, processing } = form;
     const gekozen = levels.find((l) => l.value === data.creator_level);
     const genoeg = !gekozen || gekozen.points <= available_points;
-    const vandaag = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Amsterdam' });
+    const vandaag = new Date().toLocaleDateString('sv-SE', {
+        timeZone: 'Europe/Amsterdam',
+    });
 
     function versturen(e: FormEvent) {
         e.preventDefault();
@@ -57,6 +59,9 @@ export default function Aanvragen({ available_points, locations, levels }: Props
                 <Kop onder="Vertel wat je wilt laten zien. Wij zoeken de creator die bij je zaak past en houden je op de hoogte.">
                     Samenwerking aanvragen
                 </Kop>
+                <p className="rounded-lg bg-violet/10 px-3 py-2 text-sm text-violet lg:hidden">
+                    Je hebt <strong>{available_points} punten</strong> beschikbaar.
+                </p>
 
                 <form onSubmit={versturen} className="grid gap-6 lg:grid-cols-[1fr_320px] lg:items-start" noValidate>
                     <div className="min-w-0 space-y-6">
@@ -153,8 +158,8 @@ export default function Aanvragen({ available_points, locations, levels }: Props
                                 <legend className="font-heading text-lg font-bold">Komt alcohol in beeld?</legend>
                                 <p id="alcohol-uitleg" className="mt-1 flex gap-2 text-sm text-muted-foreground">
                                     <Wine className="mt-0.5 size-4 shrink-0" aria-hidden />
-                                    Bij ja werken we alleen met creators van 25 jaar of ouder, plaatsen we niet op TikTok en staat het
-                                    NIX18-logo in beeld.
+                                    Bij ja werken we alleen met creators van 25 jaar of ouder, plaatsen we niet op TikTok en staat het NIX18-logo in
+                                    beeld.
                                 </p>
                                 <div className="mt-3 grid grid-cols-2 gap-3 sm:max-w-sm">
                                     {(
@@ -163,7 +168,12 @@ export default function Aanvragen({ available_points, locations, levels }: Props
                                             ['0', 'Nee'],
                                         ] as const
                                     ).map(([waarde, tekst]) => (
-                                        <Keuze key={waarde} naam="alcohol" gekozen={data.alcohol === waarde} onKies={() => setData('alcohol', waarde)}>
+                                        <Keuze
+                                            key={waarde}
+                                            naam="alcohol"
+                                            gekozen={data.alcohol === waarde}
+                                            onKies={() => setData('alcohol', waarde)}
+                                        >
                                             {tekst}
                                         </Keuze>
                                     ))}
@@ -176,10 +186,10 @@ export default function Aanvragen({ available_points, locations, levels }: Props
                             <fieldset>
                                 <legend className="font-heading text-lg font-bold">Niveau van de creator</legend>
                                 <p className="mt-1 text-sm text-muted-foreground">
-                                    Hoe hoger het niveau, hoe groter het bereik van de creator. Het niveau bepaalt hoeveel punten de
-                                    samenwerking kost.
+                                    Hoe hoger het niveau, hoe groter het bereik van de creator. Het niveau bepaalt hoeveel punten de samenwerking
+                                    kost.
                                 </p>
-                                <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                                <div className="mt-3 grid gap-3 sm:grid-cols-2">
                                     {levels.map((l) => {
                                         const teDuur = l.points > available_points;
 
@@ -196,9 +206,7 @@ export default function Aanvragen({ available_points, locations, levels }: Props
                                                     <span className="font-semibold whitespace-nowrap text-violet">{l.points} punten</span>
                                                 </span>
                                                 <span className="mt-1 block text-sm font-normal text-muted-foreground">{l.reward}</span>
-                                                {teDuur && (
-                                                    <span className="mt-1 block text-xs font-semibold text-rood">Te weinig tegoed</span>
-                                                )}
+                                                {teDuur && <span className="mt-1 block text-xs font-semibold text-rood">Te weinig tegoed</span>}
                                             </Keuze>
                                         );
                                     })}
@@ -215,14 +223,14 @@ export default function Aanvragen({ available_points, locations, levels }: Props
                                 {gekozen && genoeg && (
                                     <p>
                                         <Check className="mr-1 inline size-4" aria-hidden />
-                                        {gekozen.name} kost {gekozen.points} punten. Na versturen heb je nog{' '}
-                                        {available_points - gekozen.points} beschikbaar.
+                                        {gekozen.name} kost {gekozen.points} punten. Na versturen heb je nog {available_points - gekozen.points}{' '}
+                                        beschikbaar.
                                     </p>
                                 )}
                                 {gekozen && !genoeg && (
                                     <p className="font-semibold">
-                                        {gekozen.name} kost {gekozen.points} punten, je hebt er {available_points}. Kies een lager
-                                        niveau of neem contact op met je accountmanager.
+                                        {gekozen.name} kost {gekozen.points} punten, je hebt er {available_points}. Kies een lager niveau of neem
+                                        contact op met je accountmanager.
                                     </p>
                                 )}
                             </div>
@@ -232,8 +240,8 @@ export default function Aanvragen({ available_points, locations, levels }: Props
                             Aanvraag versturen
                         </Button>
                         <p className="text-center text-xs text-muted-foreground">
-                            Bij versturen zetten we de punten voor je apart (gereserveerd). Ze worden pas verbruikt na het bezoek.
-                            Annuleer je meer dan 48 uur voor het bezoek, dan krijg je ze terug.
+                            Bij versturen zetten we de punten voor je apart (gereserveerd). Ze worden pas verbruikt na het bezoek. Annuleer je meer
+                            dan 48 uur voor het bezoek, dan krijg je ze terug.
                         </p>
                     </div>
                 </form>

@@ -7,9 +7,7 @@ export function Kop({ children, naast, onder }: { children: ReactNode; naast?: R
         <header className="space-y-2">
             <span aria-hidden className="block h-1 w-9 rounded-full bg-brand-gradient" />
             <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-                <h1 className="font-heading text-2xl leading-tight font-extrabold tracking-tight break-words uppercase md:text-4xl">
-                    {children}
-                </h1>
+                <h1 className="font-heading text-2xl leading-tight font-extrabold tracking-tight break-words uppercase md:text-4xl">{children}</h1>
                 {naast}
             </div>
             {onder && <div className="text-sm text-muted-foreground">{onder}</div>}
