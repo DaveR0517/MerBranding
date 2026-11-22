@@ -150,3 +150,13 @@ test('te weinig tegoed: aanvraag wordt geweigerd', function () {
         'location_id' => $this->bloesem->locations()->first()->id, 'title' => 'X', 'briefing' => 'X', 'creator_level' => 'bronze',
     ]))->toThrow(ValidationException::class);
 });
+
+test('melding bij goedkeuring noemt de publicatiedatum, niet de bezoekdatum', function () {
+    $c = $this->dienst->aanvragen($this->bloesem, $this->sanne, [
+        'location_id' => $this->bloesem->locations()->first()->id, 'title' => 'X', 'briefing' => 'X', 'creator_level' => 'bronze',
+    ]);
+    $c = doorloopTotLive($this->dienst, $c, $this->marit, $this->eva, $this->ruben);
+
+    Notification::assertSentTo($this->sanne, PlatformMelding::class, fn ($n) => $n->template->key !== 'o-goedgekeurd'
+        || $n->vars['datum'] === $c->publish_on->translatedFormat('l j F'));
+});

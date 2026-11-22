@@ -78,7 +78,7 @@ class Samenwerking
             $this->logboek($c, $door, 'aangevraagd', null, Status::Nieuw);
 
             $this->werk->open('koppelen', "Creator koppelen: {$company->name}, {$c->title}", $c, 'samenwerkingen.koppelen', now()->addWeekdays(2));
-            $this->melder->stuur('o-aangevraagd', $this->ondernemers($c), $this->vars($c) + ['aantal' => 2], $this->urlOndernemer($c));
+            $this->melder->stuur('o-aangevraagd', $this->ondernemers($c), array_merge($this->vars($c), ['aantal' => 2]), $this->urlOndernemer($c));
             $this->melder->stuur('t-nieuw', $this->melder->team('samenwerkingen.koppelen'), $this->vars($c), $this->urlTeam($c));
 
             return $c;
@@ -115,7 +115,7 @@ class Samenwerking
 
             $this->logboek($c, $door, 'uitgenodigd', null, null, null, ['creator' => $creator->user->name]);
             $this->werk->sluit($c, ['koppelen', 'geweigerd']);
-            $this->melder->stuur('c-uitnodiging', $creator->user, $this->vars($c, $creator) + ['aantal' => config('mebranding.timers.invitation_hours')], $this->urlCreator($c));
+            $this->melder->stuur('c-uitnodiging', $creator->user, array_merge($this->vars($c, $creator), ['aantal' => config('mebranding.timers.invitation_hours')]), $this->urlCreator($c));
 
             return $uitnodiging;
         });
@@ -323,9 +323,9 @@ class Samenwerking
 
             $this->naar($c, Status::Feedback, $door, count($punten).' opmerkingen');
             $this->werk->sluit($c, 'contentcontrole');
-            $this->melder->stuur('c-feedback', $c->creator->user, $this->vars($c) + [
+            $this->melder->stuur('c-feedback', $c->creator->user, array_merge($this->vars($c), [
                 'aantal' => count($punten), 'datum' => $c->content_deadline_at?->translatedFormat('l j F') ?? 'de deadline',
-            ], $this->urlCreator($c));
+            ]), $this->urlCreator($c));
         });
     }
 
@@ -355,8 +355,8 @@ class Samenwerking
             $this->werk->sluit($c, 'contentcontrole');
 
             $datum = $publicatiedatum->translatedFormat('l j F');
-            $this->melder->stuur('c-goedgekeurd', $c->creator->user, $this->vars($c) + ['datum' => $datum], $this->urlCreator($c));
-            $this->melder->stuur('o-goedgekeurd', $this->ondernemers($c), $this->vars($c) + ['datum' => $datum], $this->urlOndernemer($c));
+            $this->melder->stuur('c-goedgekeurd', $c->creator->user, array_merge($this->vars($c), ['datum' => $datum]), $this->urlCreator($c));
+            $this->melder->stuur('o-goedgekeurd', $this->ondernemers($c), array_merge($this->vars($c), ['datum' => $datum]), $this->urlOndernemer($c));
         });
     }
 
@@ -379,7 +379,7 @@ class Samenwerking
                 $vrijdag = now()->isFriday() ? today() : today()->next('Friday');
                 Payout::create(['creator_id' => $c->creator_id, 'collaboration_id' => $c->id, 'amount_cents' => $c->fee_cents, 'run_on' => $vrijdag]);
                 $this->logboek($c, $door, 'vergoeding_opeisbaar', null, null, null, ['bedrag' => $c->fee_cents, 'betaalrun' => $vrijdag->toDateString()]);
-                $this->melder->stuur('c-uitbetaling-gepland', $door, $this->vars($c) + ['datum' => $vrijdag->translatedFormat('l j F')], $this->urlCreator($c));
+                $this->melder->stuur('c-uitbetaling-gepland', $door, array_merge($this->vars($c), ['datum' => $vrijdag->translatedFormat('l j F')]), $this->urlCreator($c));
             }
         });
     }
@@ -411,7 +411,7 @@ class Samenwerking
         }
         $c->review()->create(['user_id' => $door->id, 'rating' => $cijfer, 'body' => $tekst]);
         $this->logboek($c, $door, 'beoordeeld', null, null, null, ['cijfer' => $cijfer]);
-        $this->melder->stuur('c-beoordeling', $c->creator->user, $this->vars($c) + ['cijfer' => $cijfer], $this->urlCreator($c));
+        $this->melder->stuur('c-beoordeling', $c->creator->user, array_merge($this->vars($c), ['cijfer' => $cijfer]), $this->urlCreator($c));
     }
 
     /* ----------------------------------------------------------------- Uitzonderingen (tegoed volgens CLAUDE.md 7.2, VOORSTEL) */
@@ -433,7 +433,7 @@ class Samenwerking
             $this->naar($c, Status::Geannuleerd, $door, $reden, force: true);
             $this->werk->sluit($c);
 
-            $this->melder->stuur('o-gestopt', $this->ondernemers($c)->push($c->creator?->user), $this->vars($c) + ['reden' => $reden], $this->urlOndernemer($c));
+            $this->melder->stuur('o-gestopt', $this->ondernemers($c)->push($c->creator?->user), array_merge($this->vars($c), ['reden' => $reden]), $this->urlOndernemer($c));
         });
     }
 
