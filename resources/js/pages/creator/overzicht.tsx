@@ -3,12 +3,14 @@ import { ChevronRight, Clock, Gift } from 'lucide-react';
 import { StatusBadge } from '@/components/samenwerking/status-badge';
 import { datum, datumTijd, euro } from '@/lib/datum';
 import { klus, overzicht } from '@/routes/creator';
+import { start as profielStart } from '@/routes/creator/profiel';
 import type { SamenwerkingKort } from '@/types/samenwerking';
 import { Kaart, Kop } from './_onderdelen/opmaak';
 import { volgendeStap } from './_onderdelen/volgende-stap';
 
 type Props = {
     creator: { name: string; level: string; reward: string };
+    raamovereenkomst_getekend: boolean;
     invitations: {
         id: number;
         collaboration_id: number;
@@ -31,6 +33,7 @@ export default function Overzicht({
     invitations,
     jobs,
     payouts,
+    raamovereenkomst_getekend,
 }: Props) {
     const voornaam = creator.name.split(' ')[0];
     const lopend = jobs.filter(
@@ -61,6 +64,18 @@ export default function Overzicht({
             />
 
             <div className="mx-auto w-full max-w-3xl space-y-6 px-4 py-5 md:px-6">
+                {!raamovereenkomst_getekend && (
+                    <Link
+                        href={profielStart.url()}
+                        className="block rounded-2xl border-2 border-violet bg-violet/5 p-4"
+                        data-test="raamovereenkomst"
+                    >
+                        <span className="font-heading font-extrabold">Teken eerst je raamovereenkomst</span>
+                        <span className="mt-1 block text-sm text-muted-foreground">
+                            Eenmalig, daarna kun je uitnodigingen accepteren zonder gedoe. Vul ook je uitbetaalgegevens in.
+                        </span>
+                    </Link>
+                )}
                 {invitations.length > 0 && (
                     <section
                         aria-labelledby="uitnodigingen"

@@ -7,6 +7,7 @@ use App\Http\Presenters\SamenwerkingPresenter;
 use App\Models\Collaboration;
 use App\Models\Creator;
 use App\Models\Invitation;
+use App\Models\Signature;
 use App\Services\Samenwerking;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
@@ -24,6 +25,7 @@ class CreatorController extends Controller
         $creator = $this->creator($request);
 
         return Inertia::render('creator/overzicht', [
+            'raamovereenkomst_getekend' => Signature::where('user_id', $request->user()->id)->where('agreement', 'raamovereenkomst')->exists(),
             'creator' => ['name' => $request->user()->name, 'level' => $creator->levelName(), 'reward' => $creator->feeCents() > 0 ? 'Gratis bezoek en € '.number_format($creator->feeCents() / 100, 0, ',', '.').' per samenwerking' : 'Gratis bezoek per samenwerking'],
             'invitations' => $creator->invitations()->with('collaboration.company', 'collaboration.location')->whereNull('answer')->where('expires_at', '>', now())->get()
                 ->map(fn (Invitation $i) => [

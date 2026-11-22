@@ -14,6 +14,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -33,9 +34,29 @@ class TeamController extends Controller
                     'id' => $t->id, 'type' => $t->type, 'title' => $t->title, 'due_at' => $t->due_at?->toIso8601String(),
                     'overdue' => $t->due_at?->isPast() ?? false, 'collaboration_id' => $t->collaboration_id,
                     'status' => $t->collaboration ? SamenwerkingPresenter::status($t->collaboration->status) : null,
+                    'url' => $this->taakUrl($t),
                 ])->values(),
         ]);
     }
+
+    /** Waar een taak naartoe linkt: de samenwerking, of het scherm van de module die de taak maakte. */
+    private function taakUrl(Task $t): ?string
+    {
+        if ($t->collaboration_id) {
+            return route('team.samenwerking', $t->collaboration_id);
+        }
+
+        $route = self::TAAK_ROUTES[$t->type] ?? null;
+
+        return $route && Route::has($route) ? route($route) : null;
+    }
+
+    /** Taaksoorten zonder samenwerking en hun scherm. Modules voegen hier hun taaksoort toe. */
+    private const TAAK_ROUTES = [
+        'screening' => 'team.screening.index',
+        'support' => 'team.communicatie.support.index',
+        'abonnement' => 'team.bedrijven',
+    ];
 
     public function samenwerkingen(Request $request): Response
     {

@@ -8,6 +8,7 @@ $FORGE_COMPOSER install --no-dev --no-interaction --prefer-dist --optimize-autol
 npm ci --no-audit --no-fund
 npm run build
 
+$FORGE_PHP artisan storage:link --force
 $FORGE_PHP artisan migrate --force
 $FORGE_PHP artisan db:seed --force
 $FORGE_PHP artisan mebranding:accounts

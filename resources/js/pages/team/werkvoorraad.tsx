@@ -14,11 +14,13 @@ type Taak = {
     due_at: string | null;
     overdue: boolean;
     collaboration_id: number | null;
+    url: string | null;
     status: StatusInfo | null;
 };
 
 const soorten: Record<string, { naam: string; kleur: 'violet' | 'rood' | 'amber' }> = {
     koppelen: { naam: 'Koppelen', kleur: 'violet' },
+    screening: { naam: 'Screening', kleur: 'amber' },
     geweigerd: { naam: 'Geweigerd', kleur: 'rood' },
     contentcontrole: { naam: 'Contentcontrole', kleur: 'amber' },
 };
@@ -120,8 +122,8 @@ export default function Werkvoorraad({ tasks }: { tasks: Taak[] }) {
 
                             return (
                                 <li key={t.id} data-test="taak">
-                                    {t.collaboration_id ? (
-                                        <Link href={team.samenwerking.url(t.collaboration_id)} className={`${klassen} hover:border-violet`}>
+                                    {t.url ? (
+                                        <Link href={t.url} className={`${klassen} hover:border-violet`}>
                                             {inhoud}
                                         </Link>
                                     ) : (
