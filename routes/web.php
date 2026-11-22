@@ -25,6 +25,9 @@ Route::domain(config('mebranding.domains.site'))->group(function () {
 });
 
 Route::domain(config('mebranding.domains.app'))->prefix(config('mebranding.app_prefix'))->group(function () {
+    // Webhooks van Meta en TikTok en de tijdelijke bestandslink voor plaatsen: zonder inloggen (eigen handtekeningcontrole).
+    require base_path('routes/portaal-webhooks.php');
+
     Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', [PortaalController::class, 'start'])->name('start');
         Route::redirect('dashboard', '/'.trim(config('mebranding.app_prefix').'/', '/'))->name('dashboard');

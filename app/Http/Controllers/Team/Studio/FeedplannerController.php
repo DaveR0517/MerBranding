@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Team\Studio;
 
 use App\Models\StudioDesign;
+use App\Services\Kanalen\EigenKanalen;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -12,13 +13,14 @@ use Inertia\Response;
 
 /**
  * MeStudio, Feedplanner: raster zoals een Instagram-profiel en een maandkalender.
- * Automatisch plaatsen kan niet zonder sleutels van Meta: downloaden en handmatig markeren als geplaatst.
+ * Plaatsen op Instagram kan rechtstreeks zodra het eigen account gekoppeld is met het recht om te plaatsen
+ * (module eigen kanalen); anders downloaden en handmatig markeren als geplaatst.
  */
 class FeedplannerController extends StudioController
 {
     private const IN_FEED = ['klaar', 'ingepland', 'geplaatst'];
 
-    public function index(Request $request): Response
+    public function index(Request $request, EigenKanalen $kanalen): Response
     {
         $maand = rescue(fn () => Carbon::createFromFormat('Y-m', (string) $request->query('maand')), today(), false)->startOfMonth();
 
@@ -34,6 +36,7 @@ class FeedplannerController extends StudioController
             'kalender' => $inMaand->map(fn ($d) => $this->ontwerp($d)),
             'maand' => $maand->format('Y-m'),
             'statussen' => config('studio.statussen'),
+            'instagram_plaatsen' => $request->user()->can('kanalen.beheren') && $kanalen->magPlaatsen(),
         ]);
     }
 

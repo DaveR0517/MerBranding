@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { ChevronLeft, ChevronRight, Download, ExternalLink, GripVertical } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Download, ExternalLink, GripVertical, Send } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Kaart, Leeg, MeerLijst, Pagina, PaginaKop, Rij, Sectie, Tabs, TweeKolommen } from '@/components/pagina';
 import { Miniatuur, StudioStatus } from '@/components/studio/miniatuur';
@@ -7,6 +7,7 @@ import type { Export, OntwerpItem } from '@/components/studio/typen';
 import { telHashtags } from '@/components/studio/typen';
 import { datum, datumTijd } from '@/lib/datum';
 import { cn } from '@/lib/utils';
+import kanalen from '@/routes/team/kanalen';
 import feedplanner from '@/routes/team/studio/feedplanner';
 import ontwerpen from '@/routes/team/studio/ontwerpen';
 
@@ -18,7 +19,11 @@ type Props = {
     kalender: OntwerpItem[];
     maand: string;
     statussen: Record<string, string>;
+    /** Eigen Instagram gekoppeld met het recht om te plaatsen (module eigen kanalen). */
+    instagram_plaatsen: boolean;
 };
+
+const INSTAGRAM_FORMATEN = ['instagram_post', 'instagram_portret', 'story', 'carrousel'];
 
 const MAX_BIJSCHRIFT = 2200;
 const MAX_HASHTAGS = 30;
@@ -36,7 +41,7 @@ function lokaal(iso: string | null | undefined): string {
     return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
 }
 
-function PostDetail({ post, statussen }: { post: Post; statussen: Record<string, string> }) {
+function PostDetail({ post, statussen, plaatsen }: { post: Post; statussen: Record<string, string>; plaatsen: boolean }) {
     const [status, setStatus] = useState(post.status ?? 'klaar');
     const [gepland, setGepland] = useState(lokaal(post.scheduled_at));
     const [bijschrift, setBijschrift] = useState(post.caption ?? '');
@@ -103,7 +108,19 @@ function PostDetail({ post, statussen }: { post: Post; statussen: Record<string,
             </button>
 
             <div className="space-y-2 border-t pt-3">
-                <p className="text-sm text-muted-foreground">Automatisch plaatsen op Instagram kan pas met de sleutels van Meta. Download de post, plaats hem zelf en markeer hem hier.</p>
+                {plaatsen && INSTAGRAM_FORMATEN.includes(post.format) && post.status !== 'geplaatst' ? (
+                    <button
+                        type="button"
+                        onClick={() => router.post(kanalen.plaatsen.url(post.id), {}, { preserveScroll: true, onError: (e) => setFouten(e) })}
+                        className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-violet text-sm font-semibold text-white hover:bg-violet/90"
+                        data-test="feed-plaatsen"
+                    >
+                        <Send className="size-4" aria-hidden /> Plaatsen op Instagram
+                    </button>
+                ) : (
+                    <p className="text-sm text-muted-foreground">Download de post, plaats hem zelf en markeer hem hier. Rechtstreeks plaatsen kan zodra Instagram gekoppeld is onder Eigen kanalen.</p>
+                )}
+                {fouten.plaatsen && <p className="text-sm text-rood">{fouten.plaatsen}</p>}
                 {post.laatste_export ? (
                     <a href={post.laatste_export.url} className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg border text-sm font-semibold hover:border-violet">
                         <Download className="size-4" aria-hidden /> Downloaden voor plaatsen ({post.laatste_export.kind.toUpperCase()})
@@ -204,7 +221,7 @@ function Kalender({ maand, posts }: { maand: string; posts: OntwerpItem[] }) {
 }
 
 /** MeStudio, Feedplanner: raster zoals een Instagram-profiel (slepen voor de volgorde) en een maandkalender. */
-export default function Feedplanner({ feed, concepten, kalender, maand, statussen }: Props) {
+export default function Feedplanner({ feed, concepten, kalender, maand, statussen, instagram_plaatsen }: Props) {
     const [tab, setTab] = useState<'raster' | 'kalender'>('raster');
     const [volgorde, setVolgorde] = useState(feed);
     const [gekozen, setGekozen] = useState<number | null>(feed[0]?.id ?? null);
@@ -305,7 +322,7 @@ export default function Feedplanner({ feed, concepten, kalender, maand, statusse
                         }
                         zij={
                             <>
-                                {post && <PostDetail post={post} statussen={statussen} />}
+                                {post && <PostDetail post={post} statussen={statussen} plaatsen={instagram_plaatsen} />}
                                 <Sectie titel="Concepten" omschrijving="Nog niet in de feed.">
                                     {concepten.length === 0 ? (
                                         <p className="text-sm text-muted-foreground">Geen concepten.</p>

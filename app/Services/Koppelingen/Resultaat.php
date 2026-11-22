@@ -19,9 +19,10 @@ final class Resultaat
         return new self('niet_ingesteld', "Koppelen met {$platform} is binnenkort beschikbaar. Tot dan vul je je account handmatig in.");
     }
 
-    public static function fout(string $melding): self
+    /** @param  array<string, mixed>  $data  bijvoorbeeld token_ongeldig: het team moet opnieuw koppelen */
+    public static function fout(string $melding, array $data = []): self
     {
-        return new self('fout', $melding);
+        return new self('fout', $melding, $data);
     }
 
     public function isGelukt(): bool

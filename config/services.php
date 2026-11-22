@@ -41,6 +41,10 @@ return [
     'instagram' => [
         'client_id' => env('INSTAGRAM_CLIENT_ID'),
         'client_secret' => env('INSTAGRAM_CLIENT_SECRET'),
+        'graph_version' => env('INSTAGRAM_GRAPH_VERSION', 'v23.0'), // VOORSTEL: nieuwste stabiele versie van de Graph API
+        'webhook_verify_token' => env('INSTAGRAM_WEBHOOK_VERIFY_TOKEN'),
+        // Geheim waarmee Meta webhooks ondertekent. Leeg = het app-geheim hierboven (zo werkt Instagram Login normaal).
+        'webhook_secret' => env('INSTAGRAM_WEBHOOK_SECRET'),
     ],
 
     'tiktok' => [

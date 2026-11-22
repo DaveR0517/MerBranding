@@ -1,6 +1,7 @@
 <?php
 
 use App\Jobs\MeldGebruiksrechten;
+use App\Jobs\VerversEigenKanalen;
 use App\Services\Geld;
 use App\Services\Samenwerking;
 use App\Services\Score;
@@ -28,3 +29,6 @@ Schedule::job(new MeldGebruiksrechten)->name('gebruiksrechten-melden')->dailyAt(
 Schedule::call(fn () => app(Geld::class)->maandelijks())->name('maandelijks-tegoed-en-factuur')->monthlyOn(1, '06:10')->timezone('Europe/Amsterdam')->withoutOverlapping();
 Schedule::call(fn () => app(Geld::class)->herinneringen())->name('factuurherinneringen')->dailyAt('09:05')->timezone('Europe/Amsterdam')->withoutOverlapping();
 Schedule::call(fn () => app(Geld::class)->samenstellen(Geld::vrijdag()))->name('betaalrun-samenstellen')->fridays()->at('07:45')->timezone('Europe/Amsterdam')->withoutOverlapping();
+
+// Eigen kanalen (Instagram en TikTok van MEBRANDING): elk uur profiel, posts, cijfers en berichten ophalen, tokens op tijd verlengen.
+Schedule::job(new VerversEigenKanalen)->name('eigen-kanalen-verversen')->hourlyAt(23)->withoutOverlapping();
