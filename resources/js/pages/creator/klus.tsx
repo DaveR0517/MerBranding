@@ -11,6 +11,7 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import { StatusBadge } from '@/components/samenwerking/status-badge';
 import { Tijdlijn } from '@/components/samenwerking/tijdlijn';
+import { Snelkoppelingen } from '@/components/samenwerking/snelkoppelingen';
 import {
     FeedbackLijst,
     VideoSpeler,
@@ -76,6 +77,7 @@ export default function Klus({
                 {s.status.number !== null && (
                     <Kaart className="p-3 md:p-3">
                         <TijdlijnInBeeld samenwerking={s} />
+                        <Snelkoppelingen omgeving="creator" id={s.id} status={s.status.value} />
                     </Kaart>
                 )}
 

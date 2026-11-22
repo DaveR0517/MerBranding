@@ -25,6 +25,7 @@ const soorten: Record<string, { naam: string; kleur: 'violet' | 'rood' | 'amber'
     rechten_verlengen: { naam: 'Gebruiksrechten', kleur: 'violet' },
     radar_interesse: { naam: 'Radar', kleur: 'violet' },
     support: { naam: 'Support', kleur: 'amber' },
+    'cijfers-controleren': { naam: 'Cijfers', kleur: 'violet' },
     geweigerd: { naam: 'Geweigerd', kleur: 'rood' },
     contentcontrole: { naam: 'Contentcontrole', kleur: 'amber' },
 };

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\LeadBevestiging;
 use App\Mail\NieuweLead;
 use App\Models\Lead;
+use App\Models\Uitnodigingslink;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -62,6 +63,13 @@ class LeadController extends Controller
             ->map(fn ($v) => is_string($v) ? mb_substr($v, 0, 2000) : $v)
             ->all();
 
+        // Vriend uitnodigen: de code komt alleen uit de cookie van de uitnodigingslink, nooit uit een formulierveld.
+        unset($extra['referral_code']);
+        $code = $request->cookie(Uitnodigingslink::COOKIE);
+        if ($code && Uitnodigingslink::where('code', $code)->exists()) {
+            $extra['referral_code'] = $code;
+        }
+
         $lead = Lead::create([
             'type' => $type,
             'name' => $request->string('naam')->trim()->toString(),
@@ -80,7 +88,7 @@ class LeadController extends Controller
         Mail::to(config('mebranding.team_email'))->queue(new NieuweLead($lead));
         Mail::to($lead->email, $lead->name)->queue(new LeadBevestiging($lead));
 
-        return redirect()->route($backRoute)->with('aangemeld', true);
+        return redirect()->route($backRoute)->with('aangemeld', true)->withoutCookie(Uitnodigingslink::COOKIE);
     }
 
     /** @return array<string, string> */

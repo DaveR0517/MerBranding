@@ -57,7 +57,8 @@ class TeamController extends Controller
     /** Taaksoorten zonder samenwerking: [route, veld van de taak als parameter]. Modules voegen hier hun taaksoort toe. */
     private const TAAK_ROUTES = [
         'screening' => ['team.screening.index', null],
-        'support' => ['team.communicatie.support.index', null],
+        'support' => ['team.communicatie.support', null],
+        'cijfers-controleren' => ['team.cijfers', null],
         'abonnement' => ['team.bedrijfsbeheer.toon', 'company_id'],
         'rechten_verlengen' => ['team.content.bedrijf', 'company_id'],
         'radar_interesse' => ['team.content.radar', null],

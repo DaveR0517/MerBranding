@@ -23,10 +23,10 @@ export function OnderBalk() {
                         key={item.title}
                         href={item.href}
                         aria-current={actief ? 'page' : undefined}
-                        className={`relative flex flex-1 flex-col items-center gap-1 py-2 text-[11px] font-semibold ${actief ? 'text-white' : 'text-white/65'}`}
+                        className={`relative flex min-w-0 flex-1 flex-col items-center gap-1 py-2 text-[11px] font-semibold ${actief ? 'text-white' : 'text-white/65'}`}
                     >
                         <item.icon className="size-5" />
-                        {item.title}
+                        <span className="max-w-full truncate px-1">{item.title}</span>
                         {item.title === 'Meldingen' && unread > 0 && (
                             <span className="absolute top-1 right-[calc(50%-18px)] min-w-4 rounded-full bg-rood px-1 text-[10px] leading-4 text-white">
                                 {unread}

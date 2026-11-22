@@ -14,7 +14,7 @@ export type NavItem = {
     title: string;
     href: () => string;
     icon: LucideIcon;
-    /** Ook in de onderbalk op de telefoon (maximaal 4 per omgeving plus Meldingen). */
+    /** Ook in de onderbalk op de telefoon (de eerste 3 op volgorde, plus Meldingen). */
     mobile?: boolean;
     /** Volgorde in het menu: lager staat hoger. */
     order: number;
@@ -43,7 +43,7 @@ export function navigatie(portal: Portal | null, permissions: string[] = []): Po
             title: i.title,
             href: i.href(),
             icon: i.icon,
-            mobile: i.mobile && ++mobiel <= 4,
+            mobile: i.mobile && ++mobiel <= 3,
         })),
         { title: 'Meldingen', href: meldingen.url(), icon: Bell, mobile: true },
     ];

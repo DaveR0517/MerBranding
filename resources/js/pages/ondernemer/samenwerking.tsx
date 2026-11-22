@@ -5,6 +5,7 @@ import type { FormEvent } from 'react';
 import InputError from '@/components/input-error';
 import { StatusBadge } from '@/components/samenwerking/status-badge';
 import { Tijdlijn } from '@/components/samenwerking/tijdlijn';
+import { Snelkoppelingen } from '@/components/samenwerking/snelkoppelingen';
 import { FeedbackLijst, VideoSpeler, tijdcode } from '@/components/samenwerking/video-speler';
 import type { VideoSpelerHandle } from '@/components/samenwerking/video-speler';
 import { Button } from '@/components/ui/button';
@@ -177,6 +178,7 @@ export default function Samenwerking({ collaboration: c, can_cancel }: Props) {
                         <BlokKop>Voortgang</BlokKop>
                         <div ref={tijdlijn}>
                             <Tijdlijn stappen={c.steps} />
+                            <Snelkoppelingen omgeving="ondernemer" id={c.id} status={c.status.value} />
                         </div>
                     </Blok>
                 )}

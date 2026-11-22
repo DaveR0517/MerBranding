@@ -2,6 +2,7 @@ import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 import { StatusBadge } from '@/components/samenwerking/status-badge';
 import { Tijdlijn } from '@/components/samenwerking/tijdlijn';
+import { Snelkoppelingen } from '@/components/samenwerking/snelkoppelingen';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -326,6 +327,7 @@ export default function Samenwerking({
                     </div>
                     <div className="rounded-xl bg-white p-2 text-foreground dark:bg-background">
                         <Tijdlijn stappen={c.steps} />
+                        <Snelkoppelingen omgeving="team" id={c.id} status={c.status.value} />
                     </div>
                     {status === 'geannuleerd' && c.cancel_reason && (
                         <p className="text-sm text-white/85">Geannuleerd: {c.cancel_reason}</p>
