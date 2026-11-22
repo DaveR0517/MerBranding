@@ -6,7 +6,7 @@ cd $FORGE_RELEASE_DIRECTORY
 
 # Gedeelde opslag: video's, uploads, logs en sessies moeten elke deploy overleven.
 # Eén vaste map naast de releases; elke release verwijst ernaar.
-GEDEELD="${FORGE_SITE_PATH:-$(dirname "$(dirname "$FORGE_RELEASE_DIRECTORY")")}/storage"
+GEDEELD="$(dirname "$(dirname "$FORGE_RELEASE_DIRECTORY")")/storage"  # sitemap/storage (FORGE_SITE_PATH wijst naar current)
 mkdir -p "$GEDEELD/app/private" "$GEDEELD/app/public" "$GEDEELD/framework/cache/data" "$GEDEELD/framework/sessions" "$GEDEELD/framework/views" "$GEDEELD/logs"
 rm -rf storage
 ln -s "$GEDEELD" storage
