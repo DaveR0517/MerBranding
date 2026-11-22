@@ -21,6 +21,10 @@ type Taak = {
 const soorten: Record<string, { naam: string; kleur: 'violet' | 'rood' | 'amber' }> = {
     koppelen: { naam: 'Koppelen', kleur: 'violet' },
     screening: { naam: 'Screening', kleur: 'amber' },
+    abonnement: { naam: 'Abonnement', kleur: 'violet' },
+    rechten_verlengen: { naam: 'Gebruiksrechten', kleur: 'violet' },
+    radar_interesse: { naam: 'Radar', kleur: 'violet' },
+    support: { naam: 'Support', kleur: 'amber' },
     geweigerd: { naam: 'Geweigerd', kleur: 'rood' },
     contentcontrole: { naam: 'Contentcontrole', kleur: 'amber' },
 };

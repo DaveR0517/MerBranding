@@ -1,5 +1,6 @@
 <?php
 
+use App\Jobs\MeldGebruiksrechten;
 use App\Services\Samenwerking;
 use Illuminate\Support\Facades\Schedule;
 
@@ -12,3 +13,6 @@ Schedule::call(fn () => app(Samenwerking::class)->rondAf())->name('samenwerkinge
 Schedule::call(fn () => app(Samenwerking::class)->verlopenUitnodigingen())->name('uitnodigingen-verlopen')->everyFifteenMinutes()->withoutOverlapping();
 
 Schedule::command('horizon:snapshot')->everyFiveMinutes();
+
+// Gebruiksrechten (module content-koppelingen-planning): melding 30 en 7 dagen voor het einde (o-rechten). Tijd: VOORSTEL.
+Schedule::job(new MeldGebruiksrechten)->name('gebruiksrechten-melden')->dailyAt('08:47')->withoutOverlapping();

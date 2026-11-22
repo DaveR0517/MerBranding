@@ -46,16 +46,21 @@ class TeamController extends Controller
             return route('team.samenwerking', $t->collaboration_id);
         }
 
-        $route = self::TAAK_ROUTES[$t->type] ?? null;
+        [$route, $veld] = self::TAAK_ROUTES[$t->type] ?? [null, null];
+        if (! $route || ! Route::has($route) || ($veld && ! $t->{$veld})) {
+            return null;
+        }
 
-        return $route && Route::has($route) ? route($route) : null;
+        return $veld ? route($route, $t->{$veld}) : route($route);
     }
 
-    /** Taaksoorten zonder samenwerking en hun scherm. Modules voegen hier hun taaksoort toe. */
+    /** Taaksoorten zonder samenwerking: [route, veld van de taak als parameter]. Modules voegen hier hun taaksoort toe. */
     private const TAAK_ROUTES = [
-        'screening' => 'team.screening.index',
-        'support' => 'team.communicatie.support.index',
-        'abonnement' => 'team.bedrijven',
+        'screening' => ['team.screening.index', null],
+        'support' => ['team.communicatie.support.index', null],
+        'abonnement' => ['team.bedrijfsbeheer.toon', 'company_id'],
+        'rechten_verlengen' => ['team.content.bedrijf', 'company_id'],
+        'radar_interesse' => ['team.content.radar', null],
     ];
 
     public function samenwerkingen(Request $request): Response

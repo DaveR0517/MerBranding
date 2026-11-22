@@ -35,4 +35,17 @@ return [
         ],
     ],
 
+    /*
+    | Koppelingen (fase 3). Sleutels van Meta en TikTok zijn er nog niet: leeg = "binnenkort beschikbaar".
+    */
+    'instagram' => [
+        'client_id' => env('INSTAGRAM_CLIENT_ID'),
+        'client_secret' => env('INSTAGRAM_CLIENT_SECRET'),
+    ],
+
+    'tiktok' => [
+        'client_id' => env('TIKTOK_CLIENT_KEY'),
+        'client_secret' => env('TIKTOK_CLIENT_SECRET'),
+    ],
+
 ];
