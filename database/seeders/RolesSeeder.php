@@ -23,7 +23,7 @@ class RolesSeeder extends Seeder
         'financieel.bekijken', 'financieel.beheren', 'tegoed.corrigeren',
         'academy.beheren',
         'team.beheren', 'instellingen.beheren', 'logboek.bekijken',
-        'statistieken.bekijken', 'klassement.beheren', 'planning.beheren', 'berichten.beheren', 'sales.beheren', 'koppelingen.beheren', 'support.beheren',
+        'statistieken.bekijken', 'studio.gebruiken', 'klassement.beheren', 'planning.beheren', 'berichten.beheren', 'sales.beheren', 'koppelingen.beheren', 'support.beheren',
         'resultaten.bekijken', 'cijfers.invoeren',
     ];
 
@@ -44,12 +44,12 @@ class RolesSeeder extends Seeder
 
     /** Rechtensjablonen voor medewerkers. */
     public const TEMPLATES = [
-        'Accountmanager' => ['leads.bekijken', 'leads.beheren', 'bedrijven.bekijken', 'bedrijven.beheren', 'creators.bekijken', 'samenwerkingen.bekijken', 'samenwerkingen.koppelen', 'logboek.bekijken', 'statistieken.bekijken', 'berichten.beheren', 'support.beheren', 'resultaten.bekijken', 'cijfers.invoeren'],
-        'Contentcontrole' => ['creators.bekijken', 'creators.screenen', 'creators.beheren', 'samenwerkingen.bekijken', 'content.controleren', 'klassement.beheren', 'koppelingen.beheren', 'resultaten.bekijken', 'cijfers.invoeren'],
-        'Planning' => ['bedrijven.bekijken', 'creators.bekijken', 'samenwerkingen.bekijken', 'samenwerkingen.plannen', 'planning.beheren'],
-        'Financieel' => ['bedrijven.bekijken', 'financieel.bekijken', 'financieel.beheren', 'tegoed.corrigeren', 'logboek.bekijken', 'statistieken.bekijken', 'resultaten.bekijken'],
-        'Academybeheer' => ['creators.bekijken', 'academy.beheren'],
-        'Sales' => ['leads.bekijken', 'leads.beheren', 'bedrijven.bekijken', 'sales.beheren', 'resultaten.bekijken'],
+        'Accountmanager' => ['studio.gebruiken', 'leads.bekijken', 'leads.beheren', 'bedrijven.bekijken', 'bedrijven.beheren', 'creators.bekijken', 'samenwerkingen.bekijken', 'samenwerkingen.koppelen', 'logboek.bekijken', 'statistieken.bekijken', 'berichten.beheren', 'support.beheren', 'resultaten.bekijken', 'cijfers.invoeren'],
+        'Contentcontrole' => ['studio.gebruiken', 'creators.bekijken', 'creators.screenen', 'creators.beheren', 'samenwerkingen.bekijken', 'content.controleren', 'klassement.beheren', 'koppelingen.beheren', 'resultaten.bekijken', 'cijfers.invoeren'],
+        'Planning' => ['studio.gebruiken', 'bedrijven.bekijken', 'creators.bekijken', 'samenwerkingen.bekijken', 'samenwerkingen.plannen', 'planning.beheren'],
+        'Financieel' => ['studio.gebruiken', 'bedrijven.bekijken', 'financieel.bekijken', 'financieel.beheren', 'tegoed.corrigeren', 'logboek.bekijken', 'statistieken.bekijken', 'resultaten.bekijken'],
+        'Academybeheer' => ['studio.gebruiken', 'creators.bekijken', 'academy.beheren'],
+        'Sales' => ['studio.gebruiken', 'leads.bekijken', 'leads.beheren', 'bedrijven.bekijken', 'sales.beheren', 'resultaten.bekijken'],
     ];
 
     /** Rollen buiten het team. Hun rechten gelden binnen het eigen bedrijf of de eigen klussen (policies, fase 1). */

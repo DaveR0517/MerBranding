@@ -13,7 +13,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { isActief, navigatie, secties } from '@/lib/portaal';
+import { UITGELICHTE_SECTIES, isActief, navigatie, secties } from '@/lib/portaal';
 import { start } from '@/routes';
 
 export function AppSidebar() {
@@ -38,10 +38,22 @@ export function AppSidebar() {
 
             <SidebarContent>
                 {secties(links, auth.portal).map((groep) => (
-                    <SidebarGroup key={groep.naam} className="px-2 py-0">
-                        {groep.naam !== 'Meldingen' && (
-                            <SidebarGroupLabel>{groep.naam}</SidebarGroupLabel>
-                        )}
+                    <SidebarGroup
+                        key={groep.naam}
+                        className={
+                            UITGELICHTE_SECTIES.includes(groep.naam)
+                                ? 'mx-2 my-2 w-auto rounded-xl bg-brand-gradient p-1.5 shadow-lg shadow-violet/30 group-data-[collapsible=icon]:mx-0 group-data-[collapsible=icon]:p-0'
+                                : 'px-2 py-0'
+                        }
+                    >
+                        {groep.naam !== 'Meldingen' &&
+                            (UITGELICHTE_SECTIES.includes(groep.naam) ? (
+                                <SidebarGroupLabel className="font-heading text-sm font-extrabold tracking-wide text-white">
+                                    ✦ {groep.naam}
+                                </SidebarGroupLabel>
+                            ) : (
+                                <SidebarGroupLabel>{groep.naam}</SidebarGroupLabel>
+                            ))}
                         <SidebarMenu>
                             {groep.links.map((item) => (
                                 <SidebarMenuItem key={item.title}>

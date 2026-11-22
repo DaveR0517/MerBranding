@@ -23,6 +23,7 @@ const SECTIES: Partial<Record<Exclude<Portal, 'geen'>, Record<string, string[]>>
         'Hulp en account': ['Aan de slag', 'Uitnodigen', 'Help', 'Account'],
     },
     team: {
+        MeStudio: ['Ontwerpen', 'Sjablonen', 'Feedplanner', 'Mediatheek'],
         Dagelijks: ['Dashboard', 'Werkvoorraad', 'Samenwerkingen', 'Berichten', 'Planning'],
         Relaties: ['Bedrijven', 'Content per bedrijf', 'Creators', 'Screening', 'Klassement', 'Cursusdagen', 'Sales'],
         'Cijfers en geld': ['Cijfers', 'Financieel'],
@@ -40,6 +41,9 @@ function sectieVan(portal: Portal | null, titel: string): string {
 
     return Object.entries(indeling ?? {}).find(([, titels]) => titels.includes(titel))?.[0] ?? 'Overig';
 }
+
+/** Secties die in het menu extra opvallen (eigen afdeling). */
+export const UITGELICHTE_SECTIES = ['MeStudio'];
 
 /** Secties in vaste volgorde, met hun links. */
 export function secties(links: PortaalLink[], portal: Portal | null): { naam: string; links: PortaalLink[] }[] {

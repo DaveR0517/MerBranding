@@ -10,7 +10,12 @@ import {
 import { datum, datumTijd, euro } from "@/lib/datum";
 import * as team from "@/routes/team";
 import type { Metrieken, PlatformTotaal } from "@/types/cijfers";
-import { Pagina, PaginaKop } from "@/components/pagina";
+import {
+    KaartRaster,
+    Kerncijfer,
+    Pagina,
+    PaginaKop,
+} from "@/components/pagina";
 import { Paneel } from "../_onderdelen/basis";
 
 type Vergelijk = { nu: number; vorige: number };
@@ -86,6 +91,7 @@ function Trend({
     );
 }
 
+/** Kerncijfer uit de bouwdoos, met een link als het cijfer naar een lijst verwijst. */
 function Tegel({
     label,
     waarde,
@@ -99,34 +105,23 @@ function Tegel({
     href?: string;
     nadruk?: boolean;
 }) {
-    const inhoud = (
-        <>
-            <span className="block text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                {label}
-            </span>
-            <span
-                className={`mt-1 block font-heading text-3xl font-extrabold tabular-nums ${nadruk ? "text-rood" : ""}`}
-            >
-                {waarde}
-            </span>
-            {onder && (
-                <span className="mt-1 block text-xs text-muted-foreground">
-                    {onder}
-                </span>
-            )}
-        </>
+    const cijfer = (
+        <Kerncijfer
+            label={label}
+            waarde={nadruk ? <span className="text-rood">{waarde}</span> : waarde}
+            toelichting={onder}
+        />
     );
-    const klasse = "block min-w-0 rounded-xl border bg-card p-4";
 
     return href ? (
         <Link
             href={href}
-            className={`${klasse} transition hover:border-violet`}
+            className="block min-w-0 rounded-xl transition hover:ring-2 hover:ring-violet/40"
         >
-            {inhoud}
+            {cijfer}
         </Link>
     ) : (
-        <div className={klasse}>{inhoud}</div>
+        cijfer
     );
 }
 
@@ -156,7 +151,7 @@ export default function Dashboard(p: Props) {
                     }
                 />
 
-                <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+                <KaartRaster kolommen={4} className="grid-cols-2">
                     <Tegel
                         label="Nieuwe aanvragen"
                         waarde={k.aanvragen.nu}
@@ -242,7 +237,7 @@ export default function Dashboard(p: Props) {
                         waarde={k.creators.actief}
                         onder={`${k.creators.screening} in screening`}
                     />
-                </div>
+                </KaartRaster>
 
                 <div className="grid gap-4 lg:grid-cols-3">
                     <Paneel
