@@ -98,13 +98,13 @@ class Merkkit
     /** Tekstlagen met een stijl (en niet vrij gezet door Super Admin) krijgen de waarden van de merkkit. */
     public function pasToe(array $paginas, string $formaat): array
     {
-        return array_map(fn ($p) => ['lagen' => array_map(function ($l) use ($formaat) {
+        return array_map(fn ($p) => array_merge($p, ['lagen' => array_map(function ($l) use ($formaat) {
             if (($l['soort'] ?? null) === 'tekst' && in_array($l['stijl'] ?? null, self::STIJLEN, true) && empty($l['vrij'])) {
                 $l = array_merge($l, $this->stijl($l['stijl'], $formaat));
             }
 
             return $l;
-        }, $p['lagen'] ?? [])] + $p, $paginas);
+        }, $p['lagen'] ?? [])]), $paginas);
     }
 
     /** Een nieuw ontwerp begint nooit blanco: achtergrond uit het palet, merkbalk of verloop, logo, Kop en Tekst. */
@@ -126,7 +126,7 @@ class Merkkit
         $tekstY = $boven + (int) round(40 * $f['schaal']);
         $lagen[] = $this->tekst('Jouw kop in twee regels', 'kop', $formaat, $m, $tekstY, $W - 2 * $m, $donker ? '#FFFFFF' : '#3A3659', vak: 'Kop');
         $lagen[] = $this->tekst('Een korte tekst die uitlegt wat je wilt zeggen.', 'tekst', $formaat, $m, $tekstY + (int) round($kop['grootte'] * $kop['regelafstand'] * 2) + 30, $W - 2 * $m,
-            $donker ? '#F6F5F9' : '#6D6794', vak: 'Tekst');
+            ['licht' => '#6D6794', 'donker' => '#F6F5F9', 'verloop' => '#FFFFFF'][$soort] ?? '#6D6794', vak: 'Tekst');
         $lagen[] = $this->logo($donker ? 'wit' : 'aubergine', $m, $logoY, $logoBreedte);
 
         $pagina = ['achtergrond' => ['licht' => '#F6F5F9', 'donker' => '#2E2B48', 'verloop' => '#3A3659'][$soort] ?? '#F6F5F9', 'lagen' => $lagen];
@@ -155,8 +155,8 @@ class Merkkit
     /** Foto- of videovak: het kader staat vast, alleen de inhoud verschuift en zoomt. */
     public function vak(string $soort, string $naam, float $x, float $y, float $w, float $h, float $hoek): array
     {
-        return ['soort' => $soort] + $this->basisLaag($soort, $naam, $x, $y, $w, $h) + ['bron' => null, 'uitsnede' => ['x' => 0.5, 'y' => 0.5, 'zoom' => 1],
-            'hoekafronding' => $hoek, 'vak' => true, 'vakNaam' => $naam, 'vergrendeld' => true];
+        return array_merge($this->basisLaag($soort, $naam, $x, $y, $w, $h), ['bron' => null, 'uitsnede' => ['x' => 0.5, 'y' => 0.5, 'zoom' => 1],
+            'hoekafronding' => $hoek, 'vak' => true, 'vakNaam' => $naam, 'vergrendeld' => true]);
     }
 
     public function vorm(string $vorm, float $x, float $y, float $w, float $h, string $kleur, float $hoekafronding = 0, float $dekking = 1): array

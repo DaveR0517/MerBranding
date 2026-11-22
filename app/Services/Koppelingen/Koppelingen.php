@@ -74,7 +74,7 @@ class Koppelingen
     {
         $van = $account->status;
         $account->fill([
-            'status' => 'niet_gekoppeld', 'access_token' => null, 'refresh_token' => null, 'expires_at' => null,
+            'status' => 'niet_gekoppeld', 'access_token' => null, 'refresh_token' => null, 'expires_at' => null, 'token_expires_at' => null, 'scopes' => null,
             'consent_version' => null, 'consent_at' => null, 'professional_confirmed' => false,
         ])->save();
 
@@ -88,9 +88,12 @@ class Koppelingen
         $account->fill([
             'status' => 'gekoppeld', 'professional_confirmed' => true,
             'handle' => $resultaat->data['handle'] ?? $account->handle,
+            'external_id' => $resultaat->data['external_id'] ?? $account->external_id,
+            'scopes' => $resultaat->data['scopes'] ?? $account->scopes,
             'access_token' => $resultaat->data['access_token'] ?? null,
             'refresh_token' => $resultaat->data['refresh_token'] ?? null,
             'expires_at' => $resultaat->data['expires_at'] ?? now()->addDays($this->platform($account->platform)->tokenDagen()),
+            'token_expires_at' => $resultaat->data['token_expires_at'] ?? null,
             'last_error' => null,
         ])->save();
 
@@ -147,10 +150,10 @@ class Koppelingen
         ];
     }
 
-    private function log(SocialAccount $account, User $door, string $event, ?string $van, ?array $data = null): void
+    public function log(SocialAccount $account, ?User $door, string $event, ?string $van, ?array $data = null): void
     {
         ActivityLog::create([
-            'user_id' => $door->id, 'subject_type' => $account->getMorphClass(), 'subject_id' => $account->id, 'event' => $event,
+            'user_id' => $door?->id, 'subject_type' => $account->getMorphClass(), 'subject_id' => $account->id, 'event' => $event,
             'from_status' => $van, 'to_status' => $account->status, 'data' => $data,
         ]);
     }

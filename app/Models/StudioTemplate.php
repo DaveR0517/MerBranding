@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /** Sjabloon in MeStudio: een ontwerp met benoemde vakken (foto, video, tekst) dat als begin dient voor een nieuw ontwerp. */
 class StudioTemplate extends Model
 {
-    protected $fillable = ['slug', 'user_id', 'name', 'format', 'width', 'height', 'pages', 'preview_path', 'is_builtin', 'archived_at'];
+    protected $fillable = ['slug', 'user_id', 'name', 'format', 'width', 'height', 'pages', 'preview_path', 'is_builtin', 'seed_version', 'archived_at'];
 
     protected function casts(): array
     {

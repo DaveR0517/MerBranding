@@ -3,14 +3,20 @@
 namespace Database\Seeders;
 
 use App\Models\StudioTemplate;
+use App\Services\Studio\Merkkit;
 use Illuminate\Database\Seeder;
 
 /**
- * Huisstijlsjablonen voor MeStudio (eigen marketing van MEBRANDING). Idempotent: bestaande sjablonen
- * (op slug) blijven zoals het team ze heeft aangepast. Voorbeeldteksten in vakken zijn bedoeld om te vervangen.
+ * Huisstijlsjablonen voor MeStudio (eigen marketing van MEBRANDING), gebouwd met de merkkit: tekst op stijl,
+ * logo en merkbalk vergrendeld, foto- en videovakken met een vast kader. Ze slagen voor de merkcontrole.
+ * Idempotent: een sjabloon wordt alleen bijgewerkt als zijn seedversie ouder is; een nieuwe naam van het team blijft.
+ * Eigen sjablonen van gebruikers (zonder slug) raakt dit nooit aan. Voorbeeldteksten in vakken zijn om te vervangen.
  */
 class StudioSjablonenSeeder extends Seeder
 {
+    /** Ophogen als de lagen van deze sjablonen veranderen. */
+    public const VERSIE = 2;
+
     private const AUBERGINE = '#3A3659';
 
     private const DONKER = '#2E2B48';
@@ -25,116 +31,125 @@ class StudioSjablonenSeeder extends Seeder
 
     private const WIT = '#FFFFFF';
 
-    private int $teller = 0;
+    private Merkkit $m;
 
     public function run(): void
     {
+        $this->m = app(Merkkit::class);
+
         foreach ($this->sjablonen() as $slug => [$naam, $formaat, $paginas]) {
+            $sjabloon = StudioTemplate::firstOrNew(['slug' => $slug]);
+            if ($sjabloon->exists && $sjabloon->seed_version >= self::VERSIE) {
+                continue;
+            }
+
             $f = config("studio.formaten.{$formaat}");
-            StudioTemplate::firstOrCreate(['slug' => $slug], [
-                'name' => $naam, 'format' => $formaat, 'width' => $f['breedte'], 'height' => $f['hoogte'],
-                'pages' => $paginas, 'is_builtin' => true,
-            ]);
+            $sjabloon->fill([
+                'name' => $sjabloon->exists ? $sjabloon->name : $naam, 'format' => $formaat, 'width' => $f['breedte'], 'height' => $f['hoogte'],
+                'pages' => $paginas, 'is_builtin' => true, 'seed_version' => self::VERSIE, 'preview_path' => null,
+            ])->save();
         }
     }
 
     private function sjablonen(): array
     {
+        $m = $this->m;
+
         return [
             'creator-in-de-spotlight' => ['Creator in de spotlight', 'instagram_portret', [$this->pagina(self::DONKER, [
-                $this->fotovak('Foto van de creator', 60, 60, 960, 930, 36),
-                $this->verloop(100, 100, 470, 70, 35),
-                $this->tekst('CREATOR IN DE SPOTLIGHT', 100, 121, 470, 28, 800, self::WIT, 'center', naam: 'Label'),
-                $this->tekst('Naam creator', 60, 1030, 960, 80, 800, self::WIT, vak: 'Naam creator'),
-                $this->tekst('maakte een video bij Naam zaak in Plaats', 60, 1130, 960, 40, 400, self::LICHT, vak: 'Zaak en plaats', lettertype: 'Noto Sans Variable'),
-                $this->logo('mebranding-logo-wit.svg', 60, 1250, 314),
+                $m->vak('foto', 'Foto van de creator', 60, 60, 960, 900, 36),
+                $m->verloop(100, 100, 560, 72, 36, naam: 'Labelvlak'),
+                $m->tekst('Creator in de spotlight', 'label', 'instagram_portret', 100, 118, 560, self::WIT, 'center', naam: 'Label'),
+                $m->tekst('Naam creator', 'kop', 'instagram_portret', 60, 1000, 960, self::WIT, vak: 'Naam creator'),
+                $m->tekst('maakte een video bij Naam zaak in Plaats', 'tekst', 'instagram_portret', 60, 1100, 960, self::LICHT, vak: 'Zaak en plaats'),
+                $m->logo('wit', 60, 1245, 280),
             ])]],
 
             'resultaat-in-cijfers' => ['Resultaat in cijfers', 'instagram_post', [$this->pagina(self::AUBERGINE, [
-                $this->verloop(0, 0, 1080, 1080, 0),
-                $this->tekst('RESULTAAT IN CIJFERS', 80, 110, 920, 34, 800, self::WIT, 'center', naam: 'Label'),
-                $this->tekst('1.234', 40, 330, 1000, 230, 900, self::WIT, 'center', vak: 'Getal (vul het echte resultaat in)', regelafstand: 1),
-                $this->tekst('mensen bereikt met één video', 80, 590, 920, 56, 700, self::WIT, 'center', vak: 'Wat het getal is'),
-                $this->tekst('Naam bedrijf, maand', 80, 690, 920, 36, 400, self::LICHT, 'center', vak: 'Bedrijf en periode', lettertype: 'Noto Sans Variable'),
-                $this->logo('mebranding-logo-wit.svg', 383, 960, 314),
+                $m->verloop(0, 0, 1080, 1080, 0, merk: true, naam: 'Merkverloop'),
+                $m->tekst('Resultaat in cijfers', 'label', 'instagram_post', 60, 110, 960, self::WIT, 'center', naam: 'Label'),
+                $m->tekst('1.234', 'cijfer', 'instagram_post', 60, 300, 960, self::WIT, 'center', vak: 'Getal (vul het echte resultaat in)'),
+                $m->tekst('mensen bereikt met één video', 'subkop', 'instagram_post', 60, 560, 960, self::WIT, 'center', vak: 'Wat het getal is'),
+                $m->tekst('Naam bedrijf, maand', 'label', 'instagram_post', 60, 660, 960, self::WIT, 'center', vak: 'Bedrijf en periode'),
+                $m->logo('wit', 400, 975, 280),
             ])]],
 
             'nieuwe-partner' => ['Nieuwe partner', 'instagram_post', [$this->pagina(self::LICHT, [
-                $this->fotovak('Foto van de zaak', 0, 0, 1080, 620, 0),
-                $this->vorm('rechthoek', 0, 620, 1080, 460, self::AUBERGINE),
-                $this->verloop(80, 560, 360, 72, 36),
-                $this->tekst('NIEUWE PARTNER', 80, 583, 360, 28, 800, self::WIT, 'center', naam: 'Label'),
-                $this->tekst('Naam bedrijf', 80, 690, 920, 84, 800, self::WIT, vak: 'Naam bedrijf'),
-                $this->tekst('Welkom bij MEBRANDING. Binnenkort zie je hier video\'s van creators uit de regio.', 80, 800, 920, 38, 400, self::LICHT, vak: 'Welkomsttekst', lettertype: 'Noto Sans Variable', regelafstand: 1.35),
-                $this->logo('mebranding-logo-wit.svg', 80, 975, 280),
+                $m->vak('foto', 'Foto van de zaak', 0, 0, 1080, 620, 0),
+                $m->vorm('rechthoek', 0, 620, 1080, 460, self::AUBERGINE),
+                $m->verloop(60, 580, 360, 72, 36, naam: 'Labelvlak'),
+                $m->tekst('Nieuwe partner', 'label', 'instagram_post', 60, 598, 360, self::WIT, 'center', naam: 'Label'),
+                $m->tekst('Naam bedrijf', 'kop', 'instagram_post', 60, 690, 960, self::WIT, vak: 'Naam bedrijf'),
+                $m->tekst('Welkom bij MEBRANDING. Binnenkort zie je hier video\'s van creators uit de regio.', 'tekst', 'instagram_post', 60, 800, 960, self::LICHT, vak: 'Welkomsttekst'),
+                $m->logo('wit', 60, 975, 280),
             ])]],
 
             'video-teaser' => ['Video-teaser', 'story', [$this->pagina(self::DONKER, [
-                $this->videovak('Video', 0, 0, 1080, 1920, 0),
-                $this->vorm('rechthoek', 0, 1260, 1080, 660, self::DONKER, dekking: 0.72),
-                $this->logo('mebranding-logo-wit.svg', 383, 120, 314),
-                $this->verloop(80, 1330, 340, 72, 36),
-                $this->tekst('NIEUWE VIDEO', 80, 1353, 340, 28, 800, self::WIT, 'center', naam: 'Label'),
-                $this->tekst('Zo ziet een dag bij Naam zaak eruit', 80, 1450, 920, 88, 800, self::WIT, vak: 'Titel', regelafstand: 1.1),
-                $this->tekst('Bekijk de hele video bij de creator', 80, 1700, 920, 40, 400, self::LICHT, vak: 'Onderregel', lettertype: 'Noto Sans Variable'),
+                $m->vak('video', 'Video', 0, 0, 1080, 1920, 0),
+                $m->vorm('rechthoek', 0, 1040, 1080, 880, self::DONKER, dekking: 0.85),
+                $m->logo('wit', 400, 270, 280),
+                $m->verloop(60, 1100, 340, 72, 36, naam: 'Labelvlak'),
+                $m->tekst('Nieuwe video', 'label', 'story', 60, 1118, 340, self::WIT, 'center', naam: 'Label'),
+                $m->tekst('Zo ziet een dag bij Naam zaak eruit', 'kop', 'story', 60, 1210, 960, self::WIT, vak: 'Titel'),
+                $m->tekst('Bekijk de hele video bij de creator', 'tekst', 'story', 60, 1420, 960, self::LICHT, vak: 'Onderregel'),
             ])]],
 
             'quote-van-een-ondernemer' => ['Quote van een ondernemer', 'instagram_portret', [$this->pagina(self::AUBERGINE, [
-                $this->vorm('cirkel', 760, -160, 520, 520, self::VIOLET, dekking: 0.35),
-                $this->tekst('“', 70, 90, 300, 320, 900, self::ROOD, naam: 'Aanhalingsteken', regelafstand: 1),
-                $this->tekst('Hier komt de quote van de ondernemer, in zijn of haar eigen woorden.', 80, 380, 920, 64, 700, self::WIT, vak: 'Quote', regelafstand: 1.25),
-                $this->fotovak('Foto ondernemer', 80, 1000, 180, 180, 90),
-                $this->tekst('Naam ondernemer', 300, 1030, 700, 44, 800, self::WIT, vak: 'Naam'),
-                $this->tekst('Eigenaar Naam bedrijf', 300, 1090, 700, 34, 400, self::LICHT, vak: 'Functie en bedrijf', lettertype: 'Noto Sans Variable'),
-                $this->logo('mebranding-logo-wit.svg', 80, 1250, 280),
+                $m->vorm('cirkel', 760, -160, 520, 520, self::VIOLET, dekking: 0.35),
+                $m->verloop(60, 300, 120, 16, 8, naam: 'Accent'),
+                $m->tekst('Hier komt de quote van de ondernemer, in zijn of haar eigen woorden.', 'kop', 'instagram_portret', 60, 360, 960, self::WIT, vak: 'Quote'),
+                $m->vak('foto', 'Foto ondernemer', 60, 1000, 180, 180, 90),
+                $m->tekst('Naam ondernemer', 'subkop', 'instagram_portret', 280, 1030, 740, self::WIT, vak: 'Naam'),
+                $m->tekst('Eigenaar Naam bedrijf', 'tekst', 'instagram_portret', 280, 1095, 740, self::LICHT, vak: 'Functie en bedrijf'),
+                $m->logo('wit', 60, 1245, 280),
             ])]],
 
             'word-creator' => ['Word creator', 'story', [$this->pagina(self::AUBERGINE, [
-                $this->verloop(0, 0, 1080, 1920, 0),
-                $this->logo('mebranding-logo-wit.svg', 383, 120, 314),
-                $this->fotovak('Foto creator', 140, 300, 800, 800, 48),
-                $this->tekst("Word creator bij\nMEBRANDING", 80, 1160, 920, 88, 900, self::WIT, 'center', vak: 'Titel', regelafstand: 1.05),
-                $this->tekst('Inspireer je volgers. Word beloond.', 80, 1400, 920, 48, 700, self::WIT, 'center', vak: 'Onderregel'),
-                $this->vorm('rechthoek', 240, 1600, 600, 110, self::WIT, hoekafronding: 55),
-                $this->tekst('Meld je aan op mebranding.nl', 240, 1638, 600, 34, 800, self::AUBERGINE, 'center', vak: 'Knoptekst'),
+                $m->verloop(0, 0, 1080, 1920, 0, merk: true, naam: 'Merkverloop'),
+                $m->logo('wit', 400, 270, 280),
+                $m->vak('foto', 'Foto creator', 190, 380, 700, 640, 48),
+                $m->tekst("Word creator bij\nMEBRANDING", 'kop', 'story', 60, 1060, 960, self::WIT, 'center', vak: 'Titel'),
+                $m->tekst('Inspireer je volgers. Word beloond.', 'subkop', 'story', 60, 1260, 960, self::WIT, 'center', vak: 'Onderregel'),
+                $m->vorm('rechthoek', 160, 1420, 760, 100, self::WIT, hoekafronding: 50),
+                $m->tekst('Meld je aan op mebranding.nl', 'label', 'story', 160, 1452, 760, self::AUBERGINE, 'center', vak: 'Knoptekst'),
             ])]],
 
             'carrousel-zo-werkt-het' => ['Carrousel: zo werkt het', 'carrousel', [
                 $this->pagina(self::AUBERGINE, [
-                    $this->vorm('cirkel', -200, 900, 700, 700, self::VIOLET, dekking: 0.4),
-                    $this->vorm('cirkel', 760, -120, 460, 460, self::ROOD, dekking: 0.35),
-                    $this->tekst('ZO WERKT HET', 80, 360, 920, 34, 800, self::LICHT, naam: 'Label'),
-                    $this->tekst('Geen gedoe. Wij regelen alles.', 80, 430, 920, 110, 900, self::WIT, vak: 'Titel', regelafstand: 1.05),
-                    $this->tekst('Swipe voor de stappen →', 80, 1100, 920, 40, 600, self::LICHT, vak: 'Swipe-tekst', lettertype: 'Noto Sans Variable'),
-                    $this->logo('mebranding-logo-wit.svg', 80, 1250, 280),
+                    $m->vorm('cirkel', -200, 900, 700, 700, self::VIOLET, dekking: 0.4),
+                    $m->vorm('cirkel', 760, -120, 460, 460, self::ROOD, dekking: 0.35),
+                    $m->tekst('Zo werkt het', 'label', 'carrousel', 60, 360, 960, self::LICHT, naam: 'Label'),
+                    $m->tekst('Geen gedoe. Wij regelen alles.', 'kop', 'carrousel', 60, 430, 960, self::WIT, vak: 'Titel'),
+                    $m->tekst('Swipe voor de stappen →', 'tekst', 'carrousel', 60, 1100, 960, self::LICHT, vak: 'Swipe-tekst'),
+                    $m->logo('wit', 60, 1245, 280),
                 ]),
                 $this->pagina(self::LICHT, [
-                    $this->fotovak('Foto stap 1 en 2', 80, 80, 920, 560, 36),
-                    $this->tekst('1', 80, 700, 120, 90, 900, self::VIOLET, naam: 'Nummer 1', regelafstand: 1),
-                    $this->tekst('Je vertelt wat je wilt laten zien', 200, 712, 800, 48, 800, self::AUBERGINE, vak: 'Stap 1'),
-                    $this->tekst('2', 80, 900, 120, 90, 900, self::ROOD, naam: 'Nummer 2', regelafstand: 1),
-                    $this->tekst('Wij koppelen een creator uit de regio', 200, 912, 800, 48, 800, self::AUBERGINE, vak: 'Stap 2'),
-                    $this->logo('mebranding-logo-aubergine.svg', 80, 1250, 280),
+                    $m->vak('foto', 'Foto stap 1 en 2', 60, 60, 960, 560, 36),
+                    $m->tekst('1', 'kop', 'carrousel', 60, 700, 110, self::VIOLET, naam: 'Nummer 1'),
+                    $m->tekst('Je vertelt wat je wilt laten zien', 'subkop', 'carrousel', 180, 712, 840, self::AUBERGINE, vak: 'Stap 1'),
+                    $m->tekst('2', 'kop', 'carrousel', 60, 880, 110, self::ROOD, naam: 'Nummer 2'),
+                    $m->tekst('Wij koppelen een creator uit de regio', 'subkop', 'carrousel', 180, 892, 840, self::AUBERGINE, vak: 'Stap 2'),
+                    $m->logo('aubergine', 60, 1245, 280),
                 ]),
                 $this->pagina(self::LICHT, [
-                    $this->tekst('3', 80, 160, 120, 90, 900, self::VIOLET, naam: 'Nummer 3', regelafstand: 1),
-                    $this->tekst('De creator komt langs en maakt de video', 200, 172, 800, 48, 800, self::AUBERGINE, vak: 'Stap 3'),
-                    $this->tekst('4', 80, 400, 120, 90, 900, self::ROOD, naam: 'Nummer 4', regelafstand: 1),
-                    $this->tekst('Je ziet in je dashboard wat het oplevert', 200, 412, 800, 48, 800, self::AUBERGINE, vak: 'Stap 4'),
-                    $this->verloop(80, 780, 920, 300, 36),
-                    $this->tekst('Plan een kennismaking op mebranding.nl', 140, 870, 800, 52, 800, self::WIT, 'center', vak: 'Afsluiter', regelafstand: 1.15),
-                    $this->logo('mebranding-logo-aubergine.svg', 80, 1250, 280),
+                    $m->tekst('3', 'kop', 'carrousel', 60, 160, 110, self::VIOLET, naam: 'Nummer 3'),
+                    $m->tekst('De creator komt langs en maakt de video', 'subkop', 'carrousel', 180, 172, 840, self::AUBERGINE, vak: 'Stap 3'),
+                    $m->tekst('4', 'kop', 'carrousel', 60, 400, 110, self::ROOD, naam: 'Nummer 4'),
+                    $m->tekst('Je ziet in je dashboard wat het oplevert', 'subkop', 'carrousel', 180, 412, 840, self::AUBERGINE, vak: 'Stap 4'),
+                    $m->verloop(60, 700, 960, 300, 36, naam: 'Afsluitvlak'),
+                    $m->tekst('Plan een kennismaking op mebranding.nl', 'subkop', 'carrousel', 120, 790, 840, self::WIT, 'center', vak: 'Afsluiter'),
+                    $m->logo('aubergine', 60, 1245, 280),
                 ]),
             ]],
 
             'aankondiging' => ['Aankondiging', 'instagram_post', [$this->pagina(self::WIT, [
-                $this->verloop(0, 0, 1080, 24, 0),
-                $this->vorm('cirkel', 700, 640, 620, 620, self::LICHT),
-                $this->vorm('rechthoek', 80, 140, 330, 70, self::AUBERGINE, hoekafronding: 35),
-                $this->tekst('AANKONDIGING', 80, 162, 330, 28, 800, self::WIT, 'center', naam: 'Label'),
-                $this->tekst('Hier komt je aankondiging', 80, 280, 920, 96, 900, self::AUBERGINE, vak: 'Titel', regelafstand: 1.05),
-                $this->tekst('Een korte toelichting voor ondernemers en creators in Noord-Nederland.', 80, 560, 760, 42, 400, self::LILA, vak: 'Tekst', lettertype: 'Noto Sans Variable', regelafstand: 1.35),
-                $this->logo('mebranding-logo-aubergine.svg', 80, 960, 314),
+                $m->verloop(0, 0, 1080, 24, 0, merk: true, naam: 'Merkbalk'),
+                $m->vorm('cirkel', 700, 640, 620, 620, self::LICHT),
+                $m->vorm('rechthoek', 60, 140, 330, 72, self::AUBERGINE, hoekafronding: 36),
+                $m->tekst('Aankondiging', 'label', 'instagram_post', 60, 158, 330, self::WIT, 'center', naam: 'Label'),
+                $m->tekst('Hier komt je aankondiging', 'kop', 'instagram_post', 60, 280, 960, self::AUBERGINE, vak: 'Titel'),
+                $m->tekst('Een korte toelichting voor ondernemers en creators in Noord-Nederland.', 'tekst', 'instagram_post', 60, 500, 760, self::LILA, vak: 'Tekst'),
+                $m->logo('aubergine', 60, 975, 280),
             ])]],
         ];
     }
@@ -142,49 +157,5 @@ class StudioSjablonenSeeder extends Seeder
     private function pagina(string $achtergrond, array $lagen): array
     {
         return ['achtergrond' => $achtergrond, 'lagen' => $lagen];
-    }
-
-    private function basis(string $soort, string $naam, float $x, float $y, float $w, float $h): array
-    {
-        return ['id' => $soort.'-'.(++$this->teller), 'soort' => $soort, 'naam' => $naam, 'x' => $x, 'y' => $y,
-            'breedte' => $w, 'hoogte' => $h, 'rotatie' => 0, 'zichtbaar' => true, 'vergrendeld' => false];
-    }
-
-    private function tekst(string $tekst, float $x, float $y, float $w, int $grootte, int $gewicht, string $kleur, string $uitlijning = 'left',
-        ?string $vak = null, ?string $naam = null, string $lettertype = 'Montserrat Variable', float $regelafstand = 1.2): array
-    {
-        return $this->basis('tekst', $vak ?? $naam ?? 'Tekst', $x, $y, $w, $grootte * $regelafstand) + [
-            'tekst' => $tekst, 'lettertype' => $lettertype, 'grootte' => $grootte, 'gewicht' => $gewicht, 'kleur' => $kleur,
-            'uitlijning' => $uitlijning, 'regelafstand' => $regelafstand, 'vak' => $vak !== null, 'vakNaam' => $vak,
-        ];
-    }
-
-    private function fotovak(string $naam, float $x, float $y, float $w, float $h, float $hoek): array
-    {
-        return $this->basis('foto', $naam, $x, $y, $w, $h) + ['bron' => null, 'uitsnede' => ['x' => 0.5, 'y' => 0.5, 'zoom' => 1],
-            'hoekafronding' => $hoek, 'vak' => true, 'vakNaam' => $naam];
-    }
-
-    private function videovak(string $naam, float $x, float $y, float $w, float $h, float $hoek): array
-    {
-        return ['soort' => 'video'] + $this->fotovak($naam, $x, $y, $w, $h, $hoek);
-    }
-
-    private function vorm(string $vorm, float $x, float $y, float $w, float $h, string $kleur, float $hoekafronding = 0, float $dekking = 1): array
-    {
-        return $this->basis('vorm', $vorm === 'cirkel' ? 'Cirkel' : 'Rechthoek', $x, $y, $w, $h) + [
-            'vorm' => $vorm, 'vulling' => $kleur, 'hoekafronding' => $hoekafronding, 'dekking' => $dekking,
-        ];
-    }
-
-    private function verloop(float $x, float $y, float $w, float $h, float $hoek): array
-    {
-        return $this->basis('verloop', 'Merkverloop', $x, $y, $w, $h) + ['van' => self::ROOD, 'naar' => self::VIOLET, 'hoek' => 135, 'hoekafronding' => $hoek];
-    }
-
-    /** Logo uit public/brand; de woordmerken zijn 627,4 bij 100 (verhouding vast). */
-    private function logo(string $bestand, float $x, float $y, float $w): array
-    {
-        return $this->basis('logo', 'Logo', $x, $y, $w, round($w / 6.274)) + ['bron' => ['soort' => 'logo', 'naam' => $bestand]];
     }
 }
