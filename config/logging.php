@@ -65,6 +65,14 @@ return [
             'replace_placeholders' => true,
         ],
 
+        // Mails zolang er nog geen verzenddienst is (MAIL_MAILER=log): storage/logs/mail-*.log
+        'mail' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/mail.log'),
+            'level' => 'debug',
+            'max_files' => 30,
+        ],
+
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),
