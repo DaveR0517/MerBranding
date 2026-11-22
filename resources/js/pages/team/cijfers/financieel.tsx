@@ -12,7 +12,14 @@ import { Button } from "@/components/ui/button";
 import { datum, datumTijd } from "@/lib/datum";
 import * as team from "@/routes/team";
 import * as geld from "@/routes/team/financieel";
-import { Fouten, Kop, Label, Leeg, Pagina, Paneel } from "../_onderdelen/basis";
+import {
+    KaartRaster,
+    Kerncijfer,
+    Leeg,
+    Pagina,
+    PaginaKop,
+} from "@/components/pagina";
+import { Fouten, Label, Paneel } from "../_onderdelen/basis";
 
 type Uitbetaling = {
     id: number;
@@ -107,36 +114,41 @@ export default function Financieel({
     return (
         <>
             <Head title="Financieel" />
-            <Pagina breed>
-                <Kop
+            <Pagina>
+                <PaginaKop
                     titel="Financieel"
-                    sub="Betaalruns voor creators en facturen voor ondernemers. Bedragen van vergoedingen zoals afgesproken, facturen inclusief btw."
+                    omschrijving="Betaalruns voor creators en facturen voor ondernemers. Bedragen van vergoedingen zoals afgesproken, facturen inclusief btw."
                 />
                 <Fouten />
 
-                <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-                    <Tegel
+                <KaartRaster kolommen={4} className="grid-cols-2">
+                    <Kerncijfer
                         label="Opeisbaar"
                         waarde={bedrag(totals.opeisbaar)}
-                        onder={`${totals.opeisbaar_creators} ${totals.opeisbaar_creators === 1 ? "creator" : "creators"}, run ${datum(next_friday)}`}
+                        toelichting={`${totals.opeisbaar_creators} ${totals.opeisbaar_creators === 1 ? "creator" : "creators"}, run ${datum(next_friday)}`}
                     />
-                    <Tegel
+                    <Kerncijfer
                         label="Uitbetaald"
                         waarde={bedrag(totals.uitbetaald_maand)}
-                        onder="Deze maand"
+                        toelichting="Deze maand"
                     />
-                    <Tegel
+                    <Kerncijfer
                         label="Openstaand"
-                        waarde={bedrag(totals.openstaand)}
-                        onder={`${totals.openstaand_aantal} ${totals.openstaand_aantal === 1 ? "factuur" : "facturen"}, ${totals.te_laat_aantal} te laat`}
-                        nadruk={totals.te_laat_aantal > 0}
+                        waarde={
+                            totals.te_laat_aantal > 0 ? (
+                                <span className="text-rood">{bedrag(totals.openstaand)}</span>
+                            ) : (
+                                bedrag(totals.openstaand)
+                            )
+                        }
+                        toelichting={`${totals.openstaand_aantal} ${totals.openstaand_aantal === 1 ? "factuur" : "facturen"}, ${totals.te_laat_aantal} te laat`}
                     />
-                    <Tegel
+                    <Kerncijfer
                         label="Abonnementen"
                         waarde={bedrag(totals.gefactureerd_maand)}
-                        onder="Gefactureerd deze maand, excl. btw"
+                        toelichting="Gefactureerd deze maand, excl. btw"
                     />
-                </div>
+                </KaartRaster>
 
                 <Paneel
                     titel="Betaalrun"
@@ -171,7 +183,7 @@ export default function Financieel({
                         </div>
                     )}
                     {runs.length === 0 ? (
-                        <Leeg>Nog geen betaalruns.</Leeg>
+                        <Leeg titel="Nog geen betaalruns." />
                     ) : (
                         <div className="space-y-3">
                             {runs.map((r) => (
@@ -238,7 +250,7 @@ export default function Financieel({
                         ))}
                     </div>
                     {zichtbaar.length === 0 ? (
-                        <Leeg>Geen facturen in deze selectie.</Leeg>
+                        <Leeg titel="Geen facturen in deze selectie." />
                     ) : (
                         <ul className="divide-y">
                             {zichtbaar.map((f) => (
@@ -345,34 +357,6 @@ export default function Financieel({
                 </Paneel>
             </Pagina>
         </>
-    );
-}
-
-function Tegel({
-    label,
-    waarde,
-    onder,
-    nadruk,
-}: {
-    label: string;
-    waarde: string;
-    onder: string;
-    nadruk?: boolean;
-}) {
-    return (
-        <div className="min-w-0 rounded-2xl border bg-card p-4">
-            <span className="block text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                {label}
-            </span>
-            <span
-                className={`mt-1 block truncate font-heading text-2xl font-extrabold tabular-nums md:text-3xl ${nadruk ? "text-rood" : ""}`}
-            >
-                {waarde}
-            </span>
-            <span className="mt-1 block text-xs text-muted-foreground">
-                {onder}
-            </span>
-        </div>
     );
 }
 

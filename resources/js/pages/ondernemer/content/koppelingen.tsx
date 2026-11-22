@@ -1,8 +1,8 @@
 import { Head } from '@inertiajs/react';
+import { Pagina, PaginaKop } from '@/components/pagina';
 import { KoppelingenLijst } from '@/components/content/koppelingen-scherm';
 import type { Account, Toestemmingstekst } from '@/components/content/types';
 import content from '@/routes/ondernemer/content';
-import { Kop } from '../_onderdelen/opmaak';
 
 type Props = {
     accounts: Account[];
@@ -18,10 +18,11 @@ export default function Koppelingen({
     return (
         <>
             <Head title="Koppelingen" />
-            <div className="mx-auto w-full max-w-5xl space-y-6 p-4 md:p-6">
-                <Kop onder="Koppel je eigen accounts, zodat we profielbezoeken en nieuwe volgers op je account kunnen laten zien naast de video's van creators.">
-                    Koppelingen
-                </Kop>
+            <Pagina>
+                <PaginaKop
+                    titel="Koppelingen"
+                    omschrijving="Koppel je eigen accounts, zodat we profielbezoeken en nieuwe volgers op je account kunnen laten zien naast de video's van creators."
+                />
                 <KoppelingenLijst
                     accounts={accounts}
                     toestemming={toestemming}
@@ -34,7 +35,7 @@ export default function Koppelingen({
                         verbreken: (p) => content.koppelingen.verbreken.url(p),
                     }}
                 />
-            </div>
+            </Pagina>
         </>
     );
 }

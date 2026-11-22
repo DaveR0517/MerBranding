@@ -5,7 +5,8 @@ import { datumTijd } from "@/lib/datum";
 import * as team from "@/routes/team";
 import * as beheer from "@/routes/team/beheer";
 import { opslaan } from "@/routes/team/beheer/instellingen";
-import { Kop, Pagina, Paneel, invoer } from "../_onderdelen/basis";
+import { Pagina, PaginaKop, Tabs } from "@/components/pagina";
+import { Paneel, invoer, useTab } from "../_onderdelen/basis";
 import { Voorstel, naarEuro } from "./_onderdelen/beheer";
 
 type Waarde = number | string | boolean;
@@ -59,6 +60,7 @@ export default function Instellingen({
         ) as Record<string, boolean>,
     });
     const groepen = [...new Set(instellingen.map((i) => i.groep))];
+    const [groep, setGroep] = useTab("instellingen", groepen[0] ?? "", groepen);
     const errors = form.errors as Record<string, string>;
     const aantalVoorstel = Object.values(form.data.voorstel).filter(
         Boolean,
@@ -81,9 +83,9 @@ export default function Instellingen({
         <>
             <Head title="Instellingen" />
             <Pagina>
-                <Kop
+                <PaginaKop
                     titel="Instellingen"
-                    sub="Zelf beheren zonder ontwikkelaar. Een wijziging geldt voor stappen na het opslaan en komt met naam, oude en nieuwe waarde in het logboek."
+                    omschrijving="Zelf beheren zonder ontwikkelaar. Een wijziging geldt voor stappen na het opslaan en komt met naam, oude en nieuwe waarde in het logboek."
                     acties={
                         <Button variant="outline" asChild>
                             <Link href={team.logboek.url()}>
@@ -93,7 +95,7 @@ export default function Instellingen({
                     }
                 />
 
-                <p className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+                <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
                     <strong>
                         {aantalVoorstel} van de {instellingen.length} waarden
                         zijn nog een voorstel.
@@ -107,77 +109,206 @@ export default function Instellingen({
                     className="space-y-5"
                     data-test="instellingen"
                 >
-                    {groepen.map((g) => (
-                        <Paneel
-                            key={g}
-                            titel={g}
-                            sub={
-                                g === "Niveaus creators"
-                                    ? "Alleen Platinum en Elite krijgen geld (besloten 18-11-2026). De andere niveaus krijgen een gratis bezoek."
-                                    : undefined
-                            }
-                        >
-                            <ul className="divide-y">
-                                {instellingen
-                                    .filter((i) => i.groep === g)
-                                    .map((i) => {
-                                        const id = `i-${i.key.replaceAll(".", "-")}`;
-                                        const dicht =
-                                            i.alleen_super_admin &&
-                                            !is_super_admin;
-                                        const w = form.data.waarden[i.key];
-                                        const afwijkend =
-                                            naarInvoer(i, i.standaard) !== w;
+                    <Tabs
+                        tabs={groepen.map((g) => ({
+                            waarde: g,
+                            label: instellingen.some(
+                                (i) =>
+                                    i.groep === g && errors[`waarden.${i.key}`],
+                            )
+                                ? `${g} (fout)`
+                                : g,
+                            aantal: instellingen.filter((i) => i.groep === g)
+                                .length,
+                        }))}
+                        actief={groep}
+                        onKies={setGroep}
+                    />
+                    {groepen
+                        .filter((g) => g === groep)
+                        .map((g) => (
+                            <Paneel
+                                key={g}
+                                titel={g}
+                                sub={
+                                    g === "Niveaus creators"
+                                        ? "Alleen Platinum en Elite krijgen geld (besloten 18-11-2026). De andere niveaus krijgen een gratis bezoek."
+                                        : undefined
+                                }
+                            >
+                                <ul className="divide-y">
+                                    {instellingen
+                                        .filter((i) => i.groep === g)
+                                        .map((i) => {
+                                            const id = `i-${i.key.replaceAll(".", "-")}`;
+                                            const dicht =
+                                                i.alleen_super_admin &&
+                                                !is_super_admin;
+                                            const w = form.data.waarden[i.key];
+                                            const afwijkend =
+                                                naarInvoer(i, i.standaard) !==
+                                                w;
 
-                                        return (
-                                            <li
-                                                key={i.key}
-                                                className="grid gap-3 py-4 md:grid-cols-[minmax(0,1fr)_minmax(0,260px)] md:items-start"
-                                            >
-                                                <div className="min-w-0">
-                                                    <p className="flex flex-wrap items-center gap-2">
-                                                        <label
-                                                            htmlFor={id}
-                                                            className="font-semibold"
-                                                        >
-                                                            {i.label}
-                                                        </label>
-                                                        {form.data.voorstel[
-                                                            i.key
-                                                        ] && <Voorstel />}
-                                                    </p>
-                                                    <p className="mt-0.5 text-sm text-muted-foreground">
-                                                        {i.uitleg}
-                                                    </p>
-                                                    <p className="mt-1 text-xs text-muted-foreground">
-                                                        Standaard{" "}
-                                                        {leesbaar(
-                                                            i,
-                                                            i.standaard,
-                                                        )}
-                                                        {i.gewijzigd?.op &&
-                                                            ` · gewijzigd ${datumTijd(i.gewijzigd.op)}${i.gewijzigd.door ? ` door ${i.gewijzigd.door}` : ""}`}
-                                                    </p>
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <div className="flex items-center gap-2">
-                                                        {i.type ===
-                                                        "aan_uit" ? (
-                                                            <label className="flex min-h-10 items-center gap-2 text-sm font-semibold">
-                                                                <input
-                                                                    id={id}
-                                                                    type="checkbox"
-                                                                    className="size-5 accent-violet"
-                                                                    checked={Boolean(
-                                                                        w,
+                                            return (
+                                                <li
+                                                    key={i.key}
+                                                    className="grid gap-3 py-3 first:pt-0 last:pb-0 md:grid-cols-[minmax(0,1fr)_minmax(0,260px)] md:items-start"
+                                                >
+                                                    <div className="min-w-0">
+                                                        <p className="flex flex-wrap items-center gap-2">
+                                                            <label
+                                                                htmlFor={id}
+                                                                className="font-semibold"
+                                                            >
+                                                                {i.label}
+                                                            </label>
+                                                            {form.data.voorstel[
+                                                                i.key
+                                                            ] && <Voorstel />}
+                                                        </p>
+                                                        <p className="mt-0.5 text-sm text-muted-foreground">
+                                                            {i.uitleg}
+                                                        </p>
+                                                        <p className="mt-1 text-xs text-muted-foreground">
+                                                            Standaard{" "}
+                                                            {leesbaar(
+                                                                i,
+                                                                i.standaard,
+                                                            )}
+                                                            {i.gewijzigd?.op &&
+                                                                ` · gewijzigd ${datumTijd(i.gewijzigd.op)}${i.gewijzigd.door ? ` door ${i.gewijzigd.door}` : ""}`}
+                                                        </p>
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <div className="flex items-center gap-2">
+                                                            {i.type ===
+                                                            "aan_uit" ? (
+                                                                <label className="flex min-h-10 items-center gap-2 text-sm font-semibold">
+                                                                    <input
+                                                                        id={id}
+                                                                        type="checkbox"
+                                                                        className="size-5 accent-violet"
+                                                                        checked={Boolean(
+                                                                            w,
+                                                                        )}
+                                                                        disabled={
+                                                                            dicht
+                                                                        }
+                                                                        onChange={(
+                                                                            e,
+                                                                        ) =>
+                                                                            zetWaarde(
+                                                                                i.key,
+                                                                                e
+                                                                                    .target
+                                                                                    .checked,
+                                                                            )
+                                                                        }
+                                                                    />
+                                                                    {w
+                                                                        ? "Aan"
+                                                                        : "Uit"}
+                                                                </label>
+                                                            ) : (
+                                                                <>
+                                                                    {i.type ===
+                                                                        "bedrag" && (
+                                                                        <span className="text-sm text-muted-foreground">
+                                                                            €
+                                                                        </span>
                                                                     )}
-                                                                    disabled={
-                                                                        dicht
+                                                                    <input
+                                                                        id={id}
+                                                                        type={
+                                                                            i.type ===
+                                                                            "tijd"
+                                                                                ? "time"
+                                                                                : "text"
+                                                                        }
+                                                                        inputMode={
+                                                                            i.type ===
+                                                                            "getal"
+                                                                                ? "numeric"
+                                                                                : i.type ===
+                                                                                    "bedrag"
+                                                                                  ? "decimal"
+                                                                                  : undefined
+                                                                        }
+                                                                        required
+                                                                        value={String(
+                                                                            w,
+                                                                        )}
+                                                                        disabled={
+                                                                            dicht
+                                                                        }
+                                                                        onChange={(
+                                                                            e,
+                                                                        ) =>
+                                                                            zetWaarde(
+                                                                                i.key,
+                                                                                e
+                                                                                    .target
+                                                                                    .value,
+                                                                            )
+                                                                        }
+                                                                        className={`${invoer} max-w-36`}
+                                                                    />
+                                                                    {i.eenheid &&
+                                                                        ![
+                                                                            "tijd",
+                                                                            "euro",
+                                                                        ].includes(
+                                                                            i.eenheid,
+                                                                        ) && (
+                                                                            <span className="text-sm text-muted-foreground">
+                                                                                {
+                                                                                    i.eenheid
+                                                                                }
+                                                                            </span>
+                                                                        )}
+                                                                </>
+                                                            )}
+                                                            {afwijkend &&
+                                                                !dicht && (
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() =>
+                                                                            zetWaarde(
+                                                                                i.key,
+                                                                                naarInvoer(
+                                                                                    i,
+                                                                                    i.standaard,
+                                                                                ),
+                                                                            )
+                                                                        }
+                                                                        className="ml-auto inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold text-violet hover:bg-violet/5"
+                                                                        aria-label={`${i.label}: standaard herstellen`}
+                                                                    >
+                                                                        <RotateCcw
+                                                                            className="size-3.5"
+                                                                            aria-hidden
+                                                                        />{" "}
+                                                                        Standaard
+                                                                    </button>
+                                                                )}
+                                                        </div>
+                                                        {!dicht && (
+                                                            <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    className="size-4 accent-violet"
+                                                                    checked={
+                                                                        form
+                                                                            .data
+                                                                            .voorstel[
+                                                                            i
+                                                                                .key
+                                                                        ]
                                                                     }
                                                                     onChange={(
                                                                         e,
                                                                     ) =>
-                                                                        zetWaarde(
+                                                                        zetVoorstel(
                                                                             i.key,
                                                                             e
                                                                                 .target
@@ -185,145 +316,40 @@ export default function Instellingen({
                                                                         )
                                                                     }
                                                                 />
-                                                                {w
-                                                                    ? "Aan"
-                                                                    : "Uit"}
+                                                                Nog een voorstel
                                                             </label>
-                                                        ) : (
-                                                            <>
-                                                                {i.type ===
-                                                                    "bedrag" && (
-                                                                    <span className="text-sm text-muted-foreground">
-                                                                        €
-                                                                    </span>
-                                                                )}
-                                                                <input
-                                                                    id={id}
-                                                                    type={
-                                                                        i.type ===
-                                                                        "tijd"
-                                                                            ? "time"
-                                                                            : "text"
-                                                                    }
-                                                                    inputMode={
-                                                                        i.type ===
-                                                                        "getal"
-                                                                            ? "numeric"
-                                                                            : i.type ===
-                                                                                "bedrag"
-                                                                              ? "decimal"
-                                                                              : undefined
-                                                                    }
-                                                                    required
-                                                                    value={String(
-                                                                        w,
-                                                                    )}
-                                                                    disabled={
-                                                                        dicht
-                                                                    }
-                                                                    onChange={(
-                                                                        e,
-                                                                    ) =>
-                                                                        zetWaarde(
-                                                                            i.key,
-                                                                            e
-                                                                                .target
-                                                                                .value,
-                                                                        )
-                                                                    }
-                                                                    className={`${invoer} max-w-36`}
-                                                                />
-                                                                {i.eenheid &&
-                                                                    ![
-                                                                        "tijd",
-                                                                        "euro",
-                                                                    ].includes(
-                                                                        i.eenheid,
-                                                                    ) && (
-                                                                        <span className="text-sm text-muted-foreground">
-                                                                            {
-                                                                                i.eenheid
-                                                                            }
-                                                                        </span>
-                                                                    )}
-                                                            </>
                                                         )}
-                                                        {afwijkend &&
-                                                            !dicht && (
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() =>
-                                                                        zetWaarde(
-                                                                            i.key,
-                                                                            naarInvoer(
-                                                                                i,
-                                                                                i.standaard,
-                                                                            ),
-                                                                        )
-                                                                    }
-                                                                    className="ml-auto inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold text-violet hover:bg-violet/5"
-                                                                    aria-label={`${i.label}: standaard herstellen`}
-                                                                >
-                                                                    <RotateCcw
-                                                                        className="size-3.5"
-                                                                        aria-hidden
-                                                                    />{" "}
-                                                                    Standaard
-                                                                </button>
-                                                            )}
-                                                    </div>
-                                                    {!dicht && (
-                                                        <label className="flex items-center gap-2 text-xs text-muted-foreground">
-                                                            <input
-                                                                type="checkbox"
-                                                                className="size-4 accent-violet"
-                                                                checked={
-                                                                    form.data
-                                                                        .voorstel[
-                                                                        i.key
+                                                        {dicht && (
+                                                            <p className="text-xs text-muted-foreground">
+                                                                Alleen een Super
+                                                                Admin wijzigt
+                                                                dit.
+                                                            </p>
+                                                        )}
+                                                        {errors[
+                                                            `waarden.${i.key}`
+                                                        ] && (
+                                                            <p className="text-sm text-rood">
+                                                                {
+                                                                    errors[
+                                                                        `waarden.${i.key}`
                                                                     ]
                                                                 }
-                                                                onChange={(e) =>
-                                                                    zetVoorstel(
-                                                                        i.key,
-                                                                        e.target
-                                                                            .checked,
-                                                                    )
-                                                                }
-                                                            />
-                                                            Nog een voorstel
-                                                        </label>
-                                                    )}
-                                                    {dicht && (
-                                                        <p className="text-xs text-muted-foreground">
-                                                            Alleen een Super
-                                                            Admin wijzigt dit.
-                                                        </p>
-                                                    )}
-                                                    {errors[
-                                                        `waarden.${i.key}`
-                                                    ] && (
-                                                        <p className="text-sm text-rood">
-                                                            {
-                                                                errors[
-                                                                    `waarden.${i.key}`
-                                                                ]
-                                                            }
-                                                        </p>
-                                                    )}
-                                                </div>
-                                            </li>
-                                        );
-                                    })}
-                            </ul>
-                        </Paneel>
-                    ))}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                </li>
+                                            );
+                                        })}
+                                </ul>
+                            </Paneel>
+                        ))}
 
                     {errors.waarden && (
                         <p className="text-sm text-rood">{errors.waarden}</p>
                     )}
 
-                    <div className="sticky bottom-20 z-10 flex flex-wrap items-center justify-end gap-3 rounded-2xl border bg-card/95 p-3 shadow-sm backdrop-blur md:bottom-4">
+                    <div className="sticky bottom-20 z-10 flex flex-wrap items-center justify-end gap-3 rounded-xl border bg-card/95 p-3 shadow-sm backdrop-blur md:bottom-4">
                         <p className="mr-auto text-xs text-muted-foreground">
                             {form.isDirty
                                 ? "Niet opgeslagen wijzigingen."

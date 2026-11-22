@@ -17,7 +17,8 @@ import { Button } from '@/components/ui/button';
 import { datum, datumTijd } from '@/lib/datum';
 import { samenwerking } from '@/routes/team';
 import content from '@/routes/team/content';
-import { Kop, Leeg, Pagina, Paneel } from '../_onderdelen/basis';
+import { Leeg, Pagina, PaginaKop } from '@/components/pagina';
+import { Paneel } from '../_onderdelen/basis';
 
 type Monitor = {
     id: number;
@@ -95,17 +96,17 @@ export default function Koppelingen({
     return (
         <>
             <Head title="API-status" />
-            <Pagina breed>
-                <Kop
+            <Pagina>
+                <PaginaKop
                     titel="API-status"
-                    sub="Koppelingen met Instagram en TikTok van creators en ondernemers."
+                    omschrijving="Koppelingen met Instagram en TikTok van creators en ondernemers."
                 />
 
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                     {platforms.map((p) => (
                         <div
                             key={p.platform}
-                            className="rounded-2xl border bg-card p-4"
+                            className="rounded-xl border bg-card p-4"
                         >
                             <p className="flex items-center gap-2 font-semibold">
                                 <PlugZap
@@ -124,7 +125,7 @@ export default function Koppelingen({
                             </p>
                         </div>
                     ))}
-                    <div className="rounded-2xl border bg-card p-4">
+                    <div className="rounded-xl border bg-card p-4">
                         <p className="font-heading text-2xl font-extrabold">
                             {accounts.length}
                         </p>
@@ -133,7 +134,7 @@ export default function Koppelingen({
                         </p>
                     </div>
                     <div
-                        className={`rounded-2xl border p-4 ${metWaarschuwing.length ? 'border-rood/40 bg-rood/5' : 'bg-card'}`}
+                        className={`rounded-xl border p-4 ${metWaarschuwing.length ? 'border-rood/40 bg-rood/5' : 'bg-card'}`}
                     >
                         <p className="font-heading text-2xl font-extrabold">
                             {metWaarschuwing.length}
@@ -167,7 +168,7 @@ export default function Koppelingen({
                         ))}
                     </div>
                     {zichtbaar.length === 0 ? (
-                        <Leeg>Geen accounts in dit filter.</Leeg>
+                        <Leeg titel="Geen accounts in dit filter." />
                     ) : (
                         <ul className="divide-y" data-test="accounts">
                             {zichtbaar.map((a) => (
@@ -235,7 +236,7 @@ export default function Koppelingen({
                     sub="Posts in de meetperiode (status 10). Leg vast of de post nog te vinden is. Een gearchiveerde Instagram-post telt als verwijderd. Geen strafpunten: de regeling is nog te bespreken."
                 >
                     {publications.length === 0 ? (
-                        <Leeg>Geen posts in de meetperiode.</Leeg>
+                        <Leeg titel="Geen posts in de meetperiode." />
                     ) : (
                         <ul className="space-y-3">
                             {publications.map((p) => (

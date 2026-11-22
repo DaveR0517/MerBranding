@@ -66,7 +66,7 @@ export function Sectie({
     return (
         <section className={cn('space-y-3', className)}>
             {(titel || actie) && (
-                <div className="flex items-end justify-between gap-3">
+                <div className="flex flex-wrap items-end justify-between gap-3">
                     <div className="min-w-0">
                         {titel && <h2 className="font-heading text-lg font-bold">{titel}</h2>}
                         {omschrijving && <p className="text-sm text-muted-foreground">{omschrijving}</p>}
@@ -85,14 +85,18 @@ export function Kaart({
     className,
     nadruk = false,
     compact = false,
+    id,
 }: {
     children: ReactNode;
     className?: string;
     nadruk?: boolean;
     compact?: boolean;
+    /** Anker, bijvoorbeeld om vanuit een link naar dit blok te springen. */
+    id?: string;
 }) {
     return (
         <div
+            id={id}
             className={cn(
                 'rounded-xl border',
                 compact ? 'p-3 md:p-4' : 'p-4 md:p-5',
@@ -109,7 +113,7 @@ export function Kaart({
 export function KaartRaster({ children, kolommen = 3, className }: { children: ReactNode; kolommen?: 2 | 3 | 4; className?: string }) {
     const lg = { 2: 'lg:grid-cols-2', 3: 'lg:grid-cols-3', 4: 'lg:grid-cols-4' }[kolommen];
 
-    return <div className={cn('grid gap-3 sm:grid-cols-2 md:gap-4', lg, className)}>{children}</div>;
+    return <div className={cn('grid grid-cols-1 gap-3 *:min-w-0 sm:grid-cols-2 md:gap-4', lg, className)}>{children}</div>;
 }
 
 /** Kerncijfer: label, groot getal, toelichting. Past in een KaartRaster. */

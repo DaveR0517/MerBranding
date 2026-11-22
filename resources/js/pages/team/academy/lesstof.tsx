@@ -4,7 +4,8 @@ import { cursusdagen } from '@/routes/team/academy';
 import * as lessen from '@/routes/team/academy/lessen';
 import * as opdrachten from '@/routes/team/academy/opdrachten';
 import type { Criterium } from '../../academy/_onderdelen/types';
-import { Fouten, Kop, Pagina, Paneel, Veld, invoer } from '../_onderdelen/basis';
+import { Pagina, PaginaKop } from '@/components/pagina';
+import { Fouten, Paneel, Veld, invoer } from '../_onderdelen/basis';
 import { Tabs } from './_onderdelen/academy';
 
 type Les = { id: number; title: string; body: string; position: number; minutes: number | null };
@@ -101,8 +102,8 @@ export default function Lesstof({ lessons, assignments }: { lessons: Les[]; assi
     return (
         <>
             <Head title="Lessen en opdrachten" />
-            <Pagina breed>
-                <Kop titel="Lessen en opdrachten" sub="De online leeromgeving: optioneel voor studenten, voor en na de cursusdag." />
+            <Pagina>
+                <PaginaKop titel="Lessen en opdrachten" omschrijving="De online leeromgeving: optioneel voor studenten, voor en na de cursusdag." />
                 <Tabs />
                 <Fouten />
                 <div className="grid gap-5 lg:grid-cols-2">

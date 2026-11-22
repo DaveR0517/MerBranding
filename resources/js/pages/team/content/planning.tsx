@@ -5,7 +5,8 @@ import { Etiket } from '@/components/content/labels';
 import { datum, datumTijd } from '@/lib/datum';
 import { samenwerking } from '@/routes/team';
 import content from '@/routes/team/content';
-import { invoer, Kop, Leeg, Pagina, Paneel } from '../_onderdelen/basis';
+import { Leeg, Pagina, PaginaKop } from '@/components/pagina';
+import { invoer, Paneel } from '../_onderdelen/basis';
 
 type Bezoek = {
     id: number;
@@ -97,17 +98,17 @@ export default function Planning({
     return (
         <>
             <Head title="Planning" />
-            <Pagina breed>
-                <Kop
+            <Pagina>
+                <PaginaKop
                     titel="Planning"
-                    sub={
+                    omschrijving={
                         filters.weergave === 'week'
                             ? `Week ${periode.week}, ${datum(periode.van)} tot en met ${datum(periode.tot)}`
                             : datum(periode.van)
                     }
                 />
 
-                <div className="flex flex-wrap items-end gap-3 rounded-2xl border bg-card p-3">
+                <div className="flex flex-wrap items-end gap-3 rounded-xl border bg-card p-3">
                     <div className="flex items-center gap-1">
                         <button
                             type="button"
@@ -226,7 +227,7 @@ export default function Planning({
                                 return (
                                     <section
                                         key={dag}
-                                        className="rounded-2xl border bg-card p-3"
+                                        className="rounded-xl border bg-card p-3"
                                     >
                                         <h3 className="mb-2 text-sm font-bold first-letter:uppercase">
                                             {datum(`${dag}T12:00:00`)}
@@ -291,7 +292,7 @@ export default function Planning({
                             sub="Wacht op een tijdvak van de creator, of op de ondernemer bij zelf bevestigen."
                         >
                             {unconfirmed.length === 0 ? (
-                                <Leeg>Alles is bevestigd.</Leeg>
+                                <Leeg titel="Alles is bevestigd." />
                             ) : (
                                 <ul
                                     className="space-y-2"

@@ -8,7 +8,8 @@ import { datumTijd } from '@/lib/datum';
 import { cn } from '@/lib/utils';
 import * as team from '@/routes/team';
 import communicatie from '@/routes/team/communicatie';
-import { Kop, Label } from '../_onderdelen/basis';
+import { Leeg, Pagina, PaginaKop } from '@/components/pagina';
+import { Label } from '../_onderdelen/basis';
 
 type Props = {
     filter: string;
@@ -41,11 +42,11 @@ export default function Support({ filter, zoek, counts, tickets, ticket, statuse
     return (
         <>
             <Head title={ticket ? `Support ${ticket.number}` : 'Support'} />
-            <div className="mx-auto w-full max-w-7xl space-y-4 p-4 md:p-6">
+            <Pagina>
                 <div className={cn(ticket && 'hidden lg:block')}>
-                    <Kop
+                    <PaginaKop
                         titel="Support"
-                        sub="Vragen en problemen van ondernemers en creators. Eerste reactie binnen 1 werkdag (voorstel). Elke vraag hangt waar mogelijk aan een samenwerking."
+                        omschrijving="Vragen en problemen van ondernemers en creators. Eerste reactie binnen 1 werkdag (voorstel). Elke vraag hangt waar mogelijk aan een samenwerking."
                         acties={
                             <Link href={communicatie.help.url()} className="rounded-md border px-3 py-2 text-sm font-semibold hover:border-violet">
                                 Helpcentrum bekijken
@@ -83,7 +84,7 @@ export default function Support({ filter, zoek, counts, tickets, ticket, statuse
                             ))}
                         </div>
                         {tickets.length === 0 ? (
-                            <p className="rounded-2xl border border-dashed bg-card p-6 text-center text-sm text-muted-foreground">Geen vragen gevonden met deze zoekterm of dit filter.</p>
+                            <Leeg titel="Geen vragen gevonden met deze zoekterm of dit filter." />
                         ) : (
                             <ul className="space-y-1.5" data-test="support-lijst">
                                 {tickets.map((t) => (
@@ -91,7 +92,7 @@ export default function Support({ filter, zoek, counts, tickets, ticket, statuse
                                         <Link
                                             href={communicatie.support.vraag.url(t.id, { query })}
                                             preserveScroll
-                                            className={cn('block rounded-2xl border bg-card p-3 hover:border-violet', ticket?.id === t.id && 'border-violet ring-2 ring-violet/20')}
+                                            className={cn('block rounded-xl border bg-card p-3 hover:border-violet', ticket?.id === t.id && 'border-violet ring-2 ring-violet/20')}
                                         >
                                             <span className="flex items-start gap-3">
                                                 <Initialen naam={t.user ?? '?'} />
@@ -118,10 +119,10 @@ export default function Support({ filter, zoek, counts, tickets, ticket, statuse
                     {ticket ? (
                         <Detail key={ticket.id} ticket={ticket} statuses={statuses} priorities={priorities} teamleden={teamleden} terugUrl={communicatie.support.url({ query })} />
                     ) : (
-                        <div className="hidden min-h-80 place-items-center rounded-2xl border border-dashed bg-card p-8 text-sm text-muted-foreground lg:grid">Kies een vraag.</div>
+                        <div className="hidden min-h-80 place-items-center rounded-xl border border-dashed bg-card p-8 text-sm text-muted-foreground lg:grid">Kies een vraag.</div>
                     )}
                 </div>
-            </div>
+            </Pagina>
         </>
     );
 }
@@ -133,7 +134,7 @@ function Detail({ ticket, statuses, priorities, teamleden, terugUrl }: { ticket:
     const teLaat = ticket.status === 'open' && ticket.respond_before && new Date(ticket.respond_before) < new Date();
 
     return (
-        <section aria-label={`Vraag ${ticket.number}`} className="min-w-0 space-y-4 rounded-2xl border bg-card p-4 md:p-5">
+        <section aria-label={`Vraag ${ticket.number}`} className="min-w-0 space-y-4 rounded-xl border bg-card p-4 md:p-5">
             <Link href={terugUrl} className="inline-flex items-center gap-1 text-sm font-semibold text-violet lg:hidden">
                 <ArrowLeft className="size-4" aria-hidden /> Alle vragen
             </Link>
@@ -199,7 +200,7 @@ function Detail({ ticket, statuses, priorities, teamleden, terugUrl }: { ticket:
 
             <ol className="space-y-3" data-test="reacties">
                 {ticket.replies.map((r) => (
-                    <li key={r.id} className={cn('rounded-2xl border p-3.5', r.internal ? 'border-amber-300 bg-amber-50 dark:bg-amber-950/30' : r.mine_side ? 'bg-background' : 'border-violet/30 bg-violet/5')}>
+                    <li key={r.id} className={cn('rounded-xl border p-3.5', r.internal ? 'border-amber-300 bg-amber-50 dark:bg-amber-950/30' : r.mine_side ? 'bg-background' : 'border-violet/30 bg-violet/5')}>
                         <p className="mb-1.5 flex flex-wrap items-center gap-2 text-sm">
                             <Initialen naam={r.author} className="size-7" />
                             <span className="font-semibold">{r.author}</span>

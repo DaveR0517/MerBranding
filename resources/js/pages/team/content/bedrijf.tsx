@@ -18,15 +18,8 @@ import type {
 import { Button } from '@/components/ui/button';
 import { samenwerking } from '@/routes/team';
 import content from '@/routes/team/content';
-import {
-    Fouten,
-    invoer,
-    Kop,
-    Leeg,
-    Pagina,
-    Paneel,
-    Veld,
-} from '../_onderdelen/basis';
+import { Leeg, Pagina, PaginaKop } from '@/components/pagina';
+import { Fouten, invoer, Paneel, Veld } from '../_onderdelen/basis';
 
 type Props = {
     companies: { id: number; name: string }[];
@@ -61,8 +54,8 @@ export default function Bedrijf({
     if (!company || !kalender) {
         return (
             <Pagina>
-                <Kop titel="Content per bedrijf" />
-                <Leeg>Nog geen bedrijven.</Leeg>
+                <PaginaKop titel="Content per bedrijf" />
+                <Leeg titel="Nog geen bedrijven." />
             </Pagina>
         );
     }
@@ -70,10 +63,10 @@ export default function Bedrijf({
     return (
         <>
             <Head title={`Content ${company.name}`} />
-            <Pagina breed>
-                <Kop
+            <Pagina>
+                <PaginaKop
                     titel="Content per bedrijf"
-                    sub={company.name}
+                    omschrijving={company.name}
                     acties={
                         <label className="grid gap-1 text-xs font-semibold">
                             Bedrijf
@@ -181,7 +174,7 @@ export default function Bedrijf({
                             Rechten per pakket zijn nog niet besloten.
                         </p>
                         {rights.length === 0 ? (
-                            <Leeg>Nog geen gebruiksrechten.</Leeg>
+                            <Leeg titel="Nog geen gebruiksrechten." />
                         ) : (
                             <RechtenLijst
                                 rights={rights}

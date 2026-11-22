@@ -1,16 +1,23 @@
-import { Head, Link, router, usePage } from "@inertiajs/react";
-import { Check, ChevronRight, Coins, MapPin, Package } from "lucide-react";
-import type { ReactNode } from "react";
-import { Button } from "@/components/ui/button";
-import { datum } from "@/lib/datum";
-import { cn } from "@/lib/utils";
-import { aanvragen, overzicht } from "@/routes/ondernemer";
-import beheer from "@/routes/ondernemer/beheer";
-import type { Auth } from "@/types/auth";
-import { Blok, Kop } from "../_onderdelen/opmaak";
-import type { Abonnement } from "./_onderdelen/types";
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import {
+    Kaart,
+    KaartRaster,
+    Kerncijfer,
+    Pagina,
+    PaginaKop,
+} from '@/components/pagina';
+import { Check, ChevronRight, Coins, MapPin, Package } from 'lucide-react';
+import type { ReactNode } from 'react';
+import { Button } from '@/components/ui/button';
+import { datum } from '@/lib/datum';
+import { cn } from '@/lib/utils';
+import { aanvragen, overzicht } from '@/routes/ondernemer';
+import beheer from '@/routes/ondernemer/beheer';
+import type { Auth } from '@/types/auth';
 
-type Stap = "vestiging" | "team" | "aanvraag";
+import type { Abonnement } from './_onderdelen/types';
+
+type Stap = 'vestiging' | 'team' | 'aanvraag';
 
 type Props = {
     company: { name: string; available_points: number; locations: string[] };
@@ -30,7 +37,7 @@ export default function Welkom({
     can,
 }: Props) {
     const { auth } = usePage().props as unknown as { auth: Auth };
-    const voornaam = auth.user.name.split(" ")[0];
+    const voornaam = auth.user.name.split(' ')[0];
     const gedaan = Object.values(steps).filter(Boolean).length;
     const vink = (stap: Stap) =>
         router.post(beheer.welkom.stap.url(stap), {}, { preserveScroll: true });
@@ -38,47 +45,46 @@ export default function Welkom({
     return (
         <>
             <Head title="Aan de slag" />
-            <div className="mx-auto w-full max-w-5xl space-y-6 p-4 md:p-6">
-                <Kop
-                    onder={`${company.name} staat klaar. Dit is wat je hebt en wat je nu kunt doen.`}
-                >
-                    Welkom, {voornaam}
-                </Kop>
+            <Pagina>
+                <PaginaKop
+                    titel={`Welkom, ${voornaam}`}
+                    omschrijving={`${company.name} staat klaar. Dit is wat je hebt en wat je nu kunt doen.`}
+                />
 
-                <dl className="grid gap-2 sm:grid-cols-3">
-                    <Kaart
-                        icoon={<Package className="size-4" />}
+                <KaartRaster kolommen={3}>
+                    <Kerncijfer
+                        icoon={Package}
                         label="Abonnement"
-                    >
-                        {subscription ? (
-                            <>
-                                {subscription.name}
-                                <span className="block text-xs font-normal text-muted-foreground">
-                                    sinds {datum(subscription.starts_on)}
-                                </span>
-                            </>
-                        ) : (
-                            "Nog niet ingesteld"
-                        )}
-                    </Kaart>
-                    <Kaart icoon={<Coins className="size-4" />} label="Tegoed">
-                        {company.available_points} punten
-                        <span className="block text-xs font-normal text-muted-foreground">
-                            beschikbaar voor aanvragen
-                        </span>
-                    </Kaart>
-                    <Kaart
-                        icoon={<MapPin className="size-4" />}
+                        waarde={
+                            subscription
+                                ? subscription.name
+                                : 'Nog niet ingesteld'
+                        }
+                        toelichting={
+                            subscription
+                                ? `sinds ${datum(subscription.starts_on)}`
+                                : undefined
+                        }
+                    />
+                    <Kerncijfer
+                        icoon={Coins}
+                        label="Tegoed"
+                        waarde={`${company.available_points} punten`}
+                        toelichting="beschikbaar voor aanvragen"
+                    />
+                    <Kerncijfer
+                        icoon={MapPin}
                         label="Vestigingen"
-                    >
-                        {company.locations.length} klaargezet
-                        <span className="block truncate text-xs font-normal text-muted-foreground">
-                            {company.locations.join(", ")}
-                        </span>
-                    </Kaart>
-                </dl>
+                        waarde={`${company.locations.length} klaargezet`}
+                        toelichting={
+                            <span className="block truncate">
+                                {company.locations.join(', ')}
+                            </span>
+                        }
+                    />
+                </KaartRaster>
 
-                <Blok className="space-y-4">
+                <Kaart className="space-y-4">
                     <div className="flex flex-wrap items-end justify-between gap-2">
                         <div>
                             <h2 className="font-heading text-lg font-bold">
@@ -127,7 +133,7 @@ export default function Welkom({
                                     Vestigingen bekijken
                                 </Link>
                             }
-                            afvinken={() => vink("vestiging")}
+                            afvinken={() => vink('vestiging')}
                             afvinkTekst="Klopt"
                         />
                         <StapRij
@@ -146,7 +152,7 @@ export default function Welkom({
                                     </Link>
                                 ) : undefined
                             }
-                            afvinken={() => vink("team")}
+                            afvinken={() => vink('team')}
                             afvinkTekst="Niet nodig"
                         />
                         <StapRij
@@ -159,7 +165,7 @@ export default function Welkom({
                             }
                         />
                     </ol>
-                </Blok>
+                </Kaart>
 
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     {account_manager && (
@@ -200,28 +206,8 @@ export default function Welkom({
                         </Button>
                     </div>
                 </div>
-            </div>
+            </Pagina>
         </>
-    );
-}
-
-function Kaart({
-    icoon,
-    label,
-    children,
-}: {
-    icoon: ReactNode;
-    label: string;
-    children: ReactNode;
-}) {
-    return (
-        <div className="min-w-0 rounded-xl border bg-card p-4">
-            <dt className="flex items-center gap-1.5 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                <span aria-hidden>{icoon}</span>
-                {label}
-            </dt>
-            <dd className="mt-1 font-heading text-lg font-bold">{children}</dd>
-        </div>
     );
 }
 
@@ -245,17 +231,17 @@ function StapRij({
     return (
         <li
             className={cn(
-                "flex gap-3 rounded-xl border p-4",
-                klaar && "bg-muted/40",
+                'flex gap-3 rounded-xl border p-4',
+                klaar && 'bg-muted/40',
             )}
             data-test={`stap-${nummer}`}
         >
             <span
                 className={cn(
-                    "grid size-8 shrink-0 place-items-center rounded-full text-sm font-bold",
+                    'grid size-8 shrink-0 place-items-center rounded-full text-sm font-bold',
                     klaar
-                        ? "bg-emerald-600 text-white"
-                        : "bg-violet/10 text-violet",
+                        ? 'bg-emerald-600 text-white'
+                        : 'bg-violet/10 text-violet',
                 )}
                 aria-hidden
             >
@@ -264,14 +250,14 @@ function StapRij({
             <div className="min-w-0 flex-1">
                 <p
                     className={cn(
-                        "font-semibold",
+                        'font-semibold',
                         klaar &&
-                            "text-muted-foreground line-through decoration-1",
+                            'text-muted-foreground line-through decoration-1',
                     )}
                 >
                     {titel}
                     <span className="sr-only">
-                        {klaar ? " (klaar)" : " (nog te doen)"}
+                        {klaar ? ' (klaar)' : ' (nog te doen)'}
                     </span>
                 </p>
                 <p className="text-sm text-muted-foreground">{tekst}</p>
@@ -299,5 +285,5 @@ function StapRij({
 }
 
 Welkom.layout = {
-    breadcrumbs: [{ title: "Aan de slag", href: beheer.welkom() }],
+    breadcrumbs: [{ title: 'Aan de slag', href: beheer.welkom() }],
 };

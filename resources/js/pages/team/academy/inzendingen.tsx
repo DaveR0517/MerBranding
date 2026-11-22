@@ -4,7 +4,8 @@ import { cursusdag, cursusdagen } from '@/routes/team/academy';
 import { beoordelen } from '@/routes/team/academy/inzending';
 import { Ingediend, Uitslag } from '../../academy/_onderdelen/onderdelen';
 import type { Criterium, Inzending } from '../../academy/_onderdelen/types';
-import { Fouten, Kop, Label, Leeg, Pagina, Paneel } from '../_onderdelen/basis';
+import { Leeg, Pagina, PaginaKop } from '@/components/pagina';
+import { Fouten, Label, Paneel } from '../_onderdelen/basis';
 import { Beoordelen, Tabs } from './_onderdelen/academy';
 
 type Kaart = Inzending & { student: string; assignment: string; criteria: Criterium[] };
@@ -18,8 +19,8 @@ export default function Inzendingen({ open, assessed, exams }: Props) {
     return (
         <>
             <Head title="Beoordelen" />
-            <Pagina breed>
-                <Kop titel="Beoordelen" sub="Praktijkexamens en oefenopdrachten met de beoordelingslijst." />
+            <Pagina>
+                <PaginaKop titel="Beoordelen" omschrijving="Praktijkexamens en oefenopdrachten met de beoordelingslijst." />
                 <Tabs />
                 <Fouten />
 
@@ -44,7 +45,7 @@ export default function Inzendingen({ open, assessed, exams }: Props) {
                 <section className="space-y-3">
                     <h2 className="font-heading text-lg font-bold">Oefenopdrachten ({open.length})</h2>
                     {open.length === 0 ? (
-                        <Leeg>Alle oefenopdrachten zijn beoordeeld.</Leeg>
+                        <Leeg titel="Alle oefenopdrachten zijn beoordeeld." />
                     ) : (
                         <div className="grid gap-4 lg:grid-cols-2">
                             {open.map((s) => (

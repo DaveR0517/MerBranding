@@ -1,7 +1,8 @@
 import { Head, Link } from '@inertiajs/react';
 import { datumTijd } from '@/lib/datum';
 import * as team from '@/routes/team';
-import { Kop, Leeg, Pagina, gebeurtenis } from './_onderdelen/basis';
+import { Leeg, Pagina, PaginaKop } from '@/components/pagina';
+import { gebeurtenis } from './_onderdelen/basis';
 
 type Regel = {
     at: string;
@@ -42,16 +43,16 @@ export default function Logboek({ entries }: { entries: Regel[] }) {
     return (
         <>
             <Head title="Logboek" />
-            <Pagina breed>
-                <Kop titel="Logboek" sub="Wie deed wat en wanneer. De laatste 300 gebeurtenissen, nieuwste eerst." />
+            <Pagina>
+                <PaginaKop titel="Logboek" omschrijving="Wie deed wat en wanneer. De laatste 300 gebeurtenissen, nieuwste eerst." />
 
                 {entries.length === 0 ? (
-                    <Leeg>Nog niets vastgelegd.</Leeg>
+                    <Leeg titel="Nog niets vastgelegd." />
                 ) : (
                     <>
                         <ol className="space-y-2 md:hidden" data-test="logboek">
                             {entries.map((r, i) => (
-                                <li key={i} className="rounded-2xl border bg-card p-3 text-sm">
+                                <li key={i} className="rounded-xl border bg-card p-3 text-sm">
                                     <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
                                         <span>{datumTijd(r.at)}</span>
                                         <Onderwerp r={r} />
@@ -63,7 +64,7 @@ export default function Logboek({ entries }: { entries: Regel[] }) {
                                 </li>
                             ))}
                         </ol>
-                        <div className="hidden overflow-hidden rounded-2xl border bg-card md:block">
+                        <div className="hidden overflow-hidden rounded-xl border bg-card md:block">
                             <table className="w-full text-sm">
                                 <thead className="bg-muted/60 text-left text-xs tracking-wide text-muted-foreground uppercase">
                                     <tr>

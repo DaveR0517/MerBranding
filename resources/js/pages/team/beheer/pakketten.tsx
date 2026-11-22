@@ -8,17 +8,9 @@ import {
     toevoegen,
     versie as versieRoute,
 } from "@/routes/team/beheer/pakketten";
-import {
-    Fouten,
-    Kop,
-    Label,
-    Pagina,
-    Paneel,
-    Veld,
-    invoer,
-    morgen,
-} from "../_onderdelen/basis";
-import { Cijfer, Voorstel, naarEuro } from "./_onderdelen/beheer";
+import { Kerncijfer, KaartRaster, Pagina, PaginaKop } from "@/components/pagina";
+import { Fouten, Label, Paneel, Veld, invoer, morgen } from "../_onderdelen/basis";
+import { Voorstel, naarEuro } from "./_onderdelen/beheer";
 
 type Versie = {
     id: number;
@@ -70,10 +62,10 @@ export default function Pakketten({
     return (
         <>
             <Head title="Pakketten en prijzen" />
-            <Pagina breed>
-                <Kop
+            <Pagina>
+                <PaginaKop
                     titel="Pakketten en prijzen"
-                    sub="Abonnementen met prijs per maand en punten per maand. Een wijziging is een nieuwe prijsversie met een ingangsdatum."
+                    omschrijving="Abonnementen met prijs per maand en punten per maand. Een wijziging is een nieuwe prijsversie met een ingangsdatum."
                     acties={
                         <Button
                             className="bg-violet text-white hover:bg-violet/90"
@@ -95,29 +87,29 @@ export default function Pakketten({
                     negeer={["name", "price", "points_per_month", "valid_from"]}
                 />
 
-                <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-                    <Cijfer
+                <KaartRaster kolommen={3} className="grid-cols-2">
+                    <Kerncijfer
                         label="Pakketten"
                         waarde={pakketten.length}
-                        sub={`${pakketten.filter((p) => p.versies.some((v) => v.status === "geldt" && v.is_proposal)).length} met een voorstelprijs`}
+                        toelichting={`${pakketten.filter((p) => p.versies.some((v) => v.status === "geldt" && v.is_proposal)).length} met een voorstelprijs`}
                     />
-                    <Cijfer
+                    <Kerncijfer
                         label="Klanten op een pakket"
                         waarde={klanten}
-                        sub={pakketten
+                        toelichting={pakketten
                             .map((p) => `${p.name} ${p.klanten}`)
                             .join(", ")}
                     />
-                    <Cijfer
+                    <Kerncijfer
                         label="Geplande wijzigingen"
                         waarde={gepland}
-                        sub={
+                        toelichting={
                             gepland
                                 ? "Gaan vanzelf in op de ingangsdatum"
                                 : "Nog niets ingepland"
                         }
                     />
-                </div>
+                </KaartRaster>
 
                 {nieuw && (
                     <NieuwPakket

@@ -9,7 +9,8 @@ import { beoordelen } from '@/routes/team/academy/examen';
 import { afmelden, betaald, inchecken } from '@/routes/team/academy/inschrijving';
 import { Ingediend, Uitslag, dagDatum, gemiddeld } from '../../academy/_onderdelen/onderdelen';
 import type { Certificaat, Criterium, Dag, Examen, InschrijvingStatus } from '../../academy/_onderdelen/types';
-import { Fouten, InloggenAls, Kop, Label, Leeg, Pagina, Paneel, initialen, invoer } from '../_onderdelen/basis';
+import { Leeg, Pagina, PaginaKop } from '@/components/pagina';
+import { Fouten, InloggenAls, Label, Paneel, initialen, invoer } from '../_onderdelen/basis';
 import { Beoordelen, DagStatus, Tabs } from './_onderdelen/academy';
 import { DagFormulier } from './_onderdelen/dag-formulier';
 
@@ -145,10 +146,10 @@ export default function Cursusdag({ day, participants, waitlist, cancelled, crit
     return (
         <>
             <Head title={`Cursusdag ${day.city}`} />
-            <Pagina breed>
-                <Kop
+            <Pagina>
+                <PaginaKop
                     titel={`${day.city}, ${dagDatum(day.date, false)}`}
-                    sub={
+                    omschrijving={
                         <span className="flex flex-wrap items-center gap-2">
                             <DagStatus dag={day} />
                             {day.title}, {day.location_name}, {day.starts_at} - {day.ends_at}
@@ -182,7 +183,7 @@ export default function Cursusdag({ day, participants, waitlist, cancelled, crit
                         ['Aanwezig', `${aanwezig} van ${participants.length}`],
                         ['Gecertificeerd', String(gecertificeerd.length)],
                     ].map(([k, v]) => (
-                        <div key={k} className="rounded-2xl border bg-card p-3">
+                        <div key={k} className="rounded-xl border bg-card p-3">
                             <dt className="text-xs font-semibold text-muted-foreground uppercase">{k}</dt>
                             <dd className="font-heading text-2xl font-extrabold">{v}</dd>
                         </div>
@@ -205,7 +206,7 @@ export default function Cursusdag({ day, participants, waitlist, cancelled, crit
                                 <input id="zoek" type="search" placeholder="Zoek deelnemer" value={zoek} onChange={(e) => setZoek(e.target.value)} className={`${invoer} pl-9`} />
                             </div>
                             {participants.length === 0 ? (
-                                <Leeg>Nog geen inschrijvingen.</Leeg>
+                                <Leeg titel="Nog geen inschrijvingen." />
                             ) : (
                                 <ul className="divide-y rounded-xl border" data-test="deelnemers">
                                     {gevonden.map((d) => (

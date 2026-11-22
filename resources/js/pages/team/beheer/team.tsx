@@ -18,17 +18,23 @@ import {
     uitnodigen,
 } from "@/routes/team/beheer/medewerkers";
 import {
-    Fouten,
-    Kop,
-    Label,
+    KaartRaster,
+    Kerncijfer,
     Leeg,
     Pagina,
+    PaginaKop,
+    TweeKolommen,
+    Uitklap,
+} from "@/components/pagina";
+import {
+    Fouten,
+    Label,
     Paneel,
     Veld,
     initialen,
     invoer,
 } from "../_onderdelen/basis";
-import { Cijfer, Keuzes } from "./_onderdelen/beheer";
+import { Aandacht, Keuzes } from "./_onderdelen/beheer";
 
 type Medewerker = {
     id: number;
@@ -88,10 +94,10 @@ export default function Team({
     return (
         <>
             <Head title="Team en rechten" />
-            <Pagina breed>
-                <Kop
+            <Pagina>
+                <PaginaKop
                     titel="Team"
-                    sub="Medewerkers van MEBRANDING, hun rollen en wat ze mogen. Elke wijziging komt met naam en tijd in het logboek."
+                    omschrijving="Medewerkers van MEBRANDING, hun rollen en wat ze mogen. Elke wijziging komt met naam en tijd in het logboek."
                     acties={
                         <>
                             <Button variant="outline" asChild>
@@ -113,301 +119,318 @@ export default function Team({
 
                 <Fouten negeer={["name", "email", "rollen"]} />
 
-                <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-                    <Cijfer
+                <KaartRaster kolommen={4} className="grid-cols-2">
+                    <Kerncijfer
                         label="Medewerkers"
                         waarde={medewerkers.length}
-                        sub={
+                        toelichting={
                             gedeactiveerd.length
                                 ? `${gedeactiveerd.length} gedeactiveerd`
                                 : "Allemaal actief"
                         }
                     />
-                    <Cijfer
+                    <Kerncijfer
                         label="Rollen"
                         waarde={sjablonen.length}
-                        sub="Een medewerker kan er meer hebben"
+                        toelichting="Een medewerker kan er meer hebben"
                     />
-                    <Cijfer
+                    <Kerncijfer
                         label="Tweestaps"
                         waarde={`${metTweestaps} van ${medewerkers.length}`}
-                        sub={
-                            tweestaps_verplicht
-                                ? "Verplicht voor het team"
-                                : "Nu niet verplicht (instelling)"
-                        }
-                        let={
-                            metTweestaps < medewerkers.length &&
-                            tweestaps_verplicht
+                        toelichting={
+                            <Aandacht
+                                aan={
+                                    metTweestaps < medewerkers.length &&
+                                    tweestaps_verplicht
+                                }
+                            >
+                                {tweestaps_verplicht
+                                    ? "Verplicht voor het team"
+                                    : "Nu niet verplicht (instelling)"}
+                            </Aandacht>
                         }
                     />
-                    <Cijfer
+                    <Kerncijfer
                         label="Super Admins"
                         waarde={beheerders}
-                        sub="Advies: minstens 2"
-                        let={beheerders < 2}
+                        toelichting={
+                            <Aandacht aan={beheerders < 2}>
+                                Advies: minstens 2
+                            </Aandacht>
+                        }
                     />
-                </div>
+                </KaartRaster>
 
-                <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,380px)]">
-                    <div className="min-w-0 space-y-5">
-                        <Paneel titel="Medewerkers">
-                            <div
-                                className="mb-3 flex flex-wrap gap-2"
-                                role="group"
-                                aria-label="Filter op rol"
-                            >
-                                <FilterKnop
-                                    actief={filter === null}
-                                    onClick={() => setFilter(null)}
+                <TweeKolommen
+                    hoofd={
+                        <>
+                            <Paneel titel="Medewerkers">
+                                <div
+                                    className="mb-3 flex flex-wrap gap-2"
+                                    role="group"
+                                    aria-label="Filter op rol"
                                 >
-                                    Alle{" "}
-                                    <span className="opacity-70">
-                                        {medewerkers.length}
-                                    </span>
-                                </FilterKnop>
-                                {sjablonen
-                                    .filter((s) => s.aantal > 0)
-                                    .map((s) => (
-                                        <FilterKnop
-                                            key={s.name}
-                                            actief={filter === s.name}
-                                            onClick={() => setFilter(s.name)}
-                                        >
-                                            {s.name}{" "}
-                                            <span className="opacity-70">
-                                                {s.aantal}
-                                            </span>
-                                        </FilterKnop>
-                                    ))}
-                            </div>
-
-                            {zichtbaar.length === 0 ? (
-                                <Leeg>Niemand met deze rol.</Leeg>
-                            ) : (
-                                <ul
-                                    className="divide-y"
-                                    data-test="medewerkers"
-                                >
-                                    {zichtbaar.map((m) => (
-                                        <li
-                                            key={m.id}
-                                            className="flex flex-wrap items-center gap-3 py-3 md:flex-nowrap"
-                                        >
-                                            <span
-                                                className="grid size-10 shrink-0 place-items-center rounded-full bg-brand-gradient font-heading text-sm font-bold text-white"
-                                                aria-hidden
-                                            >
-                                                {initialen(m.name)}
-                                            </span>
-                                            <div className="min-w-0 flex-1 text-sm">
-                                                <p className="font-semibold">
-                                                    {m.name}{" "}
-                                                    {m.is_ik && (
-                                                        <span className="font-normal text-muted-foreground">
-                                                            (jij)
-                                                        </span>
-                                                    )}
-                                                </p>
-                                                <p className="truncate text-muted-foreground">
-                                                    {m.email}
-                                                </p>
-                                                <p className="mt-1 flex flex-wrap gap-1">
-                                                    {m.rollen.map((r) => (
-                                                        <Label
-                                                            key={r}
-                                                            kleur={
-                                                                r ===
-                                                                SUPER_ADMIN
-                                                                    ? "rood"
-                                                                    : "violet"
-                                                            }
-                                                        >
-                                                            {r}
-                                                        </Label>
-                                                    ))}
-                                                    {!m.email_bevestigd && (
-                                                        <Label kleur="amber">
-                                                            E-mail nog niet
-                                                            bevestigd
-                                                        </Label>
-                                                    )}
-                                                </p>
-                                            </div>
-                                            <div className="flex w-full items-center justify-between gap-3 pl-13 md:w-auto md:pl-0">
-                                                <span
-                                                    className={`inline-flex items-center gap-1 text-xs font-semibold ${m.tweestaps ? "text-emerald-700" : "text-rood"}`}
-                                                >
-                                                    {m.tweestaps ? (
-                                                        <ShieldCheck
-                                                            className="size-4"
-                                                            aria-hidden
-                                                        />
-                                                    ) : (
-                                                        <ShieldOff
-                                                            className="size-4"
-                                                            aria-hidden
-                                                        />
-                                                    )}
-                                                    Tweestaps{" "}
-                                                    {m.tweestaps
-                                                        ? "aan"
-                                                        : "uit"}
-                                                </span>
-                                                {!m.is_ik &&
-                                                    (kan_super_admin ||
-                                                        !m.is_super_admin) && (
-                                                        <Button
-                                                            variant="outline"
-                                                            size="sm"
-                                                            onClick={() =>
-                                                                setBewerk(m)
-                                                            }
-                                                            aria-label={`${m.name} beheren`}
-                                                        >
-                                                            Beheren
-                                                        </Button>
-                                                    )}
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </Paneel>
-
-                        <Paneel
-                            titel="Rechten per rol"
-                            sub="Een medewerker krijgt de optelsom van zijn rollen. Een Super Admin mag alles."
-                        >
-                            <RechtenMatrix
-                                sjablonen={sjablonen}
-                                rechten={rechten}
-                            />
-                        </Paneel>
-                    </div>
-
-                    <div className="space-y-5">
-                        <Paneel
-                            id="uitnodigen"
-                            titel="Medewerker uitnodigen"
-                            sub="De medewerker krijgt een e-mail om zelf een wachtwoord te kiezen en zet daarna tweestapsverificatie aan."
-                        >
-                            <form
-                                onSubmit={verstuur}
-                                className="space-y-3"
-                                data-test="uitnodigen"
-                            >
-                                <Veld
-                                    label="Naam"
-                                    htmlFor="m-naam"
-                                    fout={form.errors.name}
-                                >
-                                    <input
-                                        id="m-naam"
-                                        required
-                                        value={form.data.name}
-                                        onChange={(e) =>
-                                            form.setData("name", e.target.value)
-                                        }
-                                        className={invoer}
-                                    />
-                                </Veld>
-                                <Veld
-                                    label="E-mailadres"
-                                    htmlFor="m-email"
-                                    fout={form.errors.email}
-                                >
-                                    <input
-                                        id="m-email"
-                                        type="email"
-                                        required
-                                        value={form.data.email}
-                                        onChange={(e) =>
-                                            form.setData(
-                                                "email",
-                                                e.target.value,
-                                            )
-                                        }
-                                        className={invoer}
-                                    />
-                                </Veld>
-                                <fieldset className="space-y-1.5">
-                                    <legend className="text-sm font-semibold">
-                                        Rollen
-                                    </legend>
-                                    <Keuzes
-                                        naam="m-rol"
-                                        opties={keuzes}
-                                        gekozen={form.data.rollen}
-                                        onChange={(r) =>
-                                            form.setData("rollen", r)
-                                        }
-                                        uit={
-                                            kan_super_admin ? [] : [SUPER_ADMIN]
-                                        }
-                                        uitleg={{
-                                            [SUPER_ADMIN]: kan_super_admin
-                                                ? "Mag alles, ook rechten en instellingen"
-                                                : "Alleen een Super Admin geeft deze rol",
-                                        }}
-                                    />
-                                    {form.errors.rollen && (
-                                        <p className="text-sm text-rood">
-                                            {form.errors.rollen}
-                                        </p>
-                                    )}
-                                </fieldset>
-                                <Button
-                                    type="submit"
-                                    className="w-full bg-violet text-white hover:bg-violet/90"
-                                    disabled={form.processing}
-                                >
-                                    {form.processing
-                                        ? "Bezig..."
-                                        : "Uitnodiging sturen"}
-                                </Button>
-                            </form>
-                        </Paneel>
-
-                        {gedeactiveerd.length > 0 && (
-                            <Paneel
-                                titel="Gedeactiveerd"
-                                sub="Geen toegang meer tot het teamportaal. Account en gegevens blijven bewaard."
-                            >
-                                <ul className="divide-y">
-                                    {gedeactiveerd.map((g) => (
-                                        <li
-                                            key={g.id}
-                                            className="flex items-center justify-between gap-3 py-2.5 text-sm"
-                                        >
-                                            <span className="min-w-0">
-                                                <span className="block font-semibold">
-                                                    {g.name}
-                                                </span>
-                                                <span className="block truncate text-muted-foreground">
-                                                    {g.email}
-                                                </span>
-                                            </span>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
+                                    <FilterKnop
+                                        actief={filter === null}
+                                        onClick={() => setFilter(null)}
+                                    >
+                                        Alle{" "}
+                                        <span className="opacity-70">
+                                            {medewerkers.length}
+                                        </span>
+                                    </FilterKnop>
+                                    {sjablonen
+                                        .filter((s) => s.aantal > 0)
+                                        .map((s) => (
+                                            <FilterKnop
+                                                key={s.name}
+                                                actief={filter === s.name}
                                                 onClick={() =>
-                                                    setBewerk({
-                                                        ...g,
-                                                        rollen: [],
-                                                        is_super_admin: false,
-                                                    })
+                                                    setFilter(s.name)
                                                 }
                                             >
-                                                Toegang geven
-                                            </Button>
-                                        </li>
-                                    ))}
-                                </ul>
+                                                {s.name}{" "}
+                                                <span className="opacity-70">
+                                                    {s.aantal}
+                                                </span>
+                                            </FilterKnop>
+                                        ))}
+                                </div>
+
+                                {zichtbaar.length === 0 ? (
+                                    <Leeg titel="Niemand met deze rol." />
+                                ) : (
+                                    <ul
+                                        className="divide-y"
+                                        data-test="medewerkers"
+                                    >
+                                        {zichtbaar.map((m) => (
+                                            <li
+                                                key={m.id}
+                                                className="flex flex-wrap items-center gap-3 py-2.5 first:pt-0 last:pb-0 md:flex-nowrap"
+                                            >
+                                                <span
+                                                    className="grid size-10 shrink-0 place-items-center rounded-full bg-brand-gradient font-heading text-sm font-bold text-white"
+                                                    aria-hidden
+                                                >
+                                                    {initialen(m.name)}
+                                                </span>
+                                                <div className="min-w-0 flex-1 text-sm">
+                                                    <p className="font-semibold">
+                                                        {m.name}{" "}
+                                                        {m.is_ik && (
+                                                            <span className="font-normal text-muted-foreground">
+                                                                (jij)
+                                                            </span>
+                                                        )}
+                                                    </p>
+                                                    <p className="truncate text-muted-foreground">
+                                                        {m.email}
+                                                    </p>
+                                                    <p className="mt-1 flex flex-wrap gap-1">
+                                                        {m.rollen.map((r) => (
+                                                            <Label
+                                                                key={r}
+                                                                kleur={
+                                                                    r ===
+                                                                    SUPER_ADMIN
+                                                                        ? "rood"
+                                                                        : "violet"
+                                                                }
+                                                            >
+                                                                {r}
+                                                            </Label>
+                                                        ))}
+                                                        {!m.email_bevestigd && (
+                                                            <Label kleur="amber">
+                                                                E-mail nog niet
+                                                                bevestigd
+                                                            </Label>
+                                                        )}
+                                                    </p>
+                                                </div>
+                                                <div className="flex w-full items-center justify-between gap-3 pl-13 md:w-auto md:pl-0">
+                                                    <span
+                                                        className={`inline-flex items-center gap-1 text-xs font-semibold ${m.tweestaps ? "text-emerald-700" : "text-rood"}`}
+                                                    >
+                                                        {m.tweestaps ? (
+                                                            <ShieldCheck
+                                                                className="size-4"
+                                                                aria-hidden
+                                                            />
+                                                        ) : (
+                                                            <ShieldOff
+                                                                className="size-4"
+                                                                aria-hidden
+                                                            />
+                                                        )}
+                                                        Tweestaps{" "}
+                                                        {m.tweestaps
+                                                            ? "aan"
+                                                            : "uit"}
+                                                    </span>
+                                                    {!m.is_ik &&
+                                                        (kan_super_admin ||
+                                                            !m.is_super_admin) && (
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={() =>
+                                                                    setBewerk(m)
+                                                                }
+                                                                aria-label={`${m.name} beheren`}
+                                                            >
+                                                                Beheren
+                                                            </Button>
+                                                        )}
+                                                </div>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
                             </Paneel>
-                        )}
-                    </div>
-                </div>
+
+                            <Uitklap titel="Rechten per rol">
+                                <p className="mb-3 text-sm text-muted-foreground">
+                                    Een medewerker krijgt de optelsom van zijn
+                                    rollen. Een Super Admin mag alles.
+                                </p>
+                                <RechtenMatrix
+                                    sjablonen={sjablonen}
+                                    rechten={rechten}
+                                />
+                            </Uitklap>
+                        </>
+                    }
+                    zij={
+                        <>
+                            <Paneel
+                                id="uitnodigen"
+                                titel="Medewerker uitnodigen"
+                                sub="De medewerker krijgt een e-mail om zelf een wachtwoord te kiezen en zet daarna tweestapsverificatie aan."
+                            >
+                                <form
+                                    onSubmit={verstuur}
+                                    className="space-y-3"
+                                    data-test="uitnodigen"
+                                >
+                                    <Veld
+                                        label="Naam"
+                                        htmlFor="m-naam"
+                                        fout={form.errors.name}
+                                    >
+                                        <input
+                                            id="m-naam"
+                                            required
+                                            value={form.data.name}
+                                            onChange={(e) =>
+                                                form.setData(
+                                                    "name",
+                                                    e.target.value,
+                                                )
+                                            }
+                                            className={invoer}
+                                        />
+                                    </Veld>
+                                    <Veld
+                                        label="E-mailadres"
+                                        htmlFor="m-email"
+                                        fout={form.errors.email}
+                                    >
+                                        <input
+                                            id="m-email"
+                                            type="email"
+                                            required
+                                            value={form.data.email}
+                                            onChange={(e) =>
+                                                form.setData(
+                                                    "email",
+                                                    e.target.value,
+                                                )
+                                            }
+                                            className={invoer}
+                                        />
+                                    </Veld>
+                                    <fieldset className="space-y-1.5">
+                                        <legend className="text-sm font-semibold">
+                                            Rollen
+                                        </legend>
+                                        <Keuzes
+                                            naam="m-rol"
+                                            opties={keuzes}
+                                            gekozen={form.data.rollen}
+                                            onChange={(r) =>
+                                                form.setData("rollen", r)
+                                            }
+                                            uit={
+                                                kan_super_admin
+                                                    ? []
+                                                    : [SUPER_ADMIN]
+                                            }
+                                            uitleg={{
+                                                [SUPER_ADMIN]: kan_super_admin
+                                                    ? "Mag alles, ook rechten en instellingen"
+                                                    : "Alleen een Super Admin geeft deze rol",
+                                            }}
+                                        />
+                                        {form.errors.rollen && (
+                                            <p className="text-sm text-rood">
+                                                {form.errors.rollen}
+                                            </p>
+                                        )}
+                                    </fieldset>
+                                    <Button
+                                        type="submit"
+                                        className="w-full bg-violet text-white hover:bg-violet/90"
+                                        disabled={form.processing}
+                                    >
+                                        {form.processing
+                                            ? "Bezig..."
+                                            : "Uitnodiging sturen"}
+                                    </Button>
+                                </form>
+                            </Paneel>
+
+                            {gedeactiveerd.length > 0 && (
+                                <Paneel
+                                    titel="Gedeactiveerd"
+                                    sub="Geen toegang meer tot het teamportaal. Account en gegevens blijven bewaard."
+                                >
+                                    <ul className="divide-y">
+                                        {gedeactiveerd.map((g) => (
+                                            <li
+                                                key={g.id}
+                                                className="flex items-center justify-between gap-3 py-2.5 text-sm"
+                                            >
+                                                <span className="min-w-0">
+                                                    <span className="block font-semibold">
+                                                        {g.name}
+                                                    </span>
+                                                    <span className="block truncate text-muted-foreground">
+                                                        {g.email}
+                                                    </span>
+                                                </span>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() =>
+                                                        setBewerk({
+                                                            ...g,
+                                                            rollen: [],
+                                                            is_super_admin: false,
+                                                        })
+                                                    }
+                                                >
+                                                    Toegang geven
+                                                </Button>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </Paneel>
+                            )}
+                        </>
+                    }
+                />
             </Pagina>
 
             {bewerk && (

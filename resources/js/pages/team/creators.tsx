@@ -2,7 +2,8 @@ import { Head, useForm } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import * as team from '@/routes/team';
 import { opslaan as opslaanRoute } from '@/routes/team/creators';
-import { InloggenAls, Kop, Label, Leeg, Pagina, Paneel, Veld, initialen, invoer } from './_onderdelen/basis';
+import { Leeg, Pagina, PaginaKop } from '@/components/pagina';
+import { InloggenAls, Label, Paneel, Veld, initialen, invoer } from './_onderdelen/basis';
 
 type CreatorRij = {
     id: number;
@@ -93,18 +94,18 @@ export default function Creators({ creators, levels, leads, can }: { creators: C
     return (
         <>
             <Head title="Creators" />
-            <Pagina breed>
-                <Kop titel="Creators" sub={`${creators.length} ${creators.length === 1 ? 'creator' : 'creators'}`} />
+            <Pagina>
+                <PaginaKop titel="Creators" omschrijving={`${creators.length} ${creators.length === 1 ? 'creator' : 'creators'}`} />
 
                 <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,400px)]">
                     <div>
                         {creators.length === 0 ? (
-                            <Leeg>Nog geen creators.</Leeg>
+                            <Leeg titel="Nog geen creators." />
                         ) : (
                             <>
                                 <ul className="space-y-2 md:hidden" data-test="creators">
                                     {creators.map((c) => (
-                                        <li key={c.id} className="flex items-start gap-3 rounded-2xl border bg-card p-4">
+                                        <li key={c.id} className="flex items-start gap-3 rounded-xl border bg-card p-4">
                                             <span className="grid size-10 shrink-0 place-items-center rounded-full bg-brand-gradient font-heading text-sm font-bold text-white" aria-hidden>
                                                 {initialen(c.name)}
                                             </span>
@@ -129,7 +130,7 @@ export default function Creators({ creators, levels, leads, can }: { creators: C
                                         </li>
                                     ))}
                                 </ul>
-                                <div className="hidden overflow-hidden rounded-2xl border bg-card md:block">
+                                <div className="hidden overflow-hidden rounded-xl border bg-card md:block">
                                     <table className="w-full text-sm">
                                         <thead className="bg-muted/60 text-left text-xs tracking-wide text-muted-foreground uppercase">
                                             <tr>

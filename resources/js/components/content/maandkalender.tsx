@@ -162,7 +162,7 @@ export function Maandkalender({
             )}
 
             {/* Raster vanaf tablet */}
-            <div className="hidden overflow-hidden rounded-2xl border bg-card md:block">
+            <div className="hidden overflow-hidden rounded-xl border bg-card md:block">
                 <div className="grid grid-cols-7 border-b bg-muted/50 text-center text-xs font-semibold text-muted-foreground uppercase">
                     {dagen.map((d) => (
                         <div key={d} className="py-2">
@@ -222,14 +222,14 @@ export function Maandkalender({
             {/* Lijst op de telefoon */}
             <div className="space-y-3 md:hidden">
                 {Object.keys(perDag).length === 0 ? (
-                    <p className="rounded-2xl border border-dashed bg-card p-6 text-center text-sm text-muted-foreground">
+                    <p className="rounded-xl border border-dashed bg-card p-6 text-center text-sm text-muted-foreground">
                         Niets gepland in {kalender.label}.
                     </p>
                 ) : (
                     Object.entries(perDag).map(([dag, items]) => (
                         <section
                             key={dag}
-                            className="rounded-2xl border bg-card p-3"
+                            className="rounded-xl border bg-card p-3 md:p-4"
                         >
                             <h3
                                 className={cn(
@@ -356,7 +356,7 @@ function NotitieFormulier({
     return (
         <form
             onSubmit={opslaan}
-            className="grid gap-3 rounded-2xl border bg-card p-4 md:grid-cols-[160px_1fr_1fr_auto] md:items-end"
+            className="grid gap-3 rounded-xl border bg-card p-4 md:grid-cols-[160px_1fr_1fr_auto] md:items-end md:p-5"
             noValidate
         >
             <div className="grid gap-1.5">

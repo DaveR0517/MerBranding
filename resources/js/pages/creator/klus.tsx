@@ -9,6 +9,7 @@ import {
     Star,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { Kaart, Pagina, PaginaKop, Uitklap } from '@/components/pagina';
 import { StatusBadge } from '@/components/samenwerking/status-badge';
 import { Tijdlijn } from '@/components/samenwerking/tijdlijn';
 import { Snelkoppelingen } from '@/components/samenwerking/snelkoppelingen';
@@ -29,8 +30,7 @@ import type { SamenwerkingVol } from '@/types/samenwerking';
 import {
     AanZet,
     Fout,
-    Kaart,
-    Kop,
+    TitelKaart,
     Uitkomst,
     groteKnop,
     rustigeKnop,
@@ -63,23 +63,15 @@ export default function Klus({
     return (
         <>
             <Head title={`${s.company}: ${s.title}`} />
-            <Kop
-                boven={invitation ? 'Nieuwe uitnodiging' : `Klus ${s.number}`}
-                titel={s.company}
-                onder={`${s.title}, ${s.location}`}
-            >
-                <span className="inline-flex rounded-full bg-white p-0.5">
-                    <StatusBadge status={s.status} />
-                </span>
-            </Kop>
-
-            <div className="mx-auto w-full max-w-3xl space-y-4 px-4 py-5 md:px-6">
-                {s.status.number !== null && (
-                    <Kaart className="p-3 md:p-3">
-                        <TijdlijnInBeeld samenwerking={s} />
-                        <Snelkoppelingen omgeving="creator" id={s.id} status={s.status.value} />
-                    </Kaart>
-                )}
+            <Pagina smal>
+                <PaginaKop
+                    boven={
+                        invitation ? 'Nieuwe uitnodiging' : `Klus ${s.number}`
+                    }
+                    titel={s.company}
+                    omschrijving={`${s.title}, ${s.location}`}
+                    extra={<StatusBadge status={s.status} />}
+                />
 
                 {invitation ? (
                     <Uitnodiging
@@ -88,33 +80,57 @@ export default function Klus({
                         contract={contract}
                     />
                 ) : (
-                    <Stap samenwerking={s} maxMb={video_max_mb} />
+                    <>
+                        <Stap samenwerking={s} maxMb={video_max_mb} />
+                        <Snelkoppelingen
+                            omgeving="creator"
+                            id={s.id}
+                            status={s.status.value}
+                        />
+                    </>
                 )}
 
-                {!invitation && s.briefing && (
-                    <details className="rounded-2xl border bg-card p-4 shadow-xs">
-                        <summary className="cursor-pointer font-heading font-extrabold">
-                            Briefing en vestiging
-                        </summary>
-                        <p className="mt-3 whitespace-pre-line">{s.briefing}</p>
-                        {s.experience && (
-                            <p className="mt-2 text-sm">
-                                <span className="font-semibold">
-                                    Bij je bezoek:{' '}
+                <div className="space-y-3">
+                    {s.status.number !== null && (
+                        <Uitklap
+                            titel="Voortgang"
+                            rechts={
+                                <span className="text-sm text-muted-foreground tabular-nums">
+                                    Stap {s.status.number} van {s.steps.length}
                                 </span>
-                                {s.experience}
-                            </p>
-                        )}
-                        <p className="mt-2 text-sm text-muted-foreground">
-                            {s.location}, {s.location_address}
-                        </p>
-                        <p className="mt-2 text-sm">
-                            <span className="font-semibold">Je krijgt: </span>
-                            {s.reward}
-                        </p>
-                    </details>
-                )}
-            </div>
+                            }
+                        >
+                            <TijdlijnInBeeld samenwerking={s} />
+                        </Uitklap>
+                    )}
+                    {!invitation && s.briefing && (
+                        <Uitklap titel="Briefing en vestiging">
+                            <div className="space-y-2">
+                                <p className="whitespace-pre-line">
+                                    {s.briefing}
+                                </p>
+                                {s.experience && (
+                                    <p className="text-sm">
+                                        <span className="font-semibold">
+                                            Bij je bezoek:{' '}
+                                        </span>
+                                        {s.experience}
+                                    </p>
+                                )}
+                                <p className="text-sm text-muted-foreground">
+                                    {s.location}, {s.location_address}
+                                </p>
+                                <p className="text-sm">
+                                    <span className="font-semibold">
+                                        Je krijgt:{' '}
+                                    </span>
+                                    {s.reward}
+                                </p>
+                            </div>
+                        </Uitklap>
+                    )}
+                </div>
+            </Pagina>
         </>
     );
 }
@@ -130,14 +146,14 @@ function Stap({
     switch (s.status.value) {
         case 'creator_gevonden':
             return (
-                <Kaart titel="Kies je moment" accent>
+                <TitelKaart titel="Kies je moment" aanZet>
                     <AanZet>Jij bent aan zet</AanZet>
                     <p className="mb-4 text-sm">
                         Je hebt getekend, top. Kies een moment binnen de tijden
                         van {s.location}.
                     </p>
                     <TijdvakKiezer samenwerking={s} />
-                </Kaart>
+                </TitelKaart>
             );
         case 'bezoek_gepland':
             return <BezoekGepland samenwerking={s} />;
@@ -148,7 +164,10 @@ function Stap({
             return <ContentMaken samenwerking={s} maxMb={maxMb} />;
         case 'ter_controle':
             return (
-                <Kaart titel="Je video wordt gecontroleerd, vandaag nog" accent>
+                <TitelKaart
+                    titel="Je video wordt gecontroleerd, vandaag nog"
+                    aanZet
+                >
                     <p className="mb-4 text-sm text-muted-foreground">
                         Je krijgt een melding zodra het team klaar is. Je hoeft
                         nu niets te doen.
@@ -163,7 +182,7 @@ function Stap({
                             {laatste(s)!.caption}
                         </p>
                     )}
-                </Kaart>
+                </TitelKaart>
             );
         case 'goedgekeurd':
             return <Goedgekeurd samenwerking={s} />;
@@ -171,7 +190,7 @@ function Stap({
             return <Live samenwerking={s} />;
         case 'afgerond':
             return (
-                <Kaart titel="Afgerond" accent>
+                <TitelKaart titel="Afgerond" aanZet>
                     <p className="mb-3">
                         De meetperiode is voorbij. Dank je wel voor je video!
                     </p>
@@ -204,11 +223,11 @@ function Stap({
                         </p>
                     )}
                     <Vergoeding samenwerking={s} />
-                </Kaart>
+                </TitelKaart>
             );
         case 'geannuleerd':
             return (
-                <Kaart titel="Deze klus gaat niet door">
+                <TitelKaart titel="Deze klus gaat niet door">
                     <p>
                         De samenwerking is geannuleerd. Je hoeft niets meer te
                         doen.
@@ -218,11 +237,11 @@ function Stap({
                             Reden: {s.cancel_reason}
                         </p>
                     )}
-                </Kaart>
+                </TitelKaart>
             );
         case 'niet_verschenen':
             return (
-                <Kaart titel="Niet verschenen">
+                <TitelKaart titel="Niet verschenen">
                     <p>
                         Je was er niet op het afgesproken moment, dus deze klus
                         is gestopt. Klopt dat niet? Neem contact op met het
@@ -233,7 +252,7 @@ function Stap({
                             {s.cancel_reason}
                         </p>
                     )}
-                </Kaart>
+                </TitelKaart>
             );
         default:
             return (
@@ -305,7 +324,7 @@ function BezoekGepland({ samenwerking: s }: { samenwerking: SamenwerkingVol }) {
     const bezoek = s.visit_at ? new Date(s.visit_at) : null;
 
     return (
-        <Kaart titel="Je bezoek staat vast" accent>
+        <TitelKaart titel="Je bezoek staat vast" aanZet>
             <AanZet>Jij bent aan zet, op de dag zelf</AanZet>
             {bezoek && (
                 <div className="my-3 flex items-center gap-3">
@@ -355,7 +374,7 @@ function BezoekGepland({ samenwerking: s }: { samenwerking: SamenwerkingVol }) {
                     Route naar {s.location}
                 </a>
             </div>
-        </Kaart>
+        </TitelKaart>
     );
 }
 
@@ -367,7 +386,7 @@ function KlaarMetFilmen({
     const form = useForm({});
 
     return (
-        <Kaart titel="Je bent binnen, veel plezier" accent>
+        <TitelKaart titel="Je bent binnen, veel plezier" aanZet>
             <AanZet>Jij bent aan zet, aan het filmen</AanZet>
             <p className="text-sm">
                 {s.visited_at && <>Ingecheckt op {datumTijd(s.visited_at)}. </>}
@@ -385,7 +404,7 @@ function KlaarMetFilmen({
                 <Check className="size-5" aria-hidden />
                 Klaar met filmen
             </button>
-        </Kaart>
+        </TitelKaart>
     );
 }
 
@@ -402,7 +421,10 @@ function ContentMaken({
     return (
         <>
             {vorige && (
-                <Kaart titel={`Feedback op versie ${vorige.version}`} accent>
+                <TitelKaart
+                    titel={`Feedback op versie ${vorige.version}`}
+                    aanZet
+                >
                     <p className="mb-3 text-sm">
                         Tik op een tijdcode om naar dat moment in je video te
                         gaan.
@@ -414,11 +436,11 @@ function ContentMaken({
                     <div className={`mt-4 ${smalleVideo}`}>
                         <VideoSpeler versie={vorige} ref={speler} />
                     </div>
-                </Kaart>
+                </TitelKaart>
             )}
-            <Kaart
+            <TitelKaart
                 titel={vorige ? 'Lever je nieuwe versie aan' : 'Maak je video'}
-                accent={!vorige}
+                aanZet={!vorige}
             >
                 <AanZet>Jij bent aan zet</AanZet>
                 {s.content_deadline_at && (
@@ -427,7 +449,7 @@ function ContentMaken({
                     </p>
                 )}
                 <UploadFormulier samenwerking={s} maxMb={maxMb} />
-            </Kaart>
+            </TitelKaart>
         </>
     );
 }
@@ -474,7 +496,7 @@ function Goedgekeurd({ samenwerking: s }: { samenwerking: SamenwerkingVol }) {
 
     return (
         <>
-            <Kaart titel="Goedgekeurd, plaats je video" accent>
+            <TitelKaart titel="Goedgekeurd, plaats je video" aanZet>
                 <AanZet>Jij bent aan zet</AanZet>
                 <p className="rounded-xl bg-violet/10 px-3 py-2 font-semibold text-violet">
                     Plaatsen op {datum(s.publish_on)}
@@ -529,9 +551,9 @@ function Goedgekeurd({ samenwerking: s }: { samenwerking: SamenwerkingVol }) {
                     {s.alcohol &&
                         ' Er komt alcohol in beeld: plaats deze video alleen op Instagram.'}
                 </p>
-            </Kaart>
+            </TitelKaart>
 
-            <Kaart titel="Ik heb geplaatst">
+            <TitelKaart titel="Ik heb geplaatst">
                 <form
                     onSubmit={(e) => {
                         e.preventDefault();
@@ -601,7 +623,7 @@ function Goedgekeurd({ samenwerking: s }: { samenwerking: SamenwerkingVol }) {
                         Ik heb geplaatst
                     </button>
                 </form>
-            </Kaart>
+            </TitelKaart>
         </>
     );
 }
@@ -610,7 +632,7 @@ function Live({ samenwerking: s }: { samenwerking: SamenwerkingVol }) {
     const post = s.publications.at(-1);
 
     return (
-        <Kaart titel="Je post staat live" accent>
+        <TitelKaart titel="Je post staat live" aanZet>
             {post && (
                 <a
                     href={post.url}
@@ -627,7 +649,7 @@ function Live({ samenwerking: s }: { samenwerking: SamenwerkingVol }) {
                 <strong>{datum(s.measure_until)}</strong>.
             </p>
             <Vergoeding samenwerking={s} />
-        </Kaart>
+        </TitelKaart>
     );
 }
 

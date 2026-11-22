@@ -15,15 +15,15 @@ import * as cijfers from "@/routes/team/cijfers";
 import type { Metriek, Metrieken, PublicatieCijfers } from "@/types/cijfers";
 import type { SamenwerkingKort } from "@/types/samenwerking";
 import {
-    Fouten,
-    Kop,
-    Label,
     Leeg,
+    MeerLijst,
     Pagina,
-    Paneel,
-    Veld,
-    invoer,
-} from "../_onderdelen/basis";
+    PaginaKop,
+    Sectie,
+    Tabs,
+    Uitklap,
+} from "@/components/pagina";
+import { Fouten, Label, Veld, invoer } from "../_onderdelen/basis";
 
 type Historie = {
     id: number;
@@ -56,123 +56,163 @@ export default function Cijfers({
     metrics,
     companies,
 }: Props) {
-    const teControleren = collaborations.filter((c) =>
-        c.publications.some((p) => p.unreviewed),
-    ).length;
+    const open = (c: Rij) => c.publications.some((p) => p.unreviewed);
+    const teControleren = collaborations.filter(open);
+    const [tab, setTab] = useState<"controleren" | "alle">(
+        teControleren.length > 0 ? "controleren" : "alle",
+    );
     const [bedrijf, setBedrijf] = useState<string>(
         companies[0] ? String(companies[0].id) : "",
     );
+    const lijst = tab === "controleren" ? teControleren : collaborations;
 
     return (
         <>
             <Head title="Cijfers" />
-            <Pagina breed>
-                <Kop
+            <Pagina>
+                <PaginaKop
                     titel="Cijfers"
-                    sub="Cijfers per publicatie, met bron en ophaaldatum. Handmatig ingevoerde cijfers controleer je tegen de screenshot."
+                    omschrijving="Cijfers per publicatie, met bron en ophaaldatum. Handmatig ingevoerde cijfers controleer je tegen de screenshot."
                     acties={
-                        filter ? (
-                            <Button asChild variant="outline">
-                                <Link href={team.cijfers.url()}>
-                                    Alle publicaties
-                                </Link>
-                            </Button>
-                        ) : undefined
+                        <>
+                            {companies.length > 0 && (
+                                <div className="flex items-center gap-2">
+                                    <label
+                                        htmlFor="rapport-bedrijf"
+                                        className="sr-only"
+                                    >
+                                        Maandrapport van
+                                    </label>
+                                    <select
+                                        id="rapport-bedrijf"
+                                        className={`${invoer} min-w-0 md:w-56`}
+                                        value={bedrijf}
+                                        onChange={(e) =>
+                                            setBedrijf(e.target.value)
+                                        }
+                                    >
+                                        {companies.map((c) => (
+                                            <option key={c.id} value={c.id}>
+                                                {c.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <Button asChild className="h-10 shrink-0">
+                                        <Link
+                                            href={team.maandrapport.url({
+                                                bedrijf: Number(bedrijf),
+                                            })}
+                                        >
+                                            Maandrapport
+                                        </Link>
+                                    </Button>
+                                </div>
+                            )}
+                            {filter ? (
+                                <Button asChild variant="outline" className="h-10">
+                                    <Link href={team.cijfers.url()}>
+                                        Alle publicaties
+                                    </Link>
+                                </Button>
+                            ) : undefined}
+                        </>
                     }
                 />
                 <Fouten />
 
-                <div className="grid gap-3 md:grid-cols-[1fr_auto]">
-                    <p className="rounded-2xl border bg-card p-4 text-sm">
-                        {teControleren > 0 ? (
-                            <>
-                                <strong className="text-violet">
-                                    {teControleren}
-                                </strong>{" "}
-                                {teControleren === 1
-                                    ? "samenwerking heeft"
-                                    : "samenwerkingen hebben"}{" "}
-                                handmatige cijfers die nog gecontroleerd moeten
-                                worden. Ze staan bovenaan.
-                            </>
-                        ) : (
-                            "Alle handmatige cijfers zijn gecontroleerd."
-                        )}
-                    </p>
-                    {companies.length > 0 && (
-                        <div className="flex flex-wrap items-end gap-2 rounded-2xl border bg-card p-4">
-                            <Veld
-                                label="Maandrapport van"
-                                htmlFor="rapport-bedrijf"
-                            >
-                                <select
-                                    id="rapport-bedrijf"
-                                    className={invoer}
-                                    value={bedrijf}
-                                    onChange={(e) => setBedrijf(e.target.value)}
-                                >
-                                    {companies.map((c) => (
-                                        <option key={c.id} value={c.id}>
-                                            {c.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </Veld>
-                            <Button asChild>
-                                <Link
-                                    href={team.maandrapport.url({
-                                        bedrijf: Number(bedrijf),
-                                    })}
-                                >
-                                    Openen
-                                </Link>
-                            </Button>
-                        </div>
-                    )}
-                </div>
-
                 {collaborations.length === 0 ? (
-                    <Leeg>
-                        Er zijn nog geen publicaties. Zodra een creator een link
-                        koppelt (status Live), staan ze hier.
-                    </Leeg>
+                    <Leeg titel="Er zijn nog geen publicaties. Zodra een creator een link koppelt (status Live), staan ze hier." />
                 ) : (
-                    collaborations.map((c) => (
-                        <Samenwerking key={c.id} c={c} metrics={metrics} />
-                    ))
+                    <Sectie>
+                        <Tabs
+                            tabs={[
+                                {
+                                    waarde: "controleren",
+                                    label: "Te controleren",
+                                    aantal: teControleren.length,
+                                },
+                                {
+                                    waarde: "alle",
+                                    label: "Alle samenwerkingen",
+                                    aantal: collaborations.length,
+                                },
+                            ]}
+                            actief={tab}
+                            onKies={setTab}
+                        />
+                        {lijst.length === 0 ? (
+                            <Leeg titel="Alle handmatige cijfers zijn gecontroleerd." />
+                        ) : (
+                            <MeerLijst key={tab}>
+                                {lijst.map((c) => (
+                                    <li key={c.id}>
+                                        <Samenwerking
+                                            c={c}
+                                            metrics={metrics}
+                                            open={open(c)}
+                                        />
+                                    </li>
+                                ))}
+                            </MeerLijst>
+                        )}
+                    </Sectie>
                 )}
             </Pagina>
         </>
     );
 }
 
-function Samenwerking({ c, metrics }: { c: Rij; metrics: Metrieken }) {
-    const open = c.publications.some((p) => p.unreviewed);
-
+function Samenwerking({
+    c,
+    metrics,
+    open,
+}: {
+    c: Rij;
+    metrics: Metrieken;
+    open: boolean;
+}) {
     return (
-        <Paneel
+        <Uitklap
             titel={
-                <Link
-                    href={team.samenwerking.url(c.id)}
-                    className="hover:text-violet"
-                >
-                    {c.title}
-                </Link>
-            }
-            sub={
                 <>
-                    {c.company} · {c.creator ?? "geen creator"} · {c.number}
-                    {c.measure_until && (
-                        <> · meten tot {datum(c.measure_until)}</>
-                    )}
+                    <span className="block truncate">{c.title}</span>
+                    <span className="block truncate text-sm font-normal text-muted-foreground">
+                        {c.company} · {c.creator ?? "geen creator"} ·{" "}
+                        {c.publications.length}{" "}
+                        {c.publications.length === 1
+                            ? "publicatie"
+                            : "publicaties"}
+                    </span>
                 </>
             }
-            acties={
-                <div className="flex flex-wrap items-center gap-2">
+            rechts={
+                <span className="hidden shrink-0 items-center gap-2 sm:flex">
+                    {open && <Label>Te controleren</Label>}
                     <StatusBadge status={c.status} />
+                </span>
+            }
+        >
+            <div className="space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-sm text-muted-foreground">
+                        <Link
+                            href={team.samenwerking.url(c.id)}
+                            className="font-semibold text-violet hover:underline"
+                        >
+                            {c.number}
+                        </Link>
+                        {c.measure_until && (
+                            <> · meten tot {datum(c.measure_until)}</>
+                        )}
+                        <span className="sm:hidden">
+                            {" "}
+                            · <StatusBadge status={c.status} />
+                        </span>
+                    </p>
                     {open && (
                         <Button
                             size="sm"
+                            className="h-10 max-sm:w-full"
                             onClick={() =>
                                 router.post(
                                     cijfers.akkoord.url(c.id),
@@ -186,15 +226,11 @@ function Samenwerking({ c, metrics }: { c: Rij; metrics: Metrieken }) {
                         </Button>
                     )}
                 </div>
-            }
-            className={open ? "border-l-4 border-l-violet" : undefined}
-        >
-            <div className="space-y-4">
                 {c.publications.map((p) => (
                     <Publicatie key={p.id} p={p} metrics={metrics} />
                 ))}
             </div>
-        </Paneel>
+        </Uitklap>
     );
 }
 

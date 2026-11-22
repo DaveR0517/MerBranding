@@ -2,7 +2,8 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { cursusdag, cursusdagen } from '@/routes/team/academy';
 import { opslaan } from '@/routes/team/academy/studenten';
-import { InloggenAls, Kop, Label, Leeg, Pagina, Paneel, Veld, invoer } from '../_onderdelen/basis';
+import { Leeg, Pagina, PaginaKop } from '@/components/pagina';
+import { InloggenAls, Label, Paneel, Veld, invoer } from '../_onderdelen/basis';
 import { Tabs } from './_onderdelen/academy';
 
 type Student = {
@@ -20,17 +21,17 @@ export default function Studenten({ students, days }: Props) {
     return (
         <>
             <Head title="Studenten" />
-            <Pagina breed>
-                <Kop titel="Studenten" sub={`${students.length} ${students.length === 1 ? 'student' : 'studenten'}`} />
+            <Pagina>
+                <PaginaKop titel="Studenten" omschrijving={`${students.length} ${students.length === 1 ? 'student' : 'studenten'}`} />
                 <Tabs />
                 <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,380px)]">
                     <div>
                         {students.length === 0 ? (
-                            <Leeg>Nog geen studenten.</Leeg>
+                            <Leeg titel="Nog geen studenten." />
                         ) : (
                             <ul className="space-y-2">
                                 {students.map((s) => (
-                                    <li key={s.id} className="rounded-2xl border bg-card p-4 text-sm">
+                                    <li key={s.id} className="rounded-xl border bg-card p-4 text-sm">
                                         <div className="flex flex-wrap items-start justify-between gap-2">
                                             <div className="min-w-0">
                                                 <p className="flex flex-wrap items-center gap-1.5">

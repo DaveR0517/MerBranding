@@ -3,7 +3,8 @@ import { BarChart3, ListChecks, MapPin, Sparkles } from 'lucide-react';
 import { RadarUitleg } from '@/components/content/radar-uitleg';
 import { datum } from '@/lib/datum';
 import content from '@/routes/team/content';
-import { Kop, Leeg, Pagina, Paneel } from '../_onderdelen/basis';
+import { Leeg, Pagina, PaginaKop } from '@/components/pagina';
+import { Paneel } from '../_onderdelen/basis';
 
 /** AdminRadar: placeholder (fase 7, alleen na akkoord). Toont wie interesse toonde; elke interesse is een taak voor sales. */
 export default function Radar({
@@ -15,9 +16,9 @@ export default function Radar({
         <>
             <Head title="Radar: binnenkort" />
             <Pagina>
-                <Kop
+                <PaginaKop
                     titel="Radar: binnenkort"
-                    sub="Fase 7: wordt pas gebouwd na akkoord. Inhoud, prijzen en weging zijn nog niet besloten."
+                    omschrijving="Fase 7: wordt pas gebouwd na akkoord. Inhoud, prijzen en weging zijn nog niet besloten."
                 />
                 <RadarUitleg
                     onderdelen={[
@@ -48,7 +49,7 @@ export default function Radar({
                     sub="Elke interesse staat ook als taak voor sales in de werkvoorraad."
                 >
                     {interest.length === 0 ? (
-                        <Leeg>Nog geen interesse binnengekomen.</Leeg>
+                        <Leeg titel="Nog geen interesse binnengekomen." />
                     ) : (
                         <ul className="divide-y">
                             {interest.map((i) => (

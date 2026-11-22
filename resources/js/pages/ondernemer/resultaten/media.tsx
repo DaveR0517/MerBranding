@@ -1,11 +1,11 @@
-import { Head } from "@inertiajs/react";
-import { Download, Film } from "lucide-react";
-import { useMemo, useState } from "react";
-import { platformNaam } from "@/components/cijfers/cijfers";
-import { Button } from "@/components/ui/button";
-import { datum } from "@/lib/datum";
-import { mediabibliotheek } from "@/routes/ondernemer";
-import { Blok, Kop } from "../_onderdelen/opmaak";
+import { Head } from '@inertiajs/react';
+import { Download } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { platformNaam } from '@/components/cijfers/cijfers';
+import { KaartRaster, Leeg, Pagina, PaginaKop } from '@/components/pagina';
+import { Button } from '@/components/ui/button';
+import { datum } from '@/lib/datum';
+import { mediabibliotheek } from '@/routes/ondernemer';
 
 type Video = {
     id: number;
@@ -29,8 +29,8 @@ export default function Mediabibliotheek({
     company: string;
     videos: Video[];
 }) {
-    const [vestiging, setVestiging] = useState("");
-    const [zoek, setZoek] = useState("");
+    const [vestiging, setVestiging] = useState('');
+    const [zoek, setZoek] = useState('');
     const vestigingen = useMemo(
         () => [...new Set(videos.map((v) => v.location))].sort(),
         [videos],
@@ -39,7 +39,7 @@ export default function Mediabibliotheek({
         (v) =>
             (!vestiging || v.location === vestiging) &&
             (!zoek ||
-                `${v.title} ${v.creator ?? ""}`
+                `${v.title} ${v.creator ?? ''}`
                     .toLowerCase()
                     .includes(zoek.toLowerCase())),
     );
@@ -47,27 +47,17 @@ export default function Mediabibliotheek({
     return (
         <>
             <Head title="Mediabibliotheek" />
-            <div className="mx-auto w-full max-w-6xl space-y-6 p-4 md:p-6">
-                <Kop
-                    onder={`Alle goedgekeurde video's van ${company} op één plek. Download het origineel, zonder watermerk.`}
-                >
-                    Mediabibliotheek
-                </Kop>
+            <Pagina>
+                <PaginaKop
+                    titel="Mediabibliotheek"
+                    omschrijving={`Alle goedgekeurde video's van ${company} op één plek. Download het origineel, zonder watermerk.`}
+                />
 
                 {videos.length === 0 ? (
-                    <Blok className="py-10 text-center">
-                        <Film
-                            className="mx-auto size-8 text-violet"
-                            aria-hidden
-                        />
-                        <h2 className="mt-2 font-heading text-xl font-bold">
-                            Nog geen video's
-                        </h2>
-                        <p className="mx-auto mt-2 max-w-md text-muted-foreground">
-                            Zodra het team een video goedkeurt, staat hij hier
-                            klaar om te bekijken en te downloaden.
-                        </p>
-                    </Blok>
+                    <Leeg titel="Nog geen video's">
+                        Zodra het team een video goedkeurt, staat hij hier klaar
+                        om te bekijken en te downloaden.
+                    </Leeg>
                 ) : (
                     <>
                         <div className="flex flex-wrap items-end gap-3">
@@ -112,9 +102,9 @@ export default function Mediabibliotheek({
                             </p>
                         </div>
 
-                        <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        <KaartRaster kolommen={4}>
                             {zichtbaar.map((v) => (
-                                <li
+                                <div
                                     key={v.id}
                                     className="overflow-hidden rounded-xl border bg-card"
                                     data-test="video"
@@ -141,12 +131,12 @@ export default function Mediabibliotheek({
                                             <p className="text-xs text-muted-foreground">
                                                 {v.platforms
                                                     .map(platformNaam)
-                                                    .join(" en ") ||
-                                                    "Nog niet geplaatst"}
+                                                    .join(' en ') ||
+                                                    'Nog niet geplaatst'}
                                                 {v.live_at && (
                                                     <>
-                                                        {" "}
-                                                        · live sinds{" "}
+                                                        {' '}
+                                                        · live sinds{' '}
                                                         {datum(v.live_at)}
                                                     </>
                                                 )}
@@ -169,16 +159,16 @@ export default function Mediabibliotheek({
                                                                 v.size /
                                                                     1048576,
                                                             ),
-                                                        )}{" "}
+                                                        )}{' '}
                                                         MB)
                                                     </span>
                                                 )}
                                             </a>
                                         </Button>
                                     </div>
-                                </li>
+                                </div>
                             ))}
-                        </ul>
+                        </KaartRaster>
                         <p className="text-xs text-muted-foreground">
                             Wat je met een video mag (eigen kanalen,
                             advertenties, hoe lang) staat per samenwerking in
@@ -187,11 +177,11 @@ export default function Mediabibliotheek({
                         </p>
                     </>
                 )}
-            </div>
+            </Pagina>
         </>
     );
 }
 
 Mediabibliotheek.layout = {
-    breadcrumbs: [{ title: "Mediabibliotheek", href: mediabibliotheek() }],
+    breadcrumbs: [{ title: 'Mediabibliotheek', href: mediabibliotheek() }],
 };
