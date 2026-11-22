@@ -10,7 +10,8 @@ import {
 import { datum, datumTijd, euro } from "@/lib/datum";
 import * as team from "@/routes/team";
 import type { Metrieken, PlatformTotaal } from "@/types/cijfers";
-import { Kop, Pagina, Paneel } from "../_onderdelen/basis";
+import { Pagina, PaginaKop } from "@/components/pagina";
+import { Paneel } from "../_onderdelen/basis";
 
 type Vergelijk = { nu: number; vorige: number };
 
@@ -144,10 +145,10 @@ export default function Dashboard(p: Props) {
     return (
         <>
             <Head title="Dashboard" />
-            <Pagina breed>
-                <Kop
+            <Pagina>
+                <PaginaKop
                     titel="Dashboard"
-                    sub={
+                    omschrijving={
                         <>
                             Kerncijfers van het hele platform. Bijgewerkt{" "}
                             {datumTijd(p.bijgewerkt)}.

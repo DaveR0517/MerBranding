@@ -1,10 +1,16 @@
 import { Head } from '@inertiajs/react';
+import {
+    KaartRaster,
+    Kerncijfer,
+    Leeg,
+    Pagina,
+    PaginaKop,
+} from '@/components/pagina';
 import { Info } from 'lucide-react';
 import { Voorstel } from '@/components/content/labels';
 import { RechtenLijst, rechtStand } from '@/components/content/rechten-lijst';
 import type { Recht, StandaardRechten } from '@/components/content/types';
 import content from '@/routes/ondernemer/content';
-import { Kop } from '../_onderdelen/opmaak';
 
 type Props = {
     company: { name: string };
@@ -39,12 +45,11 @@ export default function Rechten({
     return (
         <>
             <Head title="Gebruiksrechten" />
-            <div className="mx-auto w-full max-w-6xl space-y-6 p-4 md:p-6">
-                <Kop
-                    onder={`${company.name}. Al je video's met de afgesproken gebruiksrechten. Zo weet je wat je waar mag gebruiken, en tot wanneer.`}
-                >
-                    Gebruiksrechten
-                </Kop>
+            <Pagina>
+                <PaginaKop
+                    titel="Gebruiksrechten"
+                    omschrijving={`${company.name}. Al je video's met de afgesproken gebruiksrechten. Zo weet je wat je waar mag gebruiken, en tot wanneer.`}
+                />
 
                 <div className="flex gap-3 rounded-xl border border-violet/20 bg-violet/5 p-4 text-sm">
                     <Info
@@ -66,28 +71,21 @@ export default function Rechten({
                     </div>
                 </div>
 
-                <dl className="grid grid-cols-2 gap-3 md:grid-cols-4">
+                <KaartRaster kolommen={4} className="grid-cols-2">
                     {tellers.map((t) => (
-                        <div
+                        <Kerncijfer
                             key={t.label}
-                            className="rounded-xl border bg-card p-3"
-                        >
-                            <dd className="font-heading text-2xl font-extrabold">
-                                {t.waarde}
-                            </dd>
-                            <dt className="text-sm text-muted-foreground">
-                                {t.label}
-                            </dt>
-                        </div>
+                            label={t.label}
+                            waarde={t.waarde}
+                        />
                     ))}
-                </dl>
+                </KaartRaster>
 
                 {rights.length === 0 ? (
-                    <p className="rounded-2xl border border-dashed bg-card p-6 text-center text-sm text-muted-foreground">
-                        Nog geen video's met gebruiksrechten. Zodra een video
-                        live staat, zie je hier tot wanneer je hem mag
-                        gebruiken.
-                    </p>
+                    <Leeg titel="Nog geen video's met gebruiksrechten">
+                        Zodra een video live staat, zie je hier tot wanneer je
+                        hem mag gebruiken.
+                    </Leeg>
                 ) : (
                     <RechtenLijst
                         rights={rights}
@@ -105,7 +103,7 @@ export default function Rechten({
                         Prijzen voor verlengen zijn nog niet bepaald.
                     </p>
                 )}
-            </div>
+            </Pagina>
         </>
     );
 }

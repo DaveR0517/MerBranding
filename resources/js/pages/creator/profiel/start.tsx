@@ -1,14 +1,14 @@
-import { Head, Link, useForm } from "@inertiajs/react";
-import { Check, ChevronRight, Circle, FileSignature } from "lucide-react";
-import * as profiel from "@/routes/creator/profiel";
+import { Head, Link, useForm } from '@inertiajs/react';
+import { Check, ChevronRight, Circle, FileSignature } from 'lucide-react';
+import { Pagina, PaginaKop } from '@/components/pagina';
+import * as profiel from '@/routes/creator/profiel';
 import {
     Fout,
-    Kaart,
-    Kop,
+    TitelKaart,
     Uitkomst,
     groteKnop,
     veld,
-} from "../_onderdelen/opmaak";
+} from '../_onderdelen/opmaak';
 
 type Props = {
     name: string;
@@ -25,26 +25,27 @@ type Props = {
 /** Eerste keer: checklist en de raamovereenkomst tekenen (docs/02 flow 2, stap 6). */
 export default function Start({ name, level, checklist, agreement }: Props) {
     const klaar = checklist.filter((c) => c.done).length;
-    const voornaam = name.split(" ")[0];
+    const voornaam = name.split(' ')[0];
 
     return (
         <>
             <Head title="Aan de slag" />
-            <Kop
-                boven="Aan de slag"
-                titel={`Welkom, ${voornaam}`}
-                onder={
-                    <span className="flex flex-wrap items-center gap-2">
-                        <span className="rounded-md bg-white px-2 py-0.5 text-xs font-extrabold tracking-wider text-aubergine-dark uppercase">
-                            {level}
-                        </span>
-                        Rond je checklist af, dan kun je uitnodigingen krijgen.
-                    </span>
-                }
-            />
 
-            <div className="mx-auto w-full max-w-3xl space-y-5 px-4 py-5 md:px-6">
-                <Kaart
+            <Pagina smal>
+                <PaginaKop
+                    titel={`Welkom, ${voornaam}`}
+                    omschrijving={
+                        <>
+                            Je bent{' '}
+                            <span className="font-semibold text-foreground">
+                                {level}
+                            </span>
+                            . Rond je checklist af, dan kun je uitnodigingen
+                            krijgen.
+                        </>
+                    }
+                />
+                <TitelKaart
                     titel={`Je checklist, ${klaar} van ${checklist.length} klaar`}
                 >
                     <div
@@ -83,10 +84,10 @@ export default function Start({ name, level, checklist, agreement }: Props) {
                                         />
                                     )}
                                     <span
-                                        className={`flex-1 text-sm ${c.done ? "text-muted-foreground" : "font-semibold"}`}
+                                        className={`flex-1 text-sm ${c.done ? 'text-muted-foreground' : 'font-semibold'}`}
                                     >
                                         <span className="sr-only">
-                                            {c.done ? "Klaar: " : "Nog doen: "}
+                                            {c.done ? 'Klaar: ' : 'Nog doen: '}
                                         </span>
                                         {c.label}
                                     </span>
@@ -102,38 +103,38 @@ export default function Start({ name, level, checklist, agreement }: Props) {
                         Instagram en TikTok koppelen volgt binnenkort. Tot die
                         tijd vul je je gebruikersnaam in bij je profiel.
                     </p>
-                </Kaart>
+                </TitelKaart>
 
                 <div id="raamovereenkomst" className="scroll-mt-4">
                     {agreement.signed_at ? (
-                        <Kaart titel="Raamovereenkomst">
+                        <TitelKaart titel="Raamovereenkomst">
                             <Uitkomst goed>
-                                Getekend door {agreement.signed_name} op{" "}
+                                Getekend door {agreement.signed_name} op{' '}
                                 {new Date(
                                     agreement.signed_at,
-                                ).toLocaleDateString("nl-NL", {
-                                    day: "numeric",
-                                    month: "long",
-                                    year: "numeric",
+                                ).toLocaleDateString('nl-NL', {
+                                    day: 'numeric',
+                                    month: 'long',
+                                    year: 'numeric',
                                 })}
                                 , versie {agreement.version}.
                             </Uitkomst>
-                        </Kaart>
+                        </TitelKaart>
                     ) : (
                         <Raamovereenkomst agreement={agreement} />
                     )}
                 </div>
-            </div>
+            </Pagina>
         </>
     );
 }
 
-function Raamovereenkomst({ agreement }: Pick<Props, "agreement">) {
-    const form = useForm({ signed_name: "", akkoord: false });
+function Raamovereenkomst({ agreement }: Pick<Props, 'agreement'>) {
+    const form = useForm({ signed_name: '', akkoord: false });
 
     return (
-        <Kaart
-            accent
+        <TitelKaart
+            aanZet
             titel={
                 <span className="flex items-center gap-2">
                     <FileSignature className="size-5 text-violet" aria-hidden />
@@ -180,7 +181,7 @@ function Raamovereenkomst({ agreement }: Pick<Props, "agreement">) {
                         required
                         value={form.data.signed_name}
                         onChange={(e) =>
-                            form.setData("signed_name", e.target.value)
+                            form.setData('signed_name', e.target.value)
                         }
                         className={`${veld} font-heading text-lg italic`}
                         aria-invalid={!!form.errors.signed_name}
@@ -199,7 +200,7 @@ function Raamovereenkomst({ agreement }: Pick<Props, "agreement">) {
                         required
                         checked={form.data.akkoord}
                         onChange={(e) =>
-                            form.setData("akkoord", e.target.checked)
+                            form.setData('akkoord', e.target.checked)
                         }
                         className="mt-0.5 size-5 shrink-0 accent-violet"
                     />
@@ -218,10 +219,10 @@ function Raamovereenkomst({ agreement }: Pick<Props, "agreement">) {
                     Teken de raamovereenkomst
                 </button>
             </form>
-        </Kaart>
+        </TitelKaart>
     );
 }
 
 Start.layout = {
-    breadcrumbs: [{ title: "Aan de slag", href: profiel.start.url() }],
+    breadcrumbs: [{ title: 'Aan de slag', href: profiel.start.url() }],
 };

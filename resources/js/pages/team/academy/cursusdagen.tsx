@@ -3,7 +3,8 @@ import { euro } from '@/lib/datum';
 import { cursusdag, cursusdagen, inzendingen } from '@/routes/team/academy';
 import { dagDatum } from '../../academy/_onderdelen/onderdelen';
 import type { Dag } from '../../academy/_onderdelen/types';
-import { Kop, Leeg, Pagina, Paneel } from '../_onderdelen/basis';
+import { Leeg, Pagina, PaginaKop } from '@/components/pagina';
+import { Paneel } from '../_onderdelen/basis';
 import { DagStatus, Tabs } from './_onderdelen/academy';
 import { DagFormulier } from './_onderdelen/dag-formulier';
 
@@ -19,8 +20,8 @@ export default function Cursusdagen({ days, open_exams, open_submissions, defaul
     return (
         <>
             <Head title="Cursusdagen" />
-            <Pagina breed>
-                <Kop titel="Cursusdagen" sub="MEBRANDING Academy: cursusdagen voor creators op locatie bij ondernemers." />
+            <Pagina>
+                <PaginaKop titel="Cursusdagen" omschrijving="MEBRANDING Academy: cursusdagen voor creators op locatie bij ondernemers." />
                 <Tabs />
                 {(open_exams > 0 || open_submissions > 0) && (
                     <p className="rounded-xl border border-violet/30 bg-violet/5 p-3 text-sm">
@@ -32,7 +33,7 @@ export default function Cursusdagen({ days, open_exams, open_submissions, defaul
                 <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,420px)]">
                     <div>
                         {days.length === 0 ? (
-                            <Leeg>Nog geen cursusdagen. Plan de eerste hiernaast.</Leeg>
+                            <Leeg titel="Nog geen cursusdagen. Plan de eerste hiernaast." />
                         ) : (
                             <>
                                 <ul className="space-y-2 md:hidden">

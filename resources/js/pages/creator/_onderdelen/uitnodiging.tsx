@@ -10,7 +10,15 @@ import { useState } from 'react';
 import { datumTijd } from '@/lib/datum';
 import { accepteren, weigeren } from '@/routes/creator';
 import type { SamenwerkingVol } from '@/types/samenwerking';
-import { Fout, Kaart, groteKnop, rustigeKnop, veld } from './opmaak';
+import { Kaart, Uitklap } from '@/components/pagina';
+import {
+    AanZet,
+    Fout,
+    TitelKaart,
+    groteKnop,
+    rustigeKnop,
+    veld,
+} from './opmaak';
 
 type Props = {
     samenwerking: SamenwerkingVol;
@@ -24,16 +32,59 @@ export function Uitnodiging({ samenwerking: s, uitnodiging, contract }: Props) {
 
     return (
         <div className="space-y-4">
-            <Kaart>
-                <p className="text-xs font-bold tracking-wider text-rood uppercase">
-                    Reageer voor {datumTijd(uitnodiging.expires_at)}
+            <Kaart className="border-violet">
+                <AanZet>
+                    <span className="text-rood">
+                        Reageer voor {datumTijd(uitnodiging.expires_at)}
+                    </span>
+                </AanZet>
+                <p
+                    className="flex items-center gap-2 font-heading text-xl font-extrabold text-violet md:text-2xl"
+                    data-test="beloning"
+                >
+                    <Gift className="size-6 shrink-0" aria-hidden />
+                    {s.reward}
                 </p>
-                <p className="mt-1 text-sm text-muted-foreground">
+                {s.experience && (
+                    <p className="mt-2 text-sm">
+                        <span className="font-semibold">Bij je bezoek: </span>
+                        {s.experience}
+                    </p>
+                )}
+                <p className="mt-2 flex items-start gap-2 text-sm">
+                    <MapPin
+                        className="mt-0.5 size-4 shrink-0 text-violet"
+                        aria-hidden
+                    />
+                    <span>
+                        <strong>{s.location}</strong>, {s.location_address}
+                    </span>
+                </p>
+                <p className="mt-2 text-sm text-muted-foreground">
+                    {s.fee_cents > 0
+                        ? 'Je vergoeding staat klaar zodra je post live staat en wordt uitbetaald in de betaalrun op vrijdag.'
+                        : 'Je bezoek is gratis, betaald door de ondernemer.'}{' '}
                     Accepteren doe je door het contract hieronder te tekenen.
                 </p>
             </Kaart>
 
-            <Kaart titel="Wat je doet">
+            {s.alcohol && (
+                <div
+                    role="note"
+                    className="flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm text-amber-950 md:p-4"
+                >
+                    <AlertTriangle
+                        className="mt-0.5 size-5 shrink-0"
+                        aria-hidden
+                    />
+                    <p>
+                        <strong>Er komt alcohol in beeld.</strong> Je plaatst
+                        deze video daarom alleen op Instagram, niet op TikTok.
+                    </p>
+                </div>
+            )}
+
+            <Uitklap titel="Wat je doet">
                 <p className="whitespace-pre-line">{s.briefing}</p>
                 {(s.period_from || s.period_to) && (
                     <p className="mt-2 text-sm text-muted-foreground">
@@ -53,62 +104,9 @@ export function Uitnodiging({ samenwerking: s, uitnodiging, contract }: Props) {
                             : 'nader te bepalen'}
                     </p>
                 )}
-                <p className="mt-3 flex items-start gap-2 text-sm">
-                    <MapPin
-                        className="mt-0.5 size-4 shrink-0 text-violet"
-                        aria-hidden
-                    />
-                    <span>
-                        <strong>{s.location}</strong>
-                        <br />
-                        {s.location_address}
-                    </span>
-                </p>
-            </Kaart>
+            </Uitklap>
 
-            <Kaart titel="Wat je krijgt">
-                <p
-                    className="flex items-center gap-2 font-heading text-2xl font-extrabold text-violet"
-                    data-test="beloning"
-                >
-                    <Gift className="size-6 shrink-0" aria-hidden />
-                    {s.reward}
-                </p>
-                {s.experience && (
-                    <p className="mt-2">
-                        <span className="font-semibold">Bij je bezoek: </span>
-                        {s.experience}
-                    </p>
-                )}
-                {s.fee_cents > 0 ? (
-                    <p className="mt-2 text-sm text-muted-foreground">
-                        Je vergoeding staat klaar zodra je post live staat en
-                        wordt uitbetaald in de betaalrun op vrijdag.
-                    </p>
-                ) : (
-                    <p className="mt-2 text-sm text-muted-foreground">
-                        Je bezoek is gratis, betaald door de ondernemer.
-                    </p>
-                )}
-            </Kaart>
-
-            {s.alcohol && (
-                <div
-                    role="note"
-                    className="flex items-start gap-3 rounded-2xl border-2 border-amber-300 bg-amber-50 p-4 text-sm text-amber-950"
-                >
-                    <AlertTriangle
-                        className="mt-0.5 size-5 shrink-0"
-                        aria-hidden
-                    />
-                    <p>
-                        <strong>Er komt alcohol in beeld.</strong> Je plaatst
-                        deze video daarom alleen op Instagram, niet op TikTok.
-                    </p>
-                </div>
-            )}
-
-            <Kaart titel="Zo gaat het verder">
+            <Uitklap titel="Zo gaat het verder">
                 <ol className="space-y-2 text-sm">
                     {[
                         'Je accepteert door het contract te tekenen.',
@@ -117,14 +115,14 @@ export function Uitnodiging({ samenwerking: s, uitnodiging, contract }: Props) {
                         'Na goedkeuring plaats je hem op de afgesproken datum op je eigen account.',
                     ].map((t, i) => (
                         <li key={i} className="flex gap-3">
-                            <span className="grid size-6 shrink-0 place-items-center rounded-full bg-violet/10 text-xs font-bold text-violet">
+                            <span className="grid size-6 shrink-0 place-items-center rounded-full bg-violet/10 text-xs font-bold text-violet tabular-nums">
                                 {i + 1}
                             </span>
                             {t}
                         </li>
                     ))}
                 </ol>
-            </Kaart>
+            </Uitklap>
 
             <Fout tekst={fouten.uitnodiging} />
             <Tekenen
@@ -141,14 +139,14 @@ function Tekenen({ uitnodiging, contract }: Props) {
     const form = useForm({ signed_name: '', akkoord: false });
 
     return (
-        <Kaart
+        <TitelKaart
+            aanZet
             titel={
                 <span className="flex items-center gap-2">
                     <FileSignature className="size-5 text-violet" aria-hidden />
                     Contract tekenen
                 </span>
             }
-            accent
         >
             <form
                 onSubmit={(e) => {
@@ -222,7 +220,7 @@ function Tekenen({ uitnodiging, contract }: Props) {
                     Teken en accepteer
                 </button>
             </form>
-        </Kaart>
+        </TitelKaart>
     );
 }
 
@@ -243,7 +241,7 @@ function Afslaan({ uitnodigingId }: { uitnodigingId: number }) {
     }
 
     return (
-        <Kaart titel="Uitnodiging afslaan">
+        <TitelKaart titel="Uitnodiging afslaan">
             <form
                 onSubmit={(e) => {
                     e.preventDefault();
@@ -288,6 +286,6 @@ function Afslaan({ uitnodigingId }: { uitnodigingId: number }) {
                     </button>
                 </div>
             </form>
-        </Kaart>
+        </TitelKaart>
     );
 }

@@ -2,7 +2,8 @@ import { Head, Link } from "@inertiajs/react";
 import { AlertTriangle, ChevronRight } from "lucide-react";
 import { datumTijd } from "@/lib/datum";
 import * as screening from "@/routes/team/screening";
-import { Kop, Label, Leeg, Pagina, initialen } from "../_onderdelen/basis";
+import { Leeg, Pagina, PaginaKop } from "@/components/pagina";
+import { Label, initialen } from "../_onderdelen/basis";
 import type { Aanmelding } from "./_gedeeld";
 import { platformKort, soortNaam } from "./_gedeeld";
 
@@ -26,10 +27,10 @@ export default function Index({
     return (
         <>
             <Head title="Screening" />
-            <Pagina breed>
-                <Kop
+            <Pagina>
+                <PaginaKop
                     titel="Screening"
-                    sub="Aanmeldingen als creator van de website. Een teamlid besluit altijd, met reden."
+                    omschrijving="Aanmeldingen als creator van de website. Een teamlid besluit altijd, met reden."
                 />
 
                 <nav
@@ -56,11 +57,9 @@ export default function Index({
                 </nav>
 
                 {leads.length === 0 ? (
-                    <Leeg>
-                        {filter === "nieuw"
+                    <Leeg titel={<>{filter === "nieuw"
                             ? "Geen nieuwe aanmeldingen. Alles is bij."
-                            : "Geen aanmeldingen in dit filter."}
-                    </Leeg>
+                            : "Geen aanmeldingen in dit filter."}</>} />
                 ) : (
                     <ul className="space-y-2" data-test="aanmeldingen">
                         {leads.map((l) => (

@@ -1,23 +1,23 @@
-import { Head, Link, useForm } from "@inertiajs/react";
-import { Camera, CheckCircle2, ExternalLink } from "lucide-react";
+import { Head, Link, useForm } from '@inertiajs/react';
+import { Camera, CheckCircle2, ExternalLink } from 'lucide-react';
 import {
     getal,
     Herkomst,
     MetingLijst,
     platformNaam,
-} from "@/components/cijfers/cijfers";
-import { datum, datumTijd } from "@/lib/datum";
-import * as creator from "@/routes/creator";
-import * as cijfers from "@/routes/creator/cijfers";
-import type { Metriek, Metrieken, PublicatieCijfers } from "@/types/cijfers";
+} from '@/components/cijfers/cijfers';
+import { Pagina, PaginaKop } from '@/components/pagina';
+import { datum, datumTijd } from '@/lib/datum';
+import * as creator from '@/routes/creator';
+import * as cijfers from '@/routes/creator/cijfers';
+import type { Metriek, Metrieken, PublicatieCijfers } from '@/types/cijfers';
 import {
     Fout,
-    Kaart,
-    Kop,
+    TitelKaart,
     Uitkomst,
     groteKnop,
     veld,
-} from "../_onderdelen/opmaak";
+} from '../_onderdelen/opmaak';
 
 type Props = {
     collaboration: {
@@ -50,19 +50,26 @@ export default function CijfersInvoeren({
     return (
         <>
             <Head title={`Cijfers ${c.title}`} />
-            <Kop
-                boven={<Link href={creator.cijfers.url()}>Cijfers</Link>}
-                titel={c.title}
-                onder={
-                    <>
-                        {c.company}
-                        {c.measure_until && (
-                            <> · meten tot {datum(c.measure_until)}</>
-                        )}
-                    </>
-                }
-            />
-            <div className="mx-auto w-full max-w-3xl space-y-4 p-4 md:p-6">
+            <Pagina smal>
+                <PaginaKop
+                    boven={
+                        <Link
+                            href={creator.cijfers.url()}
+                            className="hover:text-violet"
+                        >
+                            Cijfers
+                        </Link>
+                    }
+                    titel={c.title}
+                    omschrijving={
+                        <>
+                            {c.company}
+                            {c.measure_until && (
+                                <>, meten tot {datum(c.measure_until)}</>
+                            )}
+                        </>
+                    }
+                />
                 {!c.measuring && (
                     <Uitkomst goed>
                         De meetperiode van {measure_days} dagen is voorbij. De
@@ -70,10 +77,10 @@ export default function CijfersInvoeren({
                     </Uitkomst>
                 )}
                 {publications.map((p) => (
-                    <Kaart
+                    <TitelKaart
                         key={p.id}
                         titel={platformNaam(p.platform)}
-                        accent={c.measuring}
+                        aanZet={c.measuring}
                     >
                         <a
                             href={p.url}
@@ -81,7 +88,7 @@ export default function CijfersInvoeren({
                             rel="noopener noreferrer"
                             className="mb-3 inline-flex items-center gap-1 text-sm text-violet"
                         >
-                            Je post bekijken{" "}
+                            Je post bekijken{' '}
                             <ExternalLink className="size-3.5" aria-hidden />
                         </a>
                         <div className="space-y-2">
@@ -97,9 +104,9 @@ export default function CijfersInvoeren({
                             )}
                             metrics={metrics}
                         />
-                    </Kaart>
+                    </TitelKaart>
                 ))}
-            </div>
+            </Pagina>
         </>
     );
 }
@@ -109,12 +116,12 @@ function Formulier({
     p,
     metrics,
 }: {
-    c: Props["collaboration"];
+    c: Props['collaboration'];
     p: PublicatieCijfers;
     metrics: Metrieken;
 }) {
     const leeg = Object.fromEntries(
-        Object.keys(metrics).map((m) => [m, ""]),
+        Object.keys(metrics).map((m) => [m, '']),
     ) as Record<Metriek, string>;
     const form = useForm<
         Record<Metriek, string> & {
@@ -176,7 +183,7 @@ function Formulier({
                     <span className="min-w-0 truncate">
                         {form.data.screenshot
                             ? form.data.screenshot.name
-                            : "Kies een screenshot"}
+                            : 'Kies een screenshot'}
                     </span>
                 </span>
                 <input
@@ -185,7 +192,7 @@ function Formulier({
                     accept="image/*"
                     className="sr-only"
                     onChange={(e) =>
-                        form.setData("screenshot", e.target.files?.[0] ?? null)
+                        form.setData('screenshot', e.target.files?.[0] ?? null)
                     }
                     data-test="screenshot"
                 />
@@ -207,7 +214,7 @@ function Eerder({
     items,
     metrics,
 }: {
-    items: Props["history"];
+    items: Props['history'];
     metrics: Metrieken;
 }) {
     if (items.length === 0) {
@@ -231,7 +238,7 @@ function Eerder({
                                     <CheckCircle2
                                         className="size-4"
                                         aria-hidden
-                                    />{" "}
+                                    />{' '}
                                     Gecontroleerd
                                 </span>
                             ) : (
@@ -256,7 +263,7 @@ function Eerder({
                                     (m) =>
                                         `${metrics[m]} ${getal(h.values[m])}`,
                                 )
-                                .join(" · ")}
+                                .join(' · ')}
                         </p>
                     </li>
                 ))}
@@ -266,5 +273,5 @@ function Eerder({
 }
 
 CijfersInvoeren.layout = {
-    breadcrumbs: [{ title: "Cijfers", href: creator.cijfers() }],
+    breadcrumbs: [{ title: 'Cijfers', href: creator.cijfers() }],
 };

@@ -15,9 +15,13 @@ export function Snelkoppelingen({
     id: number;
     status: string;
 }) {
-    const berichten = { team: teamGesprek, ondernemer: ondernemerGesprek, creator: creatorGesprek }[omgeving].url(id);
+    const berichten = {
+        team: teamGesprek,
+        ondernemer: ondernemerGesprek,
+        creator: creatorGesprek,
+    }[omgeving].url(id);
     const klasse =
-        'inline-flex items-center gap-1.5 rounded-full border bg-card px-3 py-1.5 text-sm font-semibold hover:border-violet hover:text-violet';
+        'inline-flex min-h-10 items-center gap-1.5 rounded-full border bg-card px-4 py-1.5 text-sm font-semibold hover:border-violet hover:text-violet';
 
     return (
         <div className="flex flex-wrap gap-2" data-test="snelkoppelingen">
@@ -26,7 +30,8 @@ export function Snelkoppelingen({
             </Link>
             {omgeving === 'creator' && status === 'live' && (
                 <Link href={creatorCijfers.invoeren.url(id)} className={klasse}>
-                    <BarChart3 className="size-4" aria-hidden /> Cijfers invoeren
+                    <BarChart3 className="size-4" aria-hidden /> Cijfers
+                    invoeren
                 </Link>
             )}
         </div>

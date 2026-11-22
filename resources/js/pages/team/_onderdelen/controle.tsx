@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import { datum, datumTijd } from '@/lib/datum';
 import * as team from '@/routes/team';
 import type { SamenwerkingVol, Versie } from '@/types/samenwerking';
-import { Label, Leeg, Paneel, invoer, morgen, vandaag } from './basis';
+import { Leeg } from '@/components/pagina';
+import { Label, Paneel, invoer, morgen, vandaag } from './basis';
 
 type Punt = { timecode: number | null; body: string };
 
@@ -52,7 +53,7 @@ export function Contentcontrole({ c, magControleren }: { c: SamenwerkingVol; mag
     const [bezig, setBezig] = useState(false);
 
     if (!laatste) {
-        return <Leeg>De creator heeft nog geen video ingediend.</Leeg>;
+        return <Leeg titel="De creator heeft nog geen video ingediend." />;
     }
 
     const actief = magControleren && c.status.value === 'ter_controle';

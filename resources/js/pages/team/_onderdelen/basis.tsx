@@ -1,42 +1,19 @@
 import { router, usePage } from '@inertiajs/react';
 import { LogIn } from 'lucide-react';
+import { useState } from 'react';
 import type { ReactNode } from 'react';
+import { Kaart, Sectie } from '@/components/pagina';
 import { cn } from '@/lib/utils';
 import { inloggenAls } from '@/routes';
 import type { Auth } from '@/types/auth';
 
-/** Bouwstenen voor de teamschermen. Eén plek voor kop, paneel, velden en labels. */
+/** Hulpjes voor de teamschermen: paneel (op de bouwdoos), velden, labels en datums. Kop, pagina en lege staat komen uit `@/components/pagina`. */
 
-export function Kop({
-    titel,
-    sub,
-    acties,
-}: {
-    titel: string;
-    sub?: ReactNode;
-    acties?: ReactNode;
-}) {
-    return (
-        <div className="flex flex-wrap items-end justify-between gap-3">
-            <div className="min-w-0">
-                <h1 className="font-heading text-2xl font-extrabold text-aubergine md:text-3xl dark:text-white">
-                    {titel}
-                </h1>
-                {sub && <p className="mt-1 text-sm text-muted-foreground">{sub}</p>}
-            </div>
-            {acties && <div className="flex flex-wrap gap-2">{acties}</div>}
-        </div>
-    );
-}
-
-export function Pagina({ children, breed = false }: { children: ReactNode; breed?: boolean }) {
-    return (
-        <div className={cn('mx-auto w-full space-y-5 p-4 md:p-6', breed ? 'max-w-7xl' : 'max-w-5xl')}>
-            {children}
-        </div>
-    );
-}
-
+/**
+ * Paneel: een Kaart uit de bouwdoos met een Sectie-kop erin (titel, omschrijving, acties).
+ * Geen eigen opmaak; `id` dient als ankerpunt voor knoppen die naar het paneel springen.
+ * De kop mag op de telefoon onder elkaar vallen (flex-wrap), zodat brede acties de omschrijving niet samenknijpen.
+ */
 export function Paneel({
     titel,
     sub,
@@ -52,28 +29,49 @@ export function Paneel({
     acties?: ReactNode;
     id?: string;
 }) {
-    return (
-        <section id={id} className={cn('rounded-2xl border bg-card p-4 md:p-5', className)}>
-            {(titel || acties) && (
-                <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
-                    <div>
-                        {titel && <h2 className="font-heading text-base font-bold">{titel}</h2>}
-                        {sub && <p className="mt-0.5 text-sm text-muted-foreground">{sub}</p>}
-                    </div>
-                    {acties}
-                </div>
-            )}
-            {children}
-        </section>
+    const kaart = (
+        <Kaart className={className}>
+            <Sectie titel={titel} omschrijving={sub} actie={acties} className="[&>div:first-child]:flex-wrap">
+                {children}
+            </Sectie>
+        </Kaart>
+    );
+
+    return id ? (
+        <div id={id} className="scroll-mt-4">
+            {kaart}
+        </div>
+    ) : (
+        kaart
     );
 }
 
-export function Leeg({ children }: { children: ReactNode }) {
-    return (
-        <p className="rounded-2xl border border-dashed bg-card p-6 text-center text-sm text-muted-foreground">
-            {children}
-        </p>
-    );
+/**
+ * Gekozen tabblad dat blijft staan na opslaan. Een formulier laadt de pagina opnieuw (de staat begint dan
+ * opnieuw); daarom onthouden we het tabblad per scherm in de sessie van de browser.
+ */
+export function useTab<T extends string>(sleutel: string, standaard: T, geldig: readonly T[]): [T, (t: T) => void] {
+    const [tab, zet] = useState<T>(() => {
+        try {
+            const bewaard = window.sessionStorage.getItem(`tab:${sleutel}`) as T | null;
+
+            return bewaard && geldig.includes(bewaard) ? bewaard : standaard;
+        } catch {
+            return standaard;
+        }
+    });
+
+    const kies = (t: T) => {
+        zet(t);
+
+        try {
+            window.sessionStorage.setItem(`tab:${sleutel}`, t);
+        } catch {
+            // Geen opslag beschikbaar: het tabblad geldt dan alleen tot de volgende keer laden.
+        }
+    };
+
+    return [tab, kies];
 }
 
 export function Label({

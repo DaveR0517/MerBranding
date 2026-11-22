@@ -3,7 +3,8 @@ import { Check, ShieldCheck, ShieldOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import * as beheer from "@/routes/team/beheer";
 import { edit as beveiliging } from "@/routes/security";
-import { Kop, Label, Leeg, Pagina, Paneel } from "../_onderdelen/basis";
+import { Leeg, Pagina, PaginaKop } from "@/components/pagina";
+import { Label, Paneel } from "../_onderdelen/basis";
 
 /** Voor elk teamlid: je eigen rollen en wat je daarmee mag. Hier landt de link uit de melding "Je rechten zijn gewijzigd". */
 export default function MijnRechten({
@@ -19,9 +20,9 @@ export default function MijnRechten({
         <>
             <Head title="Mijn rechten" />
             <Pagina>
-                <Kop
+                <PaginaKop
                     titel="Mijn rechten"
-                    sub="Je rollen in het team en wat je daarmee mag. Rollen wijzigen doet een beheerder in Team en rechten."
+                    omschrijving="Je rollen in het team en wat je daarmee mag. Rollen wijzigen doet een beheerder in Team en rechten."
                 />
 
                 <Paneel titel="Rollen">
@@ -57,7 +58,7 @@ export default function MijnRechten({
 
                 <Paneel titel="Wat je mag">
                     {rechten.length === 0 ? (
-                        <Leeg>Geen losse rechten.</Leeg>
+                        <Leeg titel="Geen losse rechten." />
                     ) : (
                         <ul className="grid gap-1.5 text-sm sm:grid-cols-2">
                             {rechten.map((r) => (

@@ -8,7 +8,8 @@ import { datumTijd } from '@/lib/datum';
 import { cn } from '@/lib/utils';
 import * as team from '@/routes/team';
 import communicatie from '@/routes/team/communicatie';
-import { Kop, Label } from '../_onderdelen/basis';
+import { PaginaKop } from '@/components/pagina';
+import { Label } from '../_onderdelen/basis';
 
 type Props = {
     filter: string;
@@ -43,9 +44,9 @@ export default function Support({ filter, zoek, counts, tickets, ticket, statuse
             <Head title={ticket ? `Support ${ticket.number}` : 'Support'} />
             <div className="mx-auto w-full max-w-7xl space-y-4 p-4 md:p-6">
                 <div className={cn(ticket && 'hidden lg:block')}>
-                    <Kop
+                    <PaginaKop
                         titel="Support"
-                        sub="Vragen en problemen van ondernemers en creators. Eerste reactie binnen 1 werkdag (voorstel). Elke vraag hangt waar mogelijk aan een samenwerking."
+                        omschrijving="Vragen en problemen van ondernemers en creators. Eerste reactie binnen 1 werkdag (voorstel). Elke vraag hangt waar mogelijk aan een samenwerking."
                         acties={
                             <Link href={communicatie.help.url()} className="rounded-md border px-3 py-2 text-sm font-semibold hover:border-violet">
                                 Helpcentrum bekijken

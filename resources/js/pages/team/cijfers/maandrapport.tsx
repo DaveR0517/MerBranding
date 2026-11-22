@@ -3,7 +3,8 @@ import { MaandrapportWeergave } from "@/components/cijfers/maandrapport";
 import * as team from "@/routes/team";
 import { afdrukken } from "@/routes/team/maandrapport";
 import type { Maand, Maandrapport, Metrieken } from "@/types/cijfers";
-import { Kop, Pagina, invoer } from "../_onderdelen/basis";
+import { Pagina, PaginaKop } from "@/components/pagina";
+import { invoer } from "../_onderdelen/basis";
 
 type Props = {
     rapport: Maandrapport;
@@ -22,9 +23,9 @@ export default function TeamMaandrapport({
         <>
             <Head title={`Maandrapport ${r.bedrijf.name}`} />
             <Pagina>
-                <Kop
+                <PaginaKop
                     titel="Maandrapport"
-                    sub="Per bedrijf per maand: samenwerkingen, cijfers en tegoed. Zo ziet de ondernemer het ook."
+                    omschrijving="Per bedrijf per maand: samenwerkingen, cijfers en tegoed. Zo ziet de ondernemer het ook."
                     acties={
                         <label className="text-sm">
                             <span className="sr-only">Bedrijf</span>

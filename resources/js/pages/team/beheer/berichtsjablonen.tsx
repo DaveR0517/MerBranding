@@ -14,16 +14,9 @@ import { cn } from "@/lib/utils";
 import * as team from "@/routes/team";
 import * as beheer from "@/routes/team/beheer";
 import { opslaan, testmail } from "@/routes/team/beheer/berichtsjablonen";
-import {
-    Kop,
-    Label,
-    Leeg,
-    Pagina,
-    Paneel,
-    Veld,
-    invoer,
-} from "../_onderdelen/basis";
-import { Cijfer, Voorstel } from "./_onderdelen/beheer";
+import { Kerncijfer, KaartRaster, Leeg, Pagina, PaginaKop } from "@/components/pagina";
+import { Label, Paneel, Veld, invoer } from "../_onderdelen/basis";
+import { Voorstel } from "./_onderdelen/beheer";
 
 type Kanaal = "inapp" | "email" | "push";
 type Sjabloon = {
@@ -121,10 +114,10 @@ export default function Berichtsjablonen({
     return (
         <>
             <Head title="Berichtsjablonen" />
-            <Pagina breed>
-                <Kop
+            <Pagina>
+                <PaginaKop
                     titel="Berichtsjablonen"
-                    sub="Alle meldingen die MEBRANDING verstuurt, per rol en soort: onderwerp, e-mail en in-app. Teksten zijn aan te passen zonder ontwikkelaar; elke wijziging komt in het logboek."
+                    omschrijving="Alle meldingen die MEBRANDING verstuurt, per rol en soort: onderwerp, e-mail en in-app. Teksten zijn aan te passen zonder ontwikkelaar; elke wijziging komt in het logboek."
                     acties={
                         <Button variant="outline" asChild>
                             <Link href={team.logboek.url()}>Logboek</Link>
@@ -132,34 +125,34 @@ export default function Berichtsjablonen({
                     }
                 />
 
-                <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-                    <Cijfer
+                <KaartRaster kolommen={4} className="grid-cols-2">
+                    <Kerncijfer
                         label="Sjablonen"
                         waarde={sjablonen.length}
-                        sub="Uit de meldingenmatrix"
+                        toelichting="Uit de meldingenmatrix"
                     />
-                    <Cijfer
+                    <Kerncijfer
                         label="E-mail verplicht"
                         waarde={
                             sjablonen.filter(
                                 (s) => s.channels.email === "verplicht",
                             ).length
                         }
-                        sub="Beveiliging, geld en voortgang"
+                        toelichting="Beveiliging, geld en voortgang"
                     />
-                    <Cijfer
+                    <Kerncijfer
                         label="Met push"
                         waarde={
                             sjablonen.filter((s) => aan(s.channels.push)).length
                         }
-                        sub="Push volgt later, nog niet gekoppeld"
+                        toelichting="Push volgt later, nog niet gekoppeld"
                     />
-                    <Cijfer
+                    <Kerncijfer
                         label="Voorstel"
                         waarde={sjablonen.filter((s) => s.voorstel).length}
-                        sub="Concepttekst, nog te bevestigen"
+                        toelichting="Concepttekst, nog te bevestigen"
                     />
-                </div>
+                </KaartRaster>
 
                 <div className="grid gap-5 lg:grid-cols-[minmax(0,380px)_minmax(0,1fr)]">
                     <div
@@ -248,9 +241,7 @@ export default function Berichtsjablonen({
 
                         {lijst.length === 0 ? (
                             <div className="space-y-2">
-                                <Leeg>
-                                    Geen sjabloon past bij deze filters.
-                                </Leeg>
+                                <Leeg titel="Geen sjabloon past bij deze filters." />
                                 <Button
                                     variant="outline"
                                     className="w-full"

@@ -19,7 +19,8 @@ import { VestigingenBeheer } from "@/pages/ondernemer/beheer/_onderdelen/vestigi
 import { Voorstel } from "@/pages/ondernemer/beheer/_onderdelen/voorstel";
 import * as team from "@/routes/team";
 import bb from "@/routes/team/bedrijfsbeheer";
-import { Kop, Pagina, Paneel, Veld, invoer } from "../_onderdelen/basis";
+import { Pagina, PaginaKop, Tabs } from "@/components/pagina";
+import { Paneel, Veld, invoer, useTab } from "../_onderdelen/basis";
 
 type Bedrijf = {
     id: number;
@@ -55,20 +56,28 @@ export default function Bedrijf({
     can,
 }: Props) {
     const id = company.id;
+    const [tab, setTab] = useTab(`bedrijf-${company.id}`, "gegevens", [
+        "gegevens",
+        "vestigingen",
+        "gebruikers",
+    ] as const);
 
     return (
         <>
             <Head title={company.name} />
-            <Pagina breed>
-                <Link
-                    href={team.bedrijven()}
-                    className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-                >
-                    <ArrowLeft className="size-4" aria-hidden /> Alle bedrijven
-                </Link>
-                <Kop
+            <Pagina>
+                <PaginaKop
+                    boven={
+                        <Link
+                            href={team.bedrijven()}
+                            className="inline-flex items-center gap-1 hover:text-foreground"
+                        >
+                            <ArrowLeft className="size-3.5" aria-hidden /> Alle
+                            bedrijven
+                        </Link>
+                    }
                     titel={company.name}
-                    sub={
+                    omschrijving={
                         <>
                             {subscription ? (
                                 <>
@@ -129,71 +138,89 @@ export default function Bedrijf({
                     </Paneel>
                 )}
 
-                <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)] lg:items-start">
-                    <Gegevens
-                        company={company}
-                        managers={managers}
-                        kan={can.beheren}
-                    />
-                    <Tegoed
-                        company={company}
-                        ledger={ledger}
-                        kan={can.corrigeren}
-                    />
-                </div>
+                <Tabs
+                    tabs={[
+                        { waarde: "gegevens", label: "Gegevens en tegoed" },
+                        {
+                            waarde: "vestigingen",
+                            label: "Vestigingen",
+                            aantal: locations.length,
+                        },
+                        {
+                            waarde: "gebruikers",
+                            label: "Gebruikers",
+                            aantal: users.length,
+                        },
+                    ]}
+                    actief={tab}
+                    onKies={setTab}
+                />
 
-                <section className="space-y-3" aria-labelledby="vestigingen">
-                    <h2
-                        id="vestigingen"
-                        className="font-heading text-xl font-bold"
-                    >
-                        Vestigingen en bezoektijden
-                    </h2>
-                    <VestigingenBeheer
-                        locations={locations}
-                        kanBewerken={can.beheren}
-                        toevoegen={bb.vestigingen.toevoegen(id)}
-                        bijwerken={(v) =>
-                            bb.vestigingen.bijwerken({
-                                bedrijf: id,
-                                vestiging: v,
-                            })
-                        }
-                    />
-                    <BedrijfsInstellingen
-                        waarden={company}
-                        actie={bb.instellingen(id)}
-                        kanWijzigen={can.beheren}
-                        bedrijf={company.name}
-                        voorTeam
-                    />
-                </section>
+                {tab === "gegevens" && (
+                    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)] lg:items-start">
+                        <Gegevens
+                            company={company}
+                            managers={managers}
+                            kan={can.beheren}
+                        />
+                        <Tegoed
+                            company={company}
+                            ledger={ledger}
+                            kan={can.corrigeren}
+                        />
+                    </div>
+                )}
 
-                <section className="space-y-3" aria-labelledby="gebruikers">
-                    <h2
-                        id="gebruikers"
-                        className="font-heading text-xl font-bold"
+                {tab === "vestigingen" && (
+                    <section
+                        className="space-y-3"
+                        aria-label="Vestigingen en bezoektijden"
                     >
-                        Gebruikers
-                    </h2>
-                    <GebruikersBeheer
-                        users={users}
-                        kanBeheren={can.beheren}
-                        uitnodigen={bb.gebruikers.uitnodigen(id)}
-                        rol={(u) =>
-                            bb.gebruikers.rol({ bedrijf: id, gebruiker: u })
-                        }
-                        verwijderen={(u) =>
-                            bb.gebruikers.verwijderen({
-                                bedrijf: id,
-                                gebruiker: u,
-                            })
-                        }
-                        opnieuw={(u) =>
-                            bb.gebruikers.opnieuw({ bedrijf: id, gebruiker: u })
-                        }
-                    />
-                </section>
+                        <VestigingenBeheer
+                            locations={locations}
+                            kanBewerken={can.beheren}
+                            toevoegen={bb.vestigingen.toevoegen(id)}
+                            bijwerken={(v) =>
+                                bb.vestigingen.bijwerken({
+                                    bedrijf: id,
+                                    vestiging: v,
+                                })
+                            }
+                        />
+                        <BedrijfsInstellingen
+                            waarden={company}
+                            actie={bb.instellingen(id)}
+                            kanWijzigen={can.beheren}
+                            bedrijf={company.name}
+                            voorTeam
+                        />
+                    </section>
+                )}
+
+                {tab === "gebruikers" && (
+                    <section className="space-y-3" aria-label="Gebruikers">
+                        <GebruikersBeheer
+                            users={users}
+                            kanBeheren={can.beheren}
+                            uitnodigen={bb.gebruikers.uitnodigen(id)}
+                            rol={(u) =>
+                                bb.gebruikers.rol({ bedrijf: id, gebruiker: u })
+                            }
+                            verwijderen={(u) =>
+                                bb.gebruikers.verwijderen({
+                                    bedrijf: id,
+                                    gebruiker: u,
+                                })
+                            }
+                            opnieuw={(u) =>
+                                bb.gebruikers.opnieuw({
+                                    bedrijf: id,
+                                    gebruiker: u,
+                                })
+                            }
+                        />
+                    </section>
+                )}
             </Pagina>
         </>
     );
@@ -376,7 +403,7 @@ function Tegoed({
                     </Button>
                 </form>
             )}
-            <div className="max-h-[28rem] overflow-y-auto">
+            <div className="max-h-80 overflow-y-auto">
                 <Grootboek ledger={ledger} />
             </div>
         </Paneel>

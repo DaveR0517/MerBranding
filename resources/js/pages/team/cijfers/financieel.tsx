@@ -12,7 +12,8 @@ import { Button } from "@/components/ui/button";
 import { datum, datumTijd } from "@/lib/datum";
 import * as team from "@/routes/team";
 import * as geld from "@/routes/team/financieel";
-import { Fouten, Kop, Label, Leeg, Pagina, Paneel } from "../_onderdelen/basis";
+import { Leeg, Pagina, PaginaKop } from "@/components/pagina";
+import { Fouten, Label, Paneel } from "../_onderdelen/basis";
 
 type Uitbetaling = {
     id: number;
@@ -107,10 +108,10 @@ export default function Financieel({
     return (
         <>
             <Head title="Financieel" />
-            <Pagina breed>
-                <Kop
+            <Pagina>
+                <PaginaKop
                     titel="Financieel"
-                    sub="Betaalruns voor creators en facturen voor ondernemers. Bedragen van vergoedingen zoals afgesproken, facturen inclusief btw."
+                    omschrijving="Betaalruns voor creators en facturen voor ondernemers. Bedragen van vergoedingen zoals afgesproken, facturen inclusief btw."
                 />
                 <Fouten />
 
@@ -171,7 +172,7 @@ export default function Financieel({
                         </div>
                     )}
                     {runs.length === 0 ? (
-                        <Leeg>Nog geen betaalruns.</Leeg>
+                        <Leeg titel="Nog geen betaalruns." />
                     ) : (
                         <div className="space-y-3">
                             {runs.map((r) => (
@@ -238,7 +239,7 @@ export default function Financieel({
                         ))}
                     </div>
                     {zichtbaar.length === 0 ? (
-                        <Leeg>Geen facturen in deze selectie.</Leeg>
+                        <Leeg titel="Geen facturen in deze selectie." />
                     ) : (
                         <ul className="divide-y">
                             {zichtbaar.map((f) => (

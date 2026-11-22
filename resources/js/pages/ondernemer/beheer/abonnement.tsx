@@ -1,24 +1,25 @@
-import { Head, useForm } from "@inertiajs/react";
-import { FileText, Send } from "lucide-react";
-import type { FormEvent } from "react";
-import { useState } from "react";
-import InputError from "@/components/input-error";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { Spinner } from "@/components/ui/spinner";
-import { datum, euro } from "@/lib/datum";
-import { cn } from "@/lib/utils";
-import beheer from "@/routes/ondernemer/beheer";
-import { Blok, BlokKop, Kop, Tekstvak } from "../_onderdelen/opmaak";
-import { Tegoed } from "../_onderdelen/tegoed";
-import { Grootboek } from "./_onderdelen/grootboek";
+import { Head, useForm } from '@inertiajs/react';
+import { Kaart, KaartRaster, Pagina, PaginaKop } from '@/components/pagina';
+import { FileText, Send } from 'lucide-react';
+import type { FormEvent } from 'react';
+import { useState } from 'react';
+import InputError from '@/components/input-error';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Spinner } from '@/components/ui/spinner';
+import { datum, euro } from '@/lib/datum';
+import { cn } from '@/lib/utils';
+import beheer from '@/routes/ondernemer/beheer';
+import { Tekstvak } from '../_onderdelen/opmaak';
+import { Tegoed } from '../_onderdelen/tegoed';
+import { Grootboek } from './_onderdelen/grootboek';
 import type {
     Abonnement as AbonnementT,
     Boeking,
     Verzoek,
-} from "./_onderdelen/types";
-import { Voorstel } from "./_onderdelen/voorstel";
+} from './_onderdelen/types';
+import { Voorstel } from './_onderdelen/voorstel';
 
 type Pakket = {
     id: number;
@@ -51,10 +52,10 @@ type Props = {
 };
 
 const REDENEN = [
-    "Te duur voor wat het oplevert",
-    "Minder samenwerkingen nodig",
-    "Zaak stopt of wordt verkocht",
-    "Andere reden",
+    'Te duur voor wat het oplevert',
+    'Minder samenwerkingen nodig',
+    'Zaak stopt of wordt verkocht',
+    'Andere reden',
 ];
 
 export default function Abonnement({
@@ -67,16 +68,17 @@ export default function Abonnement({
     account_manager,
     can,
 }: Props) {
-    const [paneel, setPaneel] = useState<"wijzigen" | "opzeggen" | null>(null);
-    const am = account_manager ?? "je accountmanager";
+    const [paneel, setPaneel] = useState<'wijzigen' | 'opzeggen' | null>(null);
+    const am = account_manager ?? 'je accountmanager';
 
     return (
         <>
             <Head title="Abonnement" />
-            <div className="mx-auto w-full max-w-6xl space-y-6 p-4 md:p-6">
-                <Kop onder={`Pakket, tegoed en facturen van ${company.name}.`}>
-                    Abonnement
-                </Kop>
+            <Pagina>
+                <PaginaKop
+                    titel="Abonnement"
+                    omschrijving={`Pakket, tegoed en facturen van ${company.name}.`}
+                />
 
                 {requests.length > 0 && (
                     <section
@@ -98,9 +100,9 @@ export default function Abonnement({
                                         Verzoek verstuurd naar {am}
                                     </p>
                                     <p className="text-sm text-muted-foreground">
-                                        {r.title}, {datum(r.created_at)}.{" "}
+                                        {r.title}, {datum(r.created_at)}.{' '}
                                         {am.charAt(0).toUpperCase() +
-                                            am.slice(1)}{" "}
+                                            am.slice(1)}{' '}
                                         reageert binnen 1 werkdag.
                                     </p>
                                 </div>
@@ -109,76 +111,80 @@ export default function Abonnement({
                     </section>
                 )}
 
-                <div className="grid gap-5 lg:grid-cols-2">
-                    <section
-                        className="rounded-xl bg-aubergine-dark p-4 text-white md:p-6"
-                        aria-labelledby="huidig"
-                    >
-                        <p id="huidig" className="text-sm text-white/75">
-                            Huidig abonnement
-                        </p>
-                        {subscription ? (
-                            <>
-                                <div className="mt-1 flex flex-wrap items-center gap-2">
-                                    <h2 className="font-heading text-3xl font-extrabold">
-                                        {subscription.name}
-                                    </h2>
-                                    {subscription.is_proposal && <Voorstel />}
-                                </div>
-                                <p className="mt-2">
-                                    <span className="font-heading text-2xl font-bold">
-                                        {euro(subscription.price_cents)}
-                                    </span>{" "}
-                                    <span className="text-sm text-white/75">
-                                        per maand, excl. btw
-                                    </span>
-                                </p>
-                                <p className="mt-1 text-sm text-white/85">
-                                    {subscription.points_per_month} punten per
-                                    maand · sinds{" "}
-                                    {datum(subscription.starts_on)}
-                                </p>
-                                {subscription.cancels_on && (
-                                    <p className="mt-2 text-sm font-semibold text-white">
-                                        Stopt op{" "}
-                                        {datum(subscription.cancels_on)}
-                                    </p>
-                                )}
-                                {can.wijzigen ? (
-                                    <div className="mt-4 flex flex-wrap gap-2">
-                                        <Button
-                                            variant="secondary"
-                                            onClick={() =>
-                                                setPaneel("wijzigen")
-                                            }
-                                            data-test="wijzigen"
-                                        >
-                                            Abonnement wijzigen
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            className="text-white hover:bg-white/10 hover:text-white"
-                                            onClick={() =>
-                                                setPaneel("opzeggen")
-                                            }
-                                        >
-                                            Opzeggen
-                                        </Button>
-                                    </div>
-                                ) : (
-                                    <p className="mt-4 text-sm text-white/75">
-                                        Alleen een eigenaar kan het abonnement
-                                        wijzigen of opzeggen.
-                                    </p>
-                                )}
-                            </>
-                        ) : (
-                            <p className="mt-2">
-                                Er staat nog geen abonnement klaar. Neem contact
-                                op met {am}.
+                <KaartRaster kolommen={2}>
+                    <Kaart>
+                        <section aria-labelledby="huidig">
+                            <p
+                                id="huidig"
+                                className="text-xs font-semibold tracking-wide text-muted-foreground uppercase"
+                            >
+                                Huidig abonnement
                             </p>
-                        )}
-                    </section>
+                            {subscription ? (
+                                <>
+                                    <div className="mt-1 flex flex-wrap items-center gap-2">
+                                        <h2 className="font-heading text-2xl font-extrabold">
+                                            {subscription.name}
+                                        </h2>
+                                        {subscription.is_proposal && (
+                                            <Voorstel />
+                                        )}
+                                    </div>
+                                    <p className="mt-2">
+                                        <span className="font-heading text-xl font-bold tabular-nums">
+                                            {euro(subscription.price_cents)}
+                                        </span>{' '}
+                                        <span className="text-sm text-muted-foreground">
+                                            per maand, excl. btw
+                                        </span>
+                                    </p>
+                                    <p className="mt-1 text-sm text-muted-foreground">
+                                        {subscription.points_per_month} punten
+                                        per maand · sinds{' '}
+                                        {datum(subscription.starts_on)}
+                                    </p>
+                                    {subscription.cancels_on && (
+                                        <p className="mt-2 text-sm font-semibold text-rood">
+                                            Stopt op{' '}
+                                            {datum(subscription.cancels_on)}
+                                        </p>
+                                    )}
+                                    {can.wijzigen ? (
+                                        <div className="mt-4 flex flex-wrap gap-2">
+                                            <Button
+                                                variant="outline"
+                                                onClick={() =>
+                                                    setPaneel('wijzigen')
+                                                }
+                                                data-test="wijzigen"
+                                            >
+                                                Abonnement wijzigen
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                className="text-rood hover:text-rood"
+                                                onClick={() =>
+                                                    setPaneel('opzeggen')
+                                                }
+                                            >
+                                                Opzeggen
+                                            </Button>
+                                        </div>
+                                    ) : (
+                                        <p className="mt-4 text-sm text-muted-foreground">
+                                            Alleen een eigenaar kan het
+                                            abonnement wijzigen of opzeggen.
+                                        </p>
+                                    )}
+                                </>
+                            ) : (
+                                <p className="mt-2">
+                                    Er staat nog geen abonnement klaar. Neem
+                                    contact op met {am}.
+                                </p>
+                            )}
+                        </section>
+                    </Kaart>
 
                     <Tegoed
                         beschikbaar={company.available_points}
@@ -189,9 +195,9 @@ export default function Abonnement({
                             komt terug. Tegoedregels zijn een voorstel.
                         </p>
                     </Tegoed>
-                </div>
+                </KaartRaster>
 
-                {can.wijzigen && paneel === "wijzigen" && (
+                {can.wijzigen && paneel === 'wijzigen' && (
                     <Wijzigen
                         plans={plans}
                         huidig={subscription?.plan_id ?? null}
@@ -199,30 +205,31 @@ export default function Abonnement({
                         am={am}
                     />
                 )}
-                {can.wijzigen && paneel === "opzeggen" && (
+                {can.wijzigen && paneel === 'opzeggen' && (
                     <Opzeggen sluit={() => setPaneel(null)} am={am} />
                 )}
 
-                <Blok>
-                    <BlokKop
-                        rechts={
-                            <span className="text-sm text-muted-foreground">
-                                Saldo {company.available_points} punten
-                            </span>
-                        }
-                    >
-                        Tegoed per boeking
-                    </BlokKop>
+                <Kaart>
+                    <div className="mb-3 flex items-center justify-between gap-2">
+                        <h2 className="font-heading text-lg font-bold">
+                            Tegoed per boeking
+                        </h2>
+                        <span className="text-sm text-muted-foreground">
+                            Saldo {company.available_points} punten
+                        </span>
+                    </div>
                     <p className="-mt-1 mb-3 text-sm text-muted-foreground">
                         Elke wijziging in je tegoed staat hier: toegekend per
                         maand, gereserveerd bij een aanvraag, verbruikt na het
                         bezoek, teruggegeven bij annuleren.
                     </p>
                     <Grootboek ledger={ledger} />
-                </Blok>
+                </Kaart>
 
-                <Blok>
-                    <BlokKop>Facturen</BlokKop>
+                <Kaart>
+                    <h2 className="mb-3 font-heading text-lg font-bold">
+                        Facturen
+                    </h2>
                     {invoices === null ? (
                         <p className="flex items-start gap-2 text-sm text-muted-foreground">
                             <FileText
@@ -247,12 +254,12 @@ export default function Abonnement({
                                         {f.number}
                                     </span>
                                     <span className="text-muted-foreground">
-                                        {f.date ? datum(f.date) : ""}
+                                        {f.date ? datum(f.date) : ''}
                                     </span>
                                     <span>
                                         {f.amount_cents !== null
                                             ? euro(f.amount_cents)
-                                            : ""}
+                                            : ''}
                                     </span>
                                     {f.status && (
                                         <span className="rounded-full bg-muted px-2 py-0.5 text-xs">
@@ -263,8 +270,8 @@ export default function Abonnement({
                             ))}
                         </ul>
                     )}
-                </Blok>
-            </div>
+                </Kaart>
+            </Pagina>
         </>
     );
 }
@@ -281,9 +288,9 @@ function Wijzigen({
     am: string;
 }) {
     const form = useForm({
-        soort: "wijzigen",
-        plan_id: "" as string | number,
-        toelichting: "",
+        soort: 'wijzigen',
+        plan_id: '' as string | number,
+        toelichting: '',
     });
     const { data, setData, errors, processing } = form;
 
@@ -296,16 +303,18 @@ function Wijzigen({
     }
 
     return (
-        <Blok className="border-violet/40">
+        <Kaart className="border-violet/40">
             <form
                 onSubmit={versturen}
                 className="space-y-4"
                 noValidate
                 data-test="wijzigen-formulier"
             >
-                <BlokKop>Abonnementen vergelijken</BlokKop>
+                <h2 className="mb-3 font-heading text-lg font-bold">
+                    Abonnementen vergelijken
+                </h2>
                 <p className="-mt-2 text-sm text-muted-foreground">
-                    Kies het pakket dat beter past. Je stuurt een verzoek: {am}{" "}
+                    Kies het pakket dat beter past. Je stuurt een verzoek: {am}{' '}
                     bevestigt de overstap en de ingangsdatum. Er wordt nu niets
                     gewijzigd of betaald.
                 </p>
@@ -325,14 +334,14 @@ function Wijzigen({
                                 role="radio"
                                 aria-checked={gekozen}
                                 disabled={isHuidig}
-                                onClick={() => setData("plan_id", p.id)}
+                                onClick={() => setData('plan_id', p.id)}
                                 className={cn(
-                                    "rounded-xl border p-4 text-left transition",
+                                    'rounded-xl border p-4 text-left transition',
                                     isHuidig
-                                        ? "cursor-default bg-muted/50"
+                                        ? 'cursor-default bg-muted/50'
                                         : gekozen
-                                          ? "border-violet bg-violet/5 ring-1 ring-violet"
-                                          : "hover:border-violet/60",
+                                          ? 'border-violet bg-violet/5 ring-1 ring-violet'
+                                          : 'hover:border-violet/60',
                                 )}
                             >
                                 <span className="flex flex-wrap items-center gap-2">
@@ -368,7 +377,7 @@ function Wijzigen({
                     <Tekstvak
                         id="w-toelichting"
                         value={data.toelichting}
-                        onChange={(e) => setData("toelichting", e.target.value)}
+                        onChange={(e) => setData('toelichting', e.target.value)}
                         className="min-h-20"
                     />
                 </div>
@@ -389,15 +398,15 @@ function Wijzigen({
                     </Button>
                 </div>
             </form>
-        </Blok>
+        </Kaart>
     );
 }
 
 function Opzeggen({ sluit, am }: { sluit: () => void; am: string }) {
     const form = useForm({
-        soort: "opzeggen",
-        reden: "",
-        toelichting: "",
+        soort: 'opzeggen',
+        reden: '',
+        toelichting: '',
         akkoord: false,
     });
     const { data, setData, errors, processing } = form;
@@ -411,16 +420,18 @@ function Opzeggen({ sluit, am }: { sluit: () => void; am: string }) {
     }
 
     return (
-        <Blok className="border-rood/40">
+        <Kaart className="border-rood/40">
             <form
                 onSubmit={versturen}
                 className="space-y-4"
                 noValidate
                 data-test="opzeggen-formulier"
             >
-                <BlokKop>Abonnement opzeggen</BlokKop>
+                <h2 className="mb-3 font-heading text-lg font-bold">
+                    Abonnement opzeggen
+                </h2>
                 <p className="-mt-2 text-sm text-muted-foreground">
-                    Jammer dat je wilt stoppen. Vertel ons waarom, dan kijkt{" "}
+                    Jammer dat je wilt stoppen. Vertel ons waarom, dan kijkt{' '}
                     {am} of we iets kunnen oplossen.
                 </p>
                 <div className="space-y-1.5">
@@ -428,7 +439,7 @@ function Opzeggen({ sluit, am }: { sluit: () => void; am: string }) {
                     <select
                         id="o-reden"
                         value={data.reden}
-                        onChange={(e) => setData("reden", e.target.value)}
+                        onChange={(e) => setData('reden', e.target.value)}
                         className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
                     >
                         <option value="">Kies een reden</option>
@@ -445,7 +456,7 @@ function Opzeggen({ sluit, am }: { sluit: () => void; am: string }) {
                     <Tekstvak
                         id="o-toelichting"
                         value={data.toelichting}
-                        onChange={(e) => setData("toelichting", e.target.value)}
+                        onChange={(e) => setData('toelichting', e.target.value)}
                         className="min-h-20"
                     />
                 </div>
@@ -476,7 +487,7 @@ function Opzeggen({ sluit, am }: { sluit: () => void; am: string }) {
                 <label className="flex cursor-pointer items-start gap-3 text-sm">
                     <Checkbox
                         checked={data.akkoord}
-                        onCheckedChange={(v) => setData("akkoord", v === true)}
+                        onCheckedChange={(v) => setData('akkoord', v === true)}
                         className="mt-0.5"
                     />
                     <span>
@@ -498,10 +509,10 @@ function Opzeggen({ sluit, am }: { sluit: () => void; am: string }) {
                     </Button>
                 </div>
             </form>
-        </Blok>
+        </Kaart>
     );
 }
 
 Abonnement.layout = {
-    breadcrumbs: [{ title: "Abonnement", href: beheer.abonnement() }],
+    breadcrumbs: [{ title: 'Abonnement', href: beheer.abonnement() }],
 };

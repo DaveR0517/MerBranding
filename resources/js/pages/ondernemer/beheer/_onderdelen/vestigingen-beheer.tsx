@@ -1,15 +1,16 @@
-import { useForm } from "@inertiajs/react";
-import { Clock, MapPin, Pencil, Plus, Trash2, X } from "lucide-react";
-import type { FormEvent } from "react";
-import { useState } from "react";
-import InputError from "@/components/input-error";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Spinner } from "@/components/ui/spinner";
-import { Blok, BlokKop, Tekstvak } from "../../_onderdelen/opmaak";
-import { DAGEN } from "./types";
-import type { Actie, Tijdvak, Vestiging } from "./types";
+import { useForm } from '@inertiajs/react';
+import { Kaart, Leeg } from '@/components/pagina';
+import { Clock, MapPin, Pencil, Plus, Trash2, X } from 'lucide-react';
+import type { FormEvent } from 'react';
+import { useState } from 'react';
+import InputError from '@/components/input-error';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Spinner } from '@/components/ui/spinner';
+import { Tekstvak } from '../../_onderdelen/opmaak';
+import { DAGEN } from './types';
+import type { Actie, Tijdvak, Vestiging } from './types';
 
 type Velden = {
     name: string;
@@ -22,18 +23,18 @@ type Velden = {
 /** Korte samenvatting van de bezoektijden: "ma 10:00 - 16:00, di ...". */
 export function tijdenKort(windows: Tijdvak[]): string {
     if (windows.length === 0) {
-        return "Nog geen bezoektijden";
+        return 'Nog geen bezoektijden';
     }
 
     return DAGEN.map((dag, i) => {
         const vakken = windows.filter((w) => w.weekday === i + 1);
 
         return vakken.length
-            ? `${dag.slice(0, 2)} ${vakken.map((w) => `${w.starts_at} - ${w.ends_at}`).join(", ")}`
+            ? `${dag.slice(0, 2)} ${vakken.map((w) => `${w.starts_at} - ${w.ends_at}`).join(', ')}`
             : null;
     })
         .filter(Boolean)
-        .join(" · ");
+        .join(' · ');
 }
 
 /**
@@ -51,30 +52,28 @@ export function VestigingenBeheer({
     bijwerken: (id: number) => Actie;
     kanBewerken?: boolean;
 }) {
-    const [open, setOpen] = useState<number | "nieuw" | null>(null);
+    const [open, setOpen] = useState<number | 'nieuw' | null>(null);
 
     return (
         <div className="space-y-4">
-            {kanBewerken && open !== "nieuw" && (
+            {kanBewerken && open !== 'nieuw' && (
                 <Button
-                    onClick={() => setOpen("nieuw")}
+                    onClick={() => setOpen('nieuw')}
                     className="w-full sm:w-auto"
                     data-test="vestiging-toevoegen"
                 >
                     <Plus /> Vestiging toevoegen
                 </Button>
             )}
-            {open === "nieuw" && (
+            {open === 'nieuw' && (
                 <VestigingFormulier
                     actie={toevoegen}
                     sluit={() => setOpen(null)}
                 />
             )}
 
-            {locations.length === 0 && open !== "nieuw" && (
-                <Blok className="text-center text-sm text-muted-foreground">
-                    Nog geen vestigingen. Voeg de eerste toe.
-                </Blok>
+            {locations.length === 0 && open !== 'nieuw' && (
+                <Leeg titel="Nog geen vestigingen">Voeg de eerste toe.</Leeg>
             )}
 
             <ul className="space-y-3">
@@ -89,61 +88,63 @@ export function VestigingenBeheer({
                         </li>
                     ) : (
                         <li key={l.id}>
-                            <Blok
-                                className="flex flex-col gap-3 sm:flex-row sm:items-start"
-                                data-test="vestiging"
-                            >
-                                <span
-                                    className="grid size-10 shrink-0 place-items-center rounded-xl bg-violet/10 text-violet"
-                                    aria-hidden
+                            <Kaart>
+                                <div
+                                    className="flex flex-col gap-3 sm:flex-row sm:items-start"
+                                    data-test="vestiging"
                                 >
-                                    <MapPin className="size-5" />
-                                </span>
-                                <div className="min-w-0 flex-1 space-y-1">
-                                    <div className="flex flex-wrap items-center gap-2">
-                                        <h3 className="font-heading text-lg font-bold">
-                                            {l.name}
-                                        </h3>
-                                        <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-semibold text-muted-foreground">
-                                            {l.active === 0
-                                                ? "Geen lopende samenwerkingen"
-                                                : `${l.active} lopend`}
-                                        </span>
-                                    </div>
-                                    <p className="text-sm text-muted-foreground">
-                                        {[l.address, l.city]
-                                            .filter(Boolean)
-                                            .join(", ") || "Geen adres"}
-                                    </p>
-                                    <p className="flex items-start gap-1.5 text-sm">
-                                        <Clock
-                                            className="mt-0.5 size-4 shrink-0 text-muted-foreground"
-                                            aria-hidden
-                                        />
-                                        <span className="min-w-0 break-words">
-                                            {tijdenKort(l.windows)}
-                                        </span>
-                                    </p>
-                                    {l.experience && (
-                                        <p className="text-sm">
-                                            <span className="font-semibold">
-                                                Ervaring:{" "}
+                                    <span
+                                        className="grid size-10 shrink-0 place-items-center rounded-xl bg-violet/10 text-violet"
+                                        aria-hidden
+                                    >
+                                        <MapPin className="size-5" />
+                                    </span>
+                                    <div className="min-w-0 flex-1 space-y-1">
+                                        <div className="flex flex-wrap items-center gap-2">
+                                            <h3 className="font-heading text-lg font-bold">
+                                                {l.name}
+                                            </h3>
+                                            <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-semibold text-muted-foreground">
+                                                {l.active === 0
+                                                    ? 'Geen lopende samenwerkingen'
+                                                    : `${l.active} lopend`}
                                             </span>
-                                            {l.experience}
+                                        </div>
+                                        <p className="text-sm text-muted-foreground">
+                                            {[l.address, l.city]
+                                                .filter(Boolean)
+                                                .join(', ') || 'Geen adres'}
                                         </p>
+                                        <p className="flex items-start gap-1.5 text-sm">
+                                            <Clock
+                                                className="mt-0.5 size-4 shrink-0 text-muted-foreground"
+                                                aria-hidden
+                                            />
+                                            <span className="min-w-0 break-words">
+                                                {tijdenKort(l.windows)}
+                                            </span>
+                                        </p>
+                                        {l.experience && (
+                                            <p className="text-sm">
+                                                <span className="font-semibold">
+                                                    Ervaring:{' '}
+                                                </span>
+                                                {l.experience}
+                                            </p>
+                                        )}
+                                    </div>
+                                    {kanBewerken && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => setOpen(l.id)}
+                                            className="self-start"
+                                        >
+                                            <Pencil /> Bewerken
+                                        </Button>
                                     )}
                                 </div>
-                                {kanBewerken && (
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => setOpen(l.id)}
-                                        className="self-start"
-                                    >
-                                        <Pencil /> Bewerken
-                                    </Button>
-                                )}
-                            </Blok>
+                            </Kaart>
                         </li>
                     ),
                 )}
@@ -162,29 +163,29 @@ function VestigingFormulier({
     sluit: () => void;
 }) {
     const form = useForm<Velden>({
-        name: vestiging?.name ?? "",
-        address: vestiging?.address ?? "",
-        city: vestiging?.city ?? "",
-        experience: vestiging?.experience ?? "",
+        name: vestiging?.name ?? '',
+        address: vestiging?.address ?? '',
+        city: vestiging?.city ?? '',
+        experience: vestiging?.experience ?? '',
         windows:
             vestiging?.windows ??
             [1, 2, 3, 4, 5].map((d) => ({
                 weekday: d,
-                starts_at: "10:00",
-                ends_at: "16:00",
+                starts_at: '10:00',
+                ends_at: '16:00',
             })),
     });
     const { data, setData, errors, processing } = form;
     const fout = errors as Record<string, string | undefined>;
-    const id = vestiging ? `v${vestiging.id}` : "nieuw";
+    const id = vestiging ? `v${vestiging.id}` : 'nieuw';
 
     const zetVak = (
         index: number,
-        veld: "starts_at" | "ends_at",
+        veld: 'starts_at' | 'ends_at',
         waarde: string,
     ) =>
         setData(
-            "windows",
+            'windows',
             data.windows.map((w, i) =>
                 i === index ? { ...w, [veld]: waarde } : w,
             ),
@@ -193,23 +194,23 @@ function VestigingFormulier({
         const laatste = [...data.windows]
             .filter((w) => w.weekday === dag)
             .pop();
-        const start = laatste ? laatste.ends_at : "10:00";
+        const start = laatste ? laatste.ends_at : '10:00';
         const eind = laatste
-            ? `${String(Math.min(23, Number(laatste.ends_at.slice(0, 2)) + 2)).padStart(2, "0")}:00`
-            : "16:00";
-        setData("windows", [
+            ? `${String(Math.min(23, Number(laatste.ends_at.slice(0, 2)) + 2)).padStart(2, '0')}:00`
+            : '16:00';
+        setData('windows', [
             ...data.windows,
             { weekday: dag, starts_at: start, ends_at: eind },
         ]);
     };
     const verwijder = (index: number) =>
         setData(
-            "windows",
+            'windows',
             data.windows.filter((_, i) => i !== index),
         );
     const neemOver = (dag: number) => {
         const bron = data.windows.filter((w) => w.weekday === dag);
-        setData("windows", [
+        setData('windows', [
             ...bron,
             ...[1, 2, 3, 4, 5, 6, 7]
                 .filter((d) => d !== dag)
@@ -226,30 +227,29 @@ function VestigingFormulier({
     }
 
     return (
-        <Blok className="border-violet/40">
+        <Kaart className="border-violet/40">
             <form
                 onSubmit={opslaan}
                 className="space-y-5"
                 noValidate
                 data-test="vestiging-formulier"
             >
-                <BlokKop
-                    rechts={
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            onClick={sluit}
-                            aria-label="Sluiten zonder opslaan"
-                        >
-                            <X />
-                        </Button>
-                    }
-                >
-                    {vestiging
-                        ? `${vestiging.name} bewerken`
-                        : "Nieuwe vestiging"}
-                </BlokKop>
+                <div className="mb-3 flex items-center justify-between gap-2">
+                    <h2 className="font-heading text-lg font-bold">
+                        {vestiging
+                            ? `${vestiging.name} bewerken`
+                            : 'Nieuwe vestiging'}
+                    </h2>
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={sluit}
+                        aria-label="Sluiten zonder opslaan"
+                    >
+                        <X />
+                    </Button>
+                </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-1.5 sm:col-span-2">
@@ -259,7 +259,7 @@ function VestigingFormulier({
                         <Input
                             id={`${id}-name`}
                             value={data.name}
-                            onChange={(e) => setData("name", e.target.value)}
+                            onChange={(e) => setData('name', e.target.value)}
                             required
                         />
                         <InputError message={errors.name} />
@@ -269,7 +269,7 @@ function VestigingFormulier({
                         <Input
                             id={`${id}-address`}
                             value={data.address}
-                            onChange={(e) => setData("address", e.target.value)}
+                            onChange={(e) => setData('address', e.target.value)}
                             autoComplete="street-address"
                         />
                         <InputError message={errors.address} />
@@ -279,7 +279,7 @@ function VestigingFormulier({
                         <Input
                             id={`${id}-city`}
                             value={data.city}
-                            onChange={(e) => setData("city", e.target.value)}
+                            onChange={(e) => setData('city', e.target.value)}
                             required
                             autoComplete="address-level2"
                         />
@@ -293,7 +293,7 @@ function VestigingFormulier({
                             id={`${id}-experience`}
                             value={data.experience}
                             onChange={(e) =>
-                                setData("experience", e.target.value)
+                                setData('experience', e.target.value)
                             }
                             className="min-h-20"
                             placeholder="Bijvoorbeeld: lunch voor 1 persoon, inclusief drankje en dessert."
@@ -345,7 +345,7 @@ function VestigingFormulier({
                                                         onChange={(e) =>
                                                             zetVak(
                                                                 i,
-                                                                "starts_at",
+                                                                'starts_at',
                                                                 e.target.value,
                                                             )
                                                         }
@@ -360,7 +360,7 @@ function VestigingFormulier({
                                                         onChange={(e) =>
                                                             zetVak(
                                                                 i,
-                                                                "ends_at",
+                                                                'ends_at',
                                                                 e.target.value,
                                                             )
                                                         }
@@ -424,13 +424,13 @@ function VestigingFormulier({
                         Annuleren
                     </Button>
                     <Button type="submit" disabled={processing}>
-                        {processing && <Spinner />}{" "}
+                        {processing && <Spinner />}{' '}
                         {vestiging
-                            ? "Wijzigingen opslaan"
-                            : "Vestiging toevoegen"}
+                            ? 'Wijzigingen opslaan'
+                            : 'Vestiging toevoegen'}
                     </Button>
                 </div>
             </form>
-        </Blok>
+        </Kaart>
     );
 }

@@ -1,8 +1,8 @@
 import { Head } from '@inertiajs/react';
 import { KoppelingenLijst } from '@/components/content/koppelingen-scherm';
+import { Pagina, PaginaKop } from '@/components/pagina';
 import type { Account, Toestemmingstekst } from '@/components/content/types';
 import content from '@/routes/creator/content';
-import { Kop } from '../_onderdelen/opmaak';
 
 type Props = {
     accounts: Account[];
@@ -18,12 +18,11 @@ export default function Koppelingen({
     return (
         <>
             <Head title="Koppelingen" />
-            <Kop
-                boven="Account"
-                titel="Koppelingen"
-                onder="Een professioneel of creator-account is nodig voor cijfers per regio. Influencers hebben minimaal één gekoppeld account nodig."
-            />
-            <div className="mx-auto w-full max-w-3xl p-4 md:p-6">
+            <Pagina smal>
+                <PaginaKop
+                    titel="Koppelingen"
+                    omschrijving="Een professioneel of creator-account is nodig voor cijfers per regio. Influencers hebben minimaal één gekoppeld account nodig."
+                />
                 <KoppelingenLijst
                     accounts={accounts}
                     toestemming={toestemming}
@@ -36,7 +35,7 @@ export default function Koppelingen({
                         verbreken: (p) => content.koppelingen.verbreken.url(p),
                     }}
                 />
-            </div>
+            </Pagina>
         </>
     );
 }

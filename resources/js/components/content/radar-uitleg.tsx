@@ -1,4 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
+import { Kaart } from '@/components/pagina';
 import { Etiket } from './labels';
 
 /** Uitleg van Radar uit het ontwerp (OndernemerZichtbaarheid, AdminRadar). Fase 7: alleen na akkoord, nog geen functionaliteit. */
@@ -8,14 +9,10 @@ export function RadarUitleg({
     onderdelen: { icoon: LucideIcon; titel: string; tekst: string }[];
 }) {
     return (
-        <section className="relative overflow-hidden rounded-2xl bg-aubergine-dark p-5 text-white md:p-8">
-            <div
-                aria-hidden
-                className="absolute inset-0 bg-[radial-gradient(120%_90%_at_100%_0%,rgba(97,78,217,0.55),transparent_60%)]"
-            />
-            <div className="relative space-y-4">
+        <Kaart nadruk>
+            <section className="space-y-4">
                 <Etiket kleur="amber">Binnenkort, werknaam</Etiket>
-                <h2 className="font-heading text-2xl font-extrabold md:text-3xl">
+                <h2 className="font-heading text-xl font-extrabold md:text-2xl">
                     Hoe vindbaar ben je?
                 </h2>
                 <p className="max-w-2xl text-white/85">
@@ -51,7 +48,7 @@ export function RadarUitleg({
                     reviews en een duidelijk Google-profiel. Inhoud en prijs van
                     Radar zijn nog niet besloten.
                 </p>
-            </div>
-        </section>
+            </section>
+        </Kaart>
     );
 }

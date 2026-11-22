@@ -4,16 +4,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { datumTijd } from "@/lib/datum";
 import * as screening from "@/routes/team/screening";
-import {
-    Fouten,
-    Kop,
-    Label,
-    Pagina,
-    Paneel,
-    Veld,
-    gebeurtenis,
-    invoer,
-} from "../_onderdelen/basis";
+import { Pagina, PaginaKop } from "@/components/pagina";
+import { Fouten, Label, Paneel, Veld, gebeurtenis, invoer } from "../_onderdelen/basis";
 import type { Aanmelding } from "./_gedeeld";
 import { platformKort, soortNaam } from "./_gedeeld";
 
@@ -109,9 +101,9 @@ export default function Detail({
                     <ArrowLeft className="size-4" aria-hidden />
                     Alle aanmeldingen
                 </Link>
-                <Kop
+                <PaginaKop
                     titel={lead.name}
-                    sub={
+                    omschrijving={
                         <span className="flex flex-wrap items-center gap-1.5">
                             <Label kleur={kleur}>{status}</Label>
                             {lead.kind && (

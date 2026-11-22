@@ -1,19 +1,20 @@
-import { router, useForm, usePage } from "@inertiajs/react";
-import { Mail, ShieldCheck, UserPlus } from "lucide-react";
-import type { FormEvent } from "react";
-import { useState } from "react";
-import InputError from "@/components/input-error";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Spinner } from "@/components/ui/spinner";
-import { cn } from "@/lib/utils";
-import { Blok, BlokKop } from "../../_onderdelen/opmaak";
-import type { Actie, Gebruiker } from "./types";
+import { router, useForm, usePage } from '@inertiajs/react';
+import { Kaart, TweeKolommen } from '@/components/pagina';
+import { Mail, ShieldCheck, UserPlus } from 'lucide-react';
+import type { FormEvent } from 'react';
+import { useState } from 'react';
+import InputError from '@/components/input-error';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Spinner } from '@/components/ui/spinner';
+import { cn } from '@/lib/utils';
+
+import type { Actie, Gebruiker } from './types';
 
 const MAG = {
-    eigenaar: "Alles, ook facturen, abonnement en gebruikers",
-    lid: "Aanvragen, meekijken en vestigingen bijwerken",
+    eigenaar: 'Alles, ook facturen, abonnement en gebruikers',
+    lid: 'Aanvragen, meekijken en vestigingen bijwerken',
 };
 
 function initialen(naam: string): string {
@@ -22,15 +23,15 @@ function initialen(naam: string): string {
         .filter(Boolean)
         .slice(0, 2)
         .map((w) => w[0]?.toUpperCase())
-        .join("");
+        .join('');
 }
 
 function verloopt(iso: string): string {
-    return new Date(iso).toLocaleDateString("nl-NL", {
-        timeZone: "Europe/Amsterdam",
-        weekday: "short",
-        day: "numeric",
-        month: "short",
+    return new Date(iso).toLocaleDateString('nl-NL', {
+        timeZone: 'Europe/Amsterdam',
+        weekday: 'short',
+        day: 'numeric',
+        month: 'short',
     });
 }
 
@@ -55,64 +56,69 @@ export function GebruikersBeheer({
     const { errors } = usePage().props as unknown as {
         errors: Record<string, string>;
     };
-    const eigenaren = users.filter((u) => u.role === "eigenaar").length;
+    const eigenaren = users.filter((u) => u.role === 'eigenaar').length;
 
     return (
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,360px)] lg:items-start">
-            <Blok className="p-0 md:p-0">
-                <div className="px-4 pt-4 md:px-6 md:pt-5">
-                    <BlokKop
-                        rechts={
+        <TweeKolommen
+            hoofd={
+                <Kaart className="p-0 md:p-0">
+                    <div className="px-4 pt-4 md:px-5 md:pt-5">
+                        <div className="mb-3 flex items-center justify-between gap-2">
+                            <h2 className="font-heading text-lg font-bold">
+                                Collega's met toegang
+                            </h2>
                             <span className="text-sm text-muted-foreground">
                                 {users.length}
                             </span>
-                        }
-                    >
-                        Collega's met toegang
-                    </BlokKop>
-                    {errors.rol && (
-                        <p
-                            role="alert"
-                            className="mb-3 rounded-lg bg-rood/10 px-3 py-2 text-sm text-rood"
-                        >
-                            {errors.rol}
-                        </p>
-                    )}
-                </div>
-                <ul className="divide-y" data-test="gebruikers">
-                    {users.map((u) => (
-                        <Rij
-                            key={u.id}
-                            u={u}
-                            jij={u.id === me}
-                            kanBeheren={kanBeheren}
-                            laatsteEigenaar={
-                                u.role === "eigenaar" && eigenaren <= 1
-                            }
-                            rol={rol(u.id)}
-                            verwijderen={verwijderen(u.id)}
-                            opnieuw={opnieuw(u.id)}
-                        />
-                    ))}
-                </ul>
-                <p className="border-t px-4 py-3 text-sm text-muted-foreground md:px-6">
-                    Er is altijd minstens één eigenaar. Eigenaren zien facturen,
-                    wijzigen het abonnement en beheren gebruikers.
-                </p>
-            </Blok>
-
-            {kanBeheren ? (
-                <Uitnodigen actie={uitnodigen} />
-            ) : (
-                <Blok>
-                    <BlokKop>Collega uitnodigen</BlokKop>
-                    <p className="text-sm text-muted-foreground">
-                        Alleen een eigenaar kan collega's uitnodigen of rechten
-                        wijzigen. Vraag het aan een eigenaar van je bedrijf.
+                        </div>
+                        {errors.rol && (
+                            <p
+                                role="alert"
+                                className="mb-3 rounded-lg bg-rood/10 px-3 py-2 text-sm text-rood"
+                            >
+                                {errors.rol}
+                            </p>
+                        )}
+                    </div>
+                    <ul className="divide-y" data-test="gebruikers">
+                        {users.map((u) => (
+                            <Rij
+                                key={u.id}
+                                u={u}
+                                jij={u.id === me}
+                                kanBeheren={kanBeheren}
+                                laatsteEigenaar={
+                                    u.role === 'eigenaar' && eigenaren <= 1
+                                }
+                                rol={rol(u.id)}
+                                verwijderen={verwijderen(u.id)}
+                                opnieuw={opnieuw(u.id)}
+                            />
+                        ))}
+                    </ul>
+                    <p className="border-t px-4 py-3 text-sm text-muted-foreground md:px-5">
+                        Er is altijd minstens één eigenaar. Eigenaren zien
+                        facturen, wijzigen het abonnement en beheren gebruikers.
                     </p>
-                </Blok>
-            )}
-        </div>
+                </Kaart>
+            }
+            zij={
+                kanBeheren ? (
+                    <Uitnodigen actie={uitnodigen} />
+                ) : (
+                    <Kaart>
+                        <h2 className="mb-3 font-heading text-lg font-bold">
+                            Collega uitnodigen
+                        </h2>
+                        <p className="text-sm text-muted-foreground">
+                            Alleen een eigenaar kan collega's uitnodigen of
+                            rechten wijzigen. Vraag het aan een eigenaar van je
+                            bedrijf.
+                        </p>
+                    </Kaart>
+                )
+            }
+        />
     );
 }
 
@@ -139,7 +145,7 @@ function Rij({
 
     return (
         <li
-            className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center md:px-6"
+            className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center md:px-5"
             data-test="gebruiker"
         >
             <span
@@ -150,7 +156,7 @@ function Rij({
             </span>
             <div className="min-w-0 flex-1">
                 <p className="font-semibold">
-                    {u.name}{" "}
+                    {u.name}{' '}
                     {jij && (
                         <span className="ml-1 rounded-full bg-violet/10 px-2 py-0.5 text-xs text-violet">
                             Jij
@@ -164,13 +170,13 @@ function Rij({
                     <span>{MAG[u.role]}</span>
                     {u.two_factor && (
                         <span className="inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-400">
-                            <ShieldCheck className="size-3.5" aria-hidden />{" "}
+                            <ShieldCheck className="size-3.5" aria-hidden />{' '}
                             Tweestaps aan
                         </span>
                     )}
                     {u.invited_until && (
                         <span className="inline-flex items-center gap-1 text-amber-700 dark:text-amber-400">
-                            <Mail className="size-3.5" aria-hidden />{" "}
+                            <Mail className="size-3.5" aria-hidden />{' '}
                             Uitnodiging open tot {verloopt(u.invited_until)}
                         </span>
                     )}
@@ -189,7 +195,7 @@ function Rij({
                             disabled={laatsteEigenaar}
                             title={
                                 laatsteEigenaar
-                                    ? "De laatste eigenaar blijft eigenaar"
+                                    ? 'De laatste eigenaar blijft eigenaar'
                                     : undefined
                             }
                             onChange={(e) =>
@@ -219,8 +225,8 @@ function Rij({
                                         data-test="verwijderen-bevestigen"
                                     >
                                         {jij
-                                            ? "Mezelf verwijderen"
-                                            : "Toegang intrekken"}
+                                            ? 'Mezelf verwijderen'
+                                            : 'Toegang intrekken'}
                                     </Button>
                                     <Button
                                         variant="ghost"
@@ -244,13 +250,13 @@ function Rij({
                 ) : (
                     <span
                         className={cn(
-                            "rounded-full px-2.5 py-1 text-xs font-semibold",
-                            u.role === "eigenaar"
-                                ? "bg-aubergine text-white"
-                                : "bg-muted",
+                            'rounded-full px-2.5 py-1 text-xs font-semibold',
+                            u.role === 'eigenaar'
+                                ? 'bg-aubergine text-white'
+                                : 'bg-muted',
                         )}
                     >
-                        {u.role === "eigenaar" ? "Eigenaar" : "Lid"}
+                        {u.role === 'eigenaar' ? 'Eigenaar' : 'Lid'}
                     </span>
                 )}
             </div>
@@ -260,9 +266,9 @@ function Rij({
 
 function Uitnodigen({ actie }: { actie: Actie }) {
     const form = useForm({
-        name: "",
-        email: "",
-        role: "lid" as "eigenaar" | "lid",
+        name: '',
+        email: '',
+        role: 'lid' as 'eigenaar' | 'lid',
     });
     const { data, setData, errors, processing } = form;
 
@@ -275,21 +281,23 @@ function Uitnodigen({ actie }: { actie: Actie }) {
     }
 
     return (
-        <Blok>
+        <Kaart>
             <form
                 onSubmit={versturen}
                 className="space-y-4"
                 noValidate
                 data-test="uitnodigen"
             >
-                <BlokKop>Collega uitnodigen</BlokKop>
+                <h2 className="mb-3 font-heading text-lg font-bold">
+                    Collega uitnodigen
+                </h2>
                 <div className="space-y-1.5">
                     <Label htmlFor="inv-email">E-mailadres</Label>
                     <Input
                         id="inv-email"
                         type="email"
                         value={data.email}
-                        onChange={(e) => setData("email", e.target.value)}
+                        onChange={(e) => setData('email', e.target.value)}
                         required
                         autoComplete="off"
                     />
@@ -300,7 +308,7 @@ function Uitnodigen({ actie }: { actie: Actie }) {
                     <Input
                         id="inv-name"
                         value={data.name}
-                        onChange={(e) => setData("name", e.target.value)}
+                        onChange={(e) => setData('name', e.target.value)}
                         autoComplete="off"
                     />
                     <InputError message={errors.name} />
@@ -308,14 +316,14 @@ function Uitnodigen({ actie }: { actie: Actie }) {
                 <fieldset className="space-y-1.5">
                     <legend className="text-sm font-medium">Rol</legend>
                     <div className="grid grid-cols-2 gap-2">
-                        {(["lid", "eigenaar"] as const).map((r) => (
+                        {(['lid', 'eigenaar'] as const).map((r) => (
                             <label
                                 key={r}
                                 className={cn(
-                                    "cursor-pointer rounded-lg border p-3 text-sm",
+                                    'cursor-pointer rounded-lg border p-3 text-sm',
                                     data.role === r
-                                        ? "border-violet bg-violet/5 ring-1 ring-violet"
-                                        : "hover:border-violet/60",
+                                        ? 'border-violet bg-violet/5 ring-1 ring-violet'
+                                        : 'hover:border-violet/60',
                                 )}
                             >
                                 <input
@@ -323,11 +331,11 @@ function Uitnodigen({ actie }: { actie: Actie }) {
                                     name="role"
                                     value={r}
                                     checked={data.role === r}
-                                    onChange={() => setData("role", r)}
+                                    onChange={() => setData('role', r)}
                                     className="sr-only"
                                 />
                                 <span className="block font-semibold">
-                                    {r === "lid" ? "Lid" : "Eigenaar"}
+                                    {r === 'lid' ? 'Lid' : 'Eigenaar'}
                                 </span>
                                 <span className="block text-xs text-muted-foreground">
                                     {MAG[r]}
@@ -345,6 +353,6 @@ function Uitnodigen({ actie }: { actie: Actie }) {
                     wachtwoord en kan daarna tweestaps aanzetten.
                 </p>
             </form>
-        </Blok>
+        </Kaart>
     );
 }

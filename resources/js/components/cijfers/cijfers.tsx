@@ -1,30 +1,31 @@
-import type { ReactNode } from "react";
-import { datumTijd } from "@/lib/datum";
-import { cn } from "@/lib/utils";
+import type { ReactNode } from 'react';
+import { Kaart, KaartRaster } from '@/components/pagina';
+import { datumTijd } from '@/lib/datum';
+import { cn } from '@/lib/utils';
 import type {
     Bron,
     Metriek,
     Metrieken,
     PlatformTotaal,
     PublicatieCijfers,
-} from "@/types/cijfers";
+} from '@/types/cijfers';
 
 /** Gedeelde bouwstenen voor cijfers: bron, schatting, ophaaldatum en balken. Eén plek voor team, ondernemer en creator. */
 
 export function getal(n: number | null | undefined): string {
-    return n === null || n === undefined ? "" : n.toLocaleString("nl-NL");
+    return n === null || n === undefined ? '' : n.toLocaleString('nl-NL');
 }
 
 export function platformNaam(p: string): string {
     return (
-        { instagram: "Instagram", tiktok: "TikTok" }[p] ??
+        { instagram: 'Instagram', tiktok: 'TikTok' }[p] ??
         p.charAt(0).toUpperCase() + p.slice(1)
     );
 }
 
 export function bronNaam(b: Bron | string): string {
     return (
-        { handmatig: "Handmatig", instagram: "Instagram", tiktok: "TikTok" }[
+        { handmatig: 'Handmatig', instagram: 'Instagram', tiktok: 'TikTok' }[
             b
         ] ?? b
     );
@@ -92,7 +93,7 @@ export function MetingLijst({
                     <dt className="truncate text-xs text-muted-foreground">
                         {metrics[m]}
                     </dt>
-                    <dd className="font-heading text-lg font-bold">
+                    <dd className="font-heading text-lg font-bold tabular-nums">
                         {p.metrics[m]?.is_estimate && (
                             <span className="text-sm">± </span>
                         )}
@@ -117,7 +118,7 @@ export function Herkomst({ p }: { p: PublicatieCijfers }) {
     );
 }
 
-/** Totalen per platform. Over platforms en bronnen heen wordt niet opgeteld. */
+/** Totalen per platform als kerncijfers. Over platforms en bronnen heen wordt niet opgeteld. */
 export function PlatformTegels({
     platforms,
     metrics,
@@ -130,61 +131,59 @@ export function PlatformTegels({
     }
 
     return (
-        <div className="grid gap-3 md:grid-cols-2">
+        <KaartRaster kolommen={2}>
             {platforms.map((p) => (
-                <section
-                    key={p.platform}
-                    className="rounded-xl border bg-card p-4"
-                    aria-label={platformNaam(p.platform)}
-                >
-                    <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                        <h3 className="font-heading font-bold">
-                            {platformNaam(p.platform)}
-                        </h3>
-                        <span className="text-xs text-muted-foreground">
-                            {p.posts} {p.posts === 1 ? "post" : "posts"}
-                        </span>
-                    </div>
-                    <dl className="grid grid-cols-3 gap-x-3 gap-y-2">
-                        {(Object.keys(metrics) as Metriek[]).map((m) => (
-                            <div key={m} className="min-w-0">
-                                <dt className="truncate text-xs text-muted-foreground">
-                                    {metrics[m]}
-                                </dt>
-                                <dd className="font-heading text-xl font-extrabold">
-                                    {p.totals[m] === null ? (
-                                        <span className="text-sm font-normal text-muted-foreground">
-                                            geen cijfer
-                                        </span>
-                                    ) : (
-                                        getal(p.totals[m])
-                                    )}
-                                </dd>
-                            </div>
-                        ))}
-                    </dl>
-                    <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                        <BronLabel
-                            bronnen={p.sources}
-                            schatting={p.is_estimate}
-                        />
-                        {p.fetched_at && (
-                            <span>
-                                Laatst opgehaald {datumTijd(p.fetched_at)}
+                <Kaart key={p.platform}>
+                    <section aria-label={platformNaam(p.platform)}>
+                        <div className="mb-2 flex items-center justify-between gap-2">
+                            <h3 className="font-heading font-bold">
+                                {platformNaam(p.platform)}
+                            </h3>
+                            <span className="text-xs text-muted-foreground tabular-nums">
+                                {p.posts} {p.posts === 1 ? 'post' : 'posts'}
                             </span>
-                        )}
-                    </div>
-                </section>
+                        </div>
+                        <dl className="grid grid-cols-3 gap-x-3 gap-y-2">
+                            {(Object.keys(metrics) as Metriek[]).map((m) => (
+                                <div key={m} className="min-w-0">
+                                    <dt className="truncate text-xs text-muted-foreground">
+                                        {metrics[m]}
+                                    </dt>
+                                    <dd className="font-heading text-lg font-extrabold tabular-nums md:text-xl">
+                                        {p.totals[m] === null ? (
+                                            <span className="text-sm font-normal text-muted-foreground">
+                                                geen cijfer
+                                            </span>
+                                        ) : (
+                                            getal(p.totals[m])
+                                        )}
+                                    </dd>
+                                </div>
+                            ))}
+                        </dl>
+                        <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                            <BronLabel
+                                bronnen={p.sources}
+                                schatting={p.is_estimate}
+                            />
+                            {p.fetched_at && (
+                                <span>
+                                    Laatst opgehaald {datumTijd(p.fetched_at)}
+                                </span>
+                            )}
+                        </div>
+                    </section>
+                </Kaart>
             ))}
-        </div>
+        </KaartRaster>
     );
 }
 
 /** Eenvoudige staafgrafiek in CSS (geen grafiekpakket nodig). Waarde en label staan als tekst bij elke staaf. */
 export function Staven({
     data,
-    kleur = "bg-violet",
-    hoogte = "h-32",
+    kleur = 'bg-violet',
+    hoogte = 'h-32',
 }: {
     data: { label: string; waarde: number }[];
     kleur?: string;
@@ -194,7 +193,7 @@ export function Staven({
 
     return (
         <ul
-            className={cn("grid items-end gap-1.5", hoogte)}
+            className={cn('grid items-end gap-1.5', hoogte)}
             style={{
                 gridTemplateColumns: `repeat(${data.length}, minmax(0, 1fr))`,
             }}
@@ -209,8 +208,8 @@ export function Staven({
                     </span>
                     <span
                         className={cn(
-                            "w-full max-w-10 rounded-t-md",
-                            d.waarde === 0 ? "bg-muted" : kleur,
+                            'w-full max-w-10 rounded-t-md',
+                            d.waarde === 0 ? 'bg-muted' : kleur,
                         )}
                         style={{
                             height: `${Math.max(4, (d.waarde / max) * 100)}%`,
@@ -232,7 +231,7 @@ export function Balk({
     waarde,
     max,
     rechts,
-    kleur = "bg-violet",
+    kleur = 'bg-violet',
 }: {
     label: ReactNode;
     waarde: number;
@@ -250,7 +249,7 @@ export function Balk({
             </div>
             <div className="h-2 overflow-hidden rounded-full bg-muted">
                 <div
-                    className={cn("h-full rounded-full", kleur)}
+                    className={cn('h-full rounded-full', kleur)}
                     style={{
                         width: `${max > 0 ? Math.max(2, (waarde / max) * 100) : 0}%`,
                     }}
@@ -262,8 +261,8 @@ export function Balk({
 
 /** Bedrag in euro met centen, voor facturen en uitbetalingen. */
 export function bedrag(centen: number): string {
-    return (centen / 100).toLocaleString("nl-NL", {
-        style: "currency",
-        currency: "EUR",
+    return (centen / 100).toLocaleString('nl-NL', {
+        style: 'currency',
+        currency: 'EUR',
     });
 }

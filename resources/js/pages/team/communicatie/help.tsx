@@ -8,7 +8,8 @@ import type { Artikel } from '@/components/communicatie/types';
 import { Button } from '@/components/ui/button';
 import communicatie from '@/routes/team/communicatie';
 import type { Auth } from '@/types/auth';
-import { Kop, Paneel } from '../_onderdelen/basis';
+import { PaginaKop } from '@/components/pagina';
+import { Paneel } from '../_onderdelen/basis';
 
 type Props = HelpProps & { beheer?: { audiences: string[] } };
 
@@ -26,9 +27,9 @@ export default function Help(props: Props) {
             <HelpScherm
                 {...props}
                 kop={
-                    <Kop
+                    <PaginaKop
                         titel="Help"
-                        sub={props.beheer ? 'Alle artikelen van het helpcentrum. Ondernemers en creators zien alleen de artikelen voor hun doelgroep.' : 'Antwoord op de meest gestelde vragen.'}
+                        omschrijving={props.beheer ? 'Alle artikelen van het helpcentrum. Ondernemers en creators zien alleen de artikelen voor hun doelgroep.' : 'Antwoord op de meest gestelde vragen.'}
                     />
                 }
                 helpUrl={communicatie.help.url()}

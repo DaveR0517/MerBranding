@@ -5,7 +5,9 @@ import { StatusBadge } from '@/components/samenwerking/status-badge';
 import { datumTijd } from '@/lib/datum';
 import * as team from '@/routes/team';
 import type { StatusInfo } from '@/types/samenwerking';
-import { Kop, Label, Leeg, Pagina } from './_onderdelen/basis';
+import { Leeg, MeerLijst, Pagina, PaginaKop, Rij } from '@/components/pagina';
+import { cn } from '@/lib/utils';
+import { Label } from './_onderdelen/basis';
 
 type Taak = {
     id: number;
@@ -59,9 +61,9 @@ export default function Werkvoorraad({ tasks }: { tasks: Taak[] }) {
         <>
             <Head title="Werkvoorraad" />
             <Pagina>
-                <Kop
+                <PaginaKop
                     titel="Werkvoorraad"
-                    sub={
+                    omschrijving={
                         tasks.length === 0
                             ? 'Alles is bij.'
                             : `${tasks.length} ${tasks.length === 1 ? 'taak' : 'taken'}, dringendste eerst`
@@ -76,7 +78,7 @@ export default function Werkvoorraad({ tasks }: { tasks: Taak[] }) {
                                 type="button"
                                 aria-pressed={filter === c.key}
                                 onClick={() => setFilter(c.key)}
-                                className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-semibold transition ${filter === c.key ? 'border-aubergine bg-aubergine text-white' : 'bg-card hover:border-violet'}`}
+                                className={`inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-full border px-3 text-sm md:min-h-9 font-semibold transition ${filter === c.key ? 'border-aubergine bg-aubergine text-white' : 'bg-card hover:border-violet'}`}
                             >
                                 {c.naam}
                                 <span
@@ -90,54 +92,59 @@ export default function Werkvoorraad({ tasks }: { tasks: Taak[] }) {
                 )}
 
                 {tasks.length === 0 ? (
-                    <Leeg>
-                        Geen open taken. Nieuwe aanvragen, weigeringen en video's om te controleren verschijnen hier
-                        vanzelf.
-                    </Leeg>
+                    <Leeg titel="Geen open taken. Nieuwe aanvragen, weigeringen en video's om te controleren verschijnen hier vanzelf." />
                 ) : zichtbaar.length === 0 ? (
-                    <Leeg>Geen taken in dit filter.</Leeg>
+                    <Leeg titel="Geen taken in dit filter." />
                 ) : (
-                    <ul className="space-y-2" data-test="taken">
+                    <MeerLijst key={filter}>
                         {zichtbaar.map((t) => {
                             const soort = soorten[t.type] ?? { naam: t.type, kleur: 'violet' as const };
-                            const inhoud = (
-                                <>
-                                    <span
-                                        className={`mt-0.5 grid size-9 shrink-0 place-items-center rounded-full ${t.overdue ? 'bg-rood/10 text-rood' : 'bg-violet/10 text-violet'}`}
-                                        aria-hidden
-                                    >
-                                        {t.overdue ? <AlertTriangle className="size-4" /> : <Clock className="size-4" />}
-                                    </span>
-                                    <span className="min-w-0 flex-1">
-                                        <span className="flex flex-wrap items-center gap-1.5">
+                            const rij = (
+                                <Rij
+                                    className={cn(t.overdue && 'border-rood/40', t.url && 'group-hover:border-violet')}
+                                    links={
+                                        <span
+                                            className={`grid size-9 place-items-center rounded-full ${t.overdue ? 'bg-rood/10 text-rood' : 'bg-violet/10 text-violet'}`}
+                                            aria-hidden
+                                        >
+                                            {t.overdue ? <AlertTriangle className="size-4" /> : <Clock className="size-4" />}
+                                        </span>
+                                    }
+                                    titel={<span className="line-clamp-2 whitespace-normal">{t.title}</span>}
+                                    onder={
+                                        <span className="flex items-center gap-2">
                                             <Label kleur={soort.kleur}>{soort.naam}</Label>
-                                            {t.status && <StatusBadge status={t.status} />}
+                                            <span className={cn('truncate', t.overdue && 'font-semibold text-rood')}>
+                                                {t.due_at ? `${t.overdue ? 'Te laat, termijn was' : 'Termijn'} ${datumTijd(t.due_at)}` : 'Geen termijn'}
+                                            </span>
                                         </span>
-                                        <span className="mt-1 block font-semibold">{t.title}</span>
-                                        <span className={`mt-0.5 block text-sm ${t.overdue ? 'font-semibold text-rood' : 'text-muted-foreground'}`}>
-                                            {t.due_at
-                                                ? `${t.overdue ? 'Te laat, termijn was' : 'Termijn'} ${datumTijd(t.due_at)}`
-                                                : 'Geen termijn'}
-                                        </span>
-                                    </span>
-                                    <ChevronRight className="mt-2 size-5 shrink-0 text-muted-foreground" aria-hidden />
-                                </>
+                                    }
+                                    rechts={
+                                        <>
+                                            {t.status && (
+                                                <span className="hidden md:inline-flex">
+                                                    <StatusBadge status={t.status} />
+                                                </span>
+                                            )}
+                                            {t.url && <ChevronRight className="size-5 text-muted-foreground" aria-hidden />}
+                                        </>
+                                    }
+                                />
                             );
-                            const klassen = `flex items-start gap-3 rounded-2xl border bg-card p-4 transition ${t.overdue ? 'border-rood/40' : ''}`;
 
                             return (
                                 <li key={t.id} data-test="taak">
                                     {t.url ? (
-                                        <Link href={t.url} className={`${klassen} hover:border-violet`}>
-                                            {inhoud}
+                                        <Link href={t.url} className="group block rounded-xl">
+                                            {rij}
                                         </Link>
                                     ) : (
-                                        <div className={klassen}>{inhoud}</div>
+                                        rij
                                     )}
                                 </li>
                             );
                         })}
-                    </ul>
+                    </MeerLijst>
                 )}
             </Pagina>
         </>

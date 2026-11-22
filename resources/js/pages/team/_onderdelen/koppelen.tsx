@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { datumTijd } from '@/lib/datum';
 import * as team from '@/routes/team';
 import type { SamenwerkingVol } from '@/types/samenwerking';
-import { Label, Leeg, Paneel, initialen } from './basis';
+import { Leeg } from '@/components/pagina';
+import { Label, Paneel, initialen } from './basis';
 
 export type Match = {
     id: number;
@@ -85,7 +86,7 @@ export function Matchlijst({ c, matches }: { c: SamenwerkingVol; matches: Match[
                 </p>
             )}
             {matches.length === 0 ? (
-                <Leeg>Geen actieve creators gevonden.</Leeg>
+                <Leeg titel="Geen actieve creators gevonden." />
             ) : (
                 <ul className="space-y-2" data-test="matchlijst">
                     {matches.map((m) => (

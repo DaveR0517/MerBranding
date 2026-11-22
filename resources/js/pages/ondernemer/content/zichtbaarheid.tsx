@@ -1,4 +1,5 @@
 import { Head, router } from '@inertiajs/react';
+import { Kaart, Pagina, PaginaKop } from '@/components/pagina';
 import {
     Check,
     MapPin,
@@ -10,7 +11,6 @@ import {
 import { RadarUitleg } from '@/components/content/radar-uitleg';
 import { Button } from '@/components/ui/button';
 import content from '@/routes/ondernemer/content';
-import { Kop } from '../_onderdelen/opmaak';
 
 export default function Zichtbaarheid({
     company,
@@ -22,12 +22,11 @@ export default function Zichtbaarheid({
     return (
         <>
             <Head title="Radar: binnenkort" />
-            <div className="mx-auto w-full max-w-5xl space-y-6 p-4 md:p-6">
-                <Kop
-                    onder={`Hoe nieuwe klanten ${company.name} vinden op Google, in Maps, bij AI en via reviews.`}
-                >
-                    Radar: binnenkort
-                </Kop>
+            <Pagina>
+                <PaginaKop
+                    titel="Radar: binnenkort"
+                    omschrijving={`Hoe nieuwe klanten ${company.name} vinden op Google, in Maps, bij AI en via reviews.`}
+                />
                 <RadarUitleg
                     onderdelen={[
                         {
@@ -52,45 +51,47 @@ export default function Zichtbaarheid({
                         },
                     ]}
                 />
-                <section className="rounded-2xl border bg-card p-4 md:p-6">
-                    <h2 className="flex items-center gap-2 font-heading text-lg font-bold">
-                        <MessageSquareText
-                            className="size-5 text-violet"
-                            aria-hidden
-                        />
-                        Interesse?
-                    </h2>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                        Radar is nog in voorbereiding. Laat weten dat je
-                        interesse hebt, dan neemt ons team contact met je op
-                        zodra het zover is.
-                    </p>
-                    {interesse ? (
-                        <p
-                            role="status"
-                            className="mt-3 inline-flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-100"
-                        >
-                            <Check className="size-4" aria-hidden />
-                            Je interesse is doorgegeven. We nemen contact met je
-                            op.
+                <Kaart>
+                    <section>
+                        <h2 className="flex items-center gap-2 font-heading text-lg font-bold">
+                            <MessageSquareText
+                                className="size-5 text-violet"
+                                aria-hidden
+                            />
+                            Interesse?
+                        </h2>
+                        <p className="mt-1 text-sm text-muted-foreground">
+                            Radar is nog in voorbereiding. Laat weten dat je
+                            interesse hebt, dan neemt ons team contact met je op
+                            zodra het zover is.
                         </p>
-                    ) : (
-                        <Button
-                            type="button"
-                            className="mt-3 min-h-11 bg-violet hover:bg-violet/90"
-                            onClick={() =>
-                                router.post(
-                                    content.zichtbaarheid.interesse.url(),
-                                    {},
-                                    { preserveScroll: true },
-                                )
-                            }
-                        >
-                            Interesse
-                        </Button>
-                    )}
-                </section>
-            </div>
+                        {interesse ? (
+                            <p
+                                role="status"
+                                className="mt-3 inline-flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-100"
+                            >
+                                <Check className="size-4" aria-hidden />
+                                Je interesse is doorgegeven. We nemen contact
+                                met je op.
+                            </p>
+                        ) : (
+                            <Button
+                                type="button"
+                                className="mt-3 min-h-11 bg-violet hover:bg-violet/90"
+                                onClick={() =>
+                                    router.post(
+                                        content.zichtbaarheid.interesse.url(),
+                                        {},
+                                        { preserveScroll: true },
+                                    )
+                                }
+                            >
+                                Interesse
+                            </Button>
+                        )}
+                    </section>
+                </Kaart>
+            </Pagina>
         </>
     );
 }

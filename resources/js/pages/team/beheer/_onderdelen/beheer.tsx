@@ -3,40 +3,9 @@ import { cn } from "@/lib/utils";
 
 /** Bouwstenen voor de beheerschermen (team, instellingen, pakketten, berichtsjablonen). */
 
-/** Kerncijfer bovenaan een scherm. "let" kleurt de toelichting rood als er iets aandacht vraagt. */
-export function Cijfer({
-    label,
-    waarde,
-    sub,
-    let: aandacht = false,
-}: {
-    label: string;
-    waarde: ReactNode;
-    sub?: ReactNode;
-    let?: boolean;
-}) {
-    return (
-        <div className="rounded-2xl border bg-card p-4">
-            <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                {label}
-            </p>
-            <p className="mt-1 font-heading text-2xl font-extrabold text-aubergine dark:text-white">
-                {waarde}
-            </p>
-            {sub && (
-                <p
-                    className={cn(
-                        "mt-0.5 text-xs",
-                        aandacht
-                            ? "font-semibold text-rood"
-                            : "text-muted-foreground",
-                    )}
-                >
-                    {sub}
-                </p>
-            )}
-        </div>
-    );
+/** Toelichting bij een Kerncijfer die rood wordt als er iets aandacht vraagt. */
+export function Aandacht({ aan, children }: { aan: boolean; children: ReactNode }) {
+    return <span className={cn(aan && "font-semibold text-rood")}>{children}</span>;
 }
 
 /** Label VOORSTEL: deze waarde is nog niet besloten (CLAUDE.md 13). */

@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { euro } from '@/lib/datum';
 import * as team from '@/routes/team';
 import { opslaan as opslaanRoute } from '@/routes/team/bedrijven';
-import { InloggenAls, Kop, Label, Leeg, Pagina, Paneel, Veld, invoer } from './_onderdelen/basis';
+import { Leeg, MeerLijst, Pagina, PaginaKop, Rij, TweeKolommen, Uitklap } from '@/components/pagina';
+import { InloggenAls, Label, Paneel, Veld, invoer } from './_onderdelen/basis';
 
 type Bedrijf = {
     id: number;
@@ -70,70 +71,64 @@ export default function Bedrijven({ companies, plans, leads, can }: { companies:
     return (
         <>
             <Head title="Bedrijven" />
-            <Pagina breed>
-                <Kop titel="Bedrijven" sub={`${companies.length} ${companies.length === 1 ? 'bedrijf' : 'bedrijven'}`} />
+            <Pagina>
+                <PaginaKop titel="Bedrijven" omschrijving={`${companies.length} ${companies.length === 1 ? 'bedrijf' : 'bedrijven'}`} />
 
-                <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)]">
-                    <div className="space-y-5">
-                        {companies.length === 0 ? (
-                            <Leeg>Nog geen bedrijven. Voeg het eerste toe met het formulier.</Leeg>
+                <TweeKolommen
+                    hoofd={
+                        companies.length === 0 ? (
+                            <Leeg titel="Nog geen bedrijven. Voeg het eerste toe met het formulier." />
                         ) : (
-                            <ul className="grid gap-2 md:grid-cols-2" data-test="bedrijven">
-                                {companies.map((b) => (
-                                    <li key={b.id} className="rounded-2xl border bg-card p-4">
-                                        <div className="flex items-start gap-3">
-                                            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-violet/10 text-violet" aria-hidden>
-                                                <Building2 className="size-5" />
-                                            </span>
-                                            <div className="min-w-0 flex-1">
-                                                <Link href={bedrijfsbeheer.toon.url(b.id)} className="font-semibold hover:text-violet hover:underline" data-test="bedrijf-link">{b.name}</Link>
-                                                {b.branche && <p className="text-sm text-muted-foreground capitalize">{b.branche}</p>}
-                                            </div>
-                                            <span className="text-right">
-                                                <span className="block font-heading text-xl font-extrabold text-violet">{b.available_points}</span>
-                                                <span className="block text-xs text-muted-foreground">punten tegoed</span>
-                                            </span>
-                                        </div>
-                                        <dl className="mt-3 space-y-1 text-sm">
-                                            <div className="flex gap-2">
-                                                <dt className="w-24 shrink-0 text-muted-foreground">Eigenaar</dt>
-                                                <dd className="min-w-0">
-                                                    {b.owner ? (
-                                                        <>
-                                                            {b.owner.name}
-                                                            <span className="block truncate text-muted-foreground">{b.owner.email}</span>
-                                                            <span className="mt-1 block">
-                                                                <InloggenAls userId={b.owner.id} naam={b.owner.name} />
-                                                            </span>
-                                                        </>
-                                                    ) : (
-                                                        <span className="text-muted-foreground">Geen</span>
-                                                    )}
-                                                </dd>
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <dt className="w-24 shrink-0 text-muted-foreground">Vestigingen</dt>
-                                                <dd className="flex flex-wrap gap-1">
-                                                    {b.locations.map((l) => (
-                                                        <span key={l} className="inline-flex items-center gap-1">
-                                                            <MapPin className="size-3.5 text-muted-foreground" aria-hidden />
-                                                            {l}
+                            <div data-test="bedrijven">
+                                <MeerLijst>
+                                    {companies.map((b) => (
+                                        <li key={b.id}>
+                                            <Rij
+                                                links={
+                                                    <span className="grid size-10 place-items-center rounded-xl bg-violet/10 text-violet" aria-hidden>
+                                                        <Building2 className="size-5" />
+                                                    </span>
+                                                }
+                                                titel={
+                                                    <Link href={bedrijfsbeheer.toon.url(b.id)} className="hover:text-violet hover:underline" data-test="bedrijf-link">
+                                                        {b.name}
+                                                    </Link>
+                                                }
+                                                onder={
+                                                    <>
+                                                        <span className="block truncate">
+                                                            {b.owner ? `${b.owner.name} · ${b.owner.email}` : 'Geen eigenaar'}
                                                         </span>
-                                                    ))}
-                                                </dd>
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <dt className="w-24 shrink-0 text-muted-foreground">Pakket</dt>
-                                                <dd>{b.plan ?? <span className="text-muted-foreground">Geen</span>}</dd>
-                                            </div>
-                                        </dl>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                    </div>
-
-                    <div className="space-y-5">
+                                                        <span className="flex items-center gap-1 truncate">
+                                                            {[b.branche, b.plan ?? 'geen pakket'].filter(Boolean).join(' · ')}
+                                                            {b.locations.length > 0 && (
+                                                                <>
+                                                                    {' · '}
+                                                                    <MapPin className="size-3.5 shrink-0" aria-hidden />
+                                                                    <span className="truncate">{b.locations.join(', ')}</span>
+                                                                </>
+                                                            )}
+                                                        </span>
+                                                    </>
+                                                }
+                                                rechts={
+                                                    <>
+                                                        <span className="hidden sm:inline">{b.owner && <InloggenAls userId={b.owner.id} naam={b.owner.name} />}</span>
+                                                        <span className="text-right">
+                                                            <span className="block font-heading text-xl font-extrabold text-violet tabular-nums">{b.available_points}</span>
+                                                            <span className="block text-xs text-muted-foreground">punten</span>
+                                                        </span>
+                                                    </>
+                                                }
+                                            />
+                                        </li>
+                                    ))}
+                                </MeerLijst>
+                            </div>
+                        )
+                    }
+                    zij={
+                        <>
                         {leads.length > 0 && (
                             <Paneel titel="Kennismakingen van de website" sub="Neem een aanvraag over om het formulier te vullen.">
                                 <ul className="divide-y" data-test="leads">
@@ -155,7 +150,9 @@ export default function Bedrijven({ companies, plans, leads, can }: { companies:
                         )}
 
                         {can.beheren && (
-                        <Paneel id="bedrijf-toevoegen" titel="Bedrijf toevoegen" sub="De eigenaar krijgt een uitnodiging per e-mail om zelf een wachtwoord te kiezen.">
+                        <div id="bedrijf-toevoegen" className="scroll-mt-4">
+                        <Uitklap key={form.data.lead_id || 'nieuw'} titel="Bedrijf toevoegen" open={Boolean(form.data.lead_id) || Object.keys(form.errors).length > 0}>
+                            <p className="mb-3 text-sm text-muted-foreground">De eigenaar krijgt een uitnodiging per e-mail om zelf een wachtwoord te kiezen.</p>
                             {gekozenLead && (
                                 <p className="mb-3 flex items-center justify-between gap-2 rounded-xl bg-violet/5 p-3 text-sm">
                                     <span>
@@ -218,10 +215,12 @@ export default function Bedrijven({ companies, plans, leads, can }: { companies:
                                 </Button>
                                 {form.recentlySuccessful && <p className="text-sm text-emerald-700">Bedrijf toegevoegd.</p>}
                             </form>
-                        </Paneel>
+                        </Uitklap>
+                        </div>
                         )}
-                    </div>
-                </div>
+                        </>
+                    }
+                />
             </Pagina>
         </>
     );

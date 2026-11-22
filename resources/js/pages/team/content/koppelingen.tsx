@@ -17,7 +17,8 @@ import { Button } from '@/components/ui/button';
 import { datum, datumTijd } from '@/lib/datum';
 import { samenwerking } from '@/routes/team';
 import content from '@/routes/team/content';
-import { Kop, Leeg, Pagina, Paneel } from '../_onderdelen/basis';
+import { Leeg, Pagina, PaginaKop } from '@/components/pagina';
+import { Paneel } from '../_onderdelen/basis';
 
 type Monitor = {
     id: number;
@@ -95,10 +96,10 @@ export default function Koppelingen({
     return (
         <>
             <Head title="API-status" />
-            <Pagina breed>
-                <Kop
+            <Pagina>
+                <PaginaKop
                     titel="API-status"
-                    sub="Koppelingen met Instagram en TikTok van creators en ondernemers."
+                    omschrijving="Koppelingen met Instagram en TikTok van creators en ondernemers."
                 />
 
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -167,7 +168,7 @@ export default function Koppelingen({
                         ))}
                     </div>
                     {zichtbaar.length === 0 ? (
-                        <Leeg>Geen accounts in dit filter.</Leeg>
+                        <Leeg titel="Geen accounts in dit filter." />
                     ) : (
                         <ul className="divide-y" data-test="accounts">
                             {zichtbaar.map((a) => (
@@ -235,7 +236,7 @@ export default function Koppelingen({
                     sub="Posts in de meetperiode (status 10). Leg vast of de post nog te vinden is. Een gearchiveerde Instagram-post telt als verwijderd. Geen strafpunten: de regeling is nog te bespreken."
                 >
                     {publications.length === 0 ? (
-                        <Leeg>Geen posts in de meetperiode.</Leeg>
+                        <Leeg titel="Geen posts in de meetperiode." />
                     ) : (
                         <ul className="space-y-3">
                             {publications.map((p) => (

@@ -120,7 +120,7 @@ function AccountKaart({
 
     return (
         <section
-            className="flex h-full flex-col gap-3 rounded-2xl border bg-card p-4 md:p-5"
+            className="flex h-full flex-col gap-3 rounded-xl border bg-card p-4 md:p-5"
             data-test={`koppeling-${a.platform}`}
         >
             <div className="flex items-start justify-between gap-2">

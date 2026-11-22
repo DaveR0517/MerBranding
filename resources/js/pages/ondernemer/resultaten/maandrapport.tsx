@@ -1,9 +1,9 @@
-import { Head } from "@inertiajs/react";
-import { MaandrapportWeergave } from "@/components/cijfers/maandrapport";
-import { maandrapport } from "@/routes/ondernemer";
-import { afdrukken } from "@/routes/ondernemer/maandrapport";
-import type { Maand, Maandrapport, Metrieken } from "@/types/cijfers";
-import { Kop } from "../_onderdelen/opmaak";
+import { Head } from '@inertiajs/react';
+import { MaandrapportWeergave } from '@/components/cijfers/maandrapport';
+import { Pagina, PaginaKop } from '@/components/pagina';
+import { maandrapport } from '@/routes/ondernemer';
+import { afdrukken } from '@/routes/ondernemer/maandrapport';
+import type { Maand, Maandrapport, Metrieken } from '@/types/cijfers';
 
 export default function OndernemerMaandrapport({
     rapport: r,
@@ -17,10 +17,11 @@ export default function OndernemerMaandrapport({
     return (
         <>
             <Head title={`Maandrapport ${r.maand_label}`} />
-            <div className="mx-auto w-full max-w-5xl space-y-6 p-4 md:p-6">
-                <Kop onder="Wat er deze maand gebeurde: samenwerkingen, cijfers en je tegoed.">
-                    Maandrapport
-                </Kop>
+            <Pagina>
+                <PaginaKop
+                    titel="Maandrapport"
+                    omschrijving="Wat er deze maand gebeurde: samenwerkingen, cijfers en je tegoed."
+                />
                 <MaandrapportWeergave
                     r={r}
                     maanden={maanden}
@@ -28,11 +29,11 @@ export default function OndernemerMaandrapport({
                     maandUrl={(m) => maandrapport.url({ maand: m })}
                     afdrukUrl={afdrukken.url({ maand: r.maand })}
                 />
-            </div>
+            </Pagina>
         </>
     );
 }
 
 OndernemerMaandrapport.layout = {
-    breadcrumbs: [{ title: "Maandrapport", href: maandrapport() }],
+    breadcrumbs: [{ title: 'Maandrapport', href: maandrapport() }],
 };

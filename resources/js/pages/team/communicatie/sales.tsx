@@ -8,7 +8,8 @@ import { datum, datumTijd } from '@/lib/datum';
 import { cn } from '@/lib/utils';
 import * as team from '@/routes/team';
 import communicatie from '@/routes/team/communicatie';
-import { Fouten, Kop, Label, Paneel, vandaag } from '../_onderdelen/basis';
+import { PaginaKop } from '@/components/pagina';
+import { Fouten, Label, Paneel, vandaag } from '../_onderdelen/basis';
 
 type Fase = { key: string; name: string };
 type Lead = {
@@ -75,9 +76,9 @@ export default function Sales({ stages, team: teamleden, leads }: Props) {
         <>
             <Head title="Sales-pipeline" />
             <div className="mx-auto w-full max-w-[1600px] space-y-5 p-4 md:p-6">
-                <Kop
+                <PaginaKop
                     titel="Sales-pipeline"
-                    sub="Nieuwe ondernemers binnenhalen. Sleep een kaart naar de volgende fase, of open hem."
+                    omschrijving="Nieuwe ondernemers binnenhalen. Sleep een kaart naar de volgende fase, of open hem."
                     acties={
                         <>
                             <div className="inline-flex rounded-md border p-0.5" role="group" aria-label="Weergave">

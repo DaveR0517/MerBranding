@@ -1,9 +1,16 @@
-import { Head, Link } from "@inertiajs/react";
-import { BarChart3, ChevronRight } from "lucide-react";
-import { datum } from "@/lib/datum";
-import * as creator from "@/routes/creator";
-import * as cijfers from "@/routes/creator/cijfers";
-import { Kaart, Kop } from "../_onderdelen/opmaak";
+import { Head, Link } from '@inertiajs/react';
+import { ChevronRight } from 'lucide-react';
+import {
+    Leeg,
+    MeerLijst,
+    Pagina,
+    PaginaKop,
+    Rij,
+    Sectie,
+} from '@/components/pagina';
+import { datum } from '@/lib/datum';
+import * as creator from '@/routes/creator';
+import * as cijfers from '@/routes/creator/cijfers';
 
 type Klus = {
     id: number;
@@ -27,20 +34,16 @@ export default function CijfersOverzicht({
     return (
         <>
             <Head title="Cijfers" />
-            <Kop
-                boven="Cijfers"
-                titel="Cijfers van je posts"
-                onder="Tijdens de meetperiode van 14 dagen vul je hier je cijfers in, met een screenshot."
-            />
-            <div className="mx-auto w-full max-w-3xl space-y-4 p-4 md:p-6">
+            <Pagina smal>
+                <PaginaKop
+                    titel="Cijfers van je posts"
+                    omschrijving="Tijdens de meetperiode van 14 dagen vul je hier je cijfers in, met een screenshot."
+                />
                 {collaborations.length === 0 ? (
-                    <Kaart>
-                        <BarChart3 className="size-7 text-violet" aria-hidden />
-                        <p className="mt-2 text-muted-foreground">
-                            Zodra je een post live hebt gezet, kun je hier de
-                            cijfers invullen.
-                        </p>
-                    </Kaart>
+                    <Leeg titel="Nog geen posts">
+                        Zodra je een post live hebt gezet, kun je hier de
+                        cijfers invullen.
+                    </Leeg>
                 ) : (
                     <>
                         {nu.length > 0 && (
@@ -51,50 +54,48 @@ export default function CijfersOverzicht({
                         )}
                     </>
                 )}
-            </div>
+            </Pagina>
         </>
     );
 }
 
 function Lijst({ titel, items }: { titel: string; items: Klus[] }) {
     return (
-        <Kaart titel={titel}>
-            <ul className="-mx-1 divide-y">
+        <Sectie titel={titel}>
+            <MeerLijst>
                 {items.map((c) => (
                     <li key={c.id}>
                         <Link
                             href={cijfers.invoeren.url(c.id)}
-                            className="flex min-h-14 items-center gap-3 rounded-lg px-1 py-3 hover:bg-violet/5"
+                            className="block"
                             data-test="klus-cijfers"
                         >
-                            <span className="min-w-0 flex-1">
-                                <span className="block truncate font-semibold">
-                                    {c.title}
-                                </span>
-                                <span className="block truncate text-sm text-muted-foreground">
-                                    {c.company}, {c.location}
-                                    {c.measuring && c.measure_until
-                                        ? ` · invullen tot ${datum(c.measure_until)}`
-                                        : ""}
-                                </span>
-                            </span>
-                            {c.measuring && !c.entered && (
-                                <span className="rounded-full bg-violet px-2.5 py-0.5 text-xs font-bold text-white">
-                                    Invullen
-                                </span>
-                            )}
-                            <ChevronRight
-                                className="size-4 text-muted-foreground"
-                                aria-hidden
+                            <Rij
+                                className="transition hover:border-violet"
+                                titel={c.title}
+                                onder={`${c.company}, ${c.location}${c.measuring && c.measure_until ? `, invullen tot ${datum(c.measure_until)}` : ''}`}
+                                rechts={
+                                    <>
+                                        {c.measuring && !c.entered && (
+                                            <span className="rounded-full bg-violet px-2.5 py-0.5 text-xs font-bold text-white">
+                                                Invullen
+                                            </span>
+                                        )}
+                                        <ChevronRight
+                                            className="size-4 text-muted-foreground"
+                                            aria-hidden
+                                        />
+                                    </>
+                                }
                             />
                         </Link>
                     </li>
                 ))}
-            </ul>
-        </Kaart>
+            </MeerLijst>
+        </Sectie>
     );
 }
 
 CijfersOverzicht.layout = {
-    breadcrumbs: [{ title: "Cijfers", href: creator.cijfers() }],
+    breadcrumbs: [{ title: 'Cijfers', href: creator.cijfers() }],
 };
