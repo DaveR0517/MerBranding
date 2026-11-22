@@ -55,6 +55,12 @@ return [
     ],
 
     /*
+    | Tweestapsverificatie verplicht voor het team (CLAUDE.md 5). Standaard aan.
+    | Uit te zetten met MEBRANDING_TEAM_2FA=false (tests, eerste inrichting) of door een Super Admin in Instellingen.
+    */
+    'team_2fa_verplicht' => (bool) env('MEBRANDING_TEAM_2FA', true),
+
+    /*
     | Video's. Tot Cloudflare R2 en Bunny Stream er zijn: privé opslag op de server.
     */
     'video_disk' => env('MEBRANDING_VIDEO_DISK', 'local'),

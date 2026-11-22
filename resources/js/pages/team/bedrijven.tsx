@@ -1,4 +1,5 @@
-import { Head, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
+import * as bedrijfsbeheer from '@/routes/team/bedrijfsbeheer';
 import { Building2, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { euro } from '@/lib/datum';
@@ -85,7 +86,7 @@ export default function Bedrijven({ companies, plans, leads, can }: { companies:
                                                 <Building2 className="size-5" />
                                             </span>
                                             <div className="min-w-0 flex-1">
-                                                <p className="font-semibold">{b.name}</p>
+                                                <Link href={bedrijfsbeheer.toon.url(b.id)} className="font-semibold hover:text-violet hover:underline" data-test="bedrijf-link">{b.name}</Link>
                                                 {b.branche && <p className="text-sm text-muted-foreground capitalize">{b.branche}</p>}
                                             </div>
                                             <span className="text-right">
