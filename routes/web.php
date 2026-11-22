@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 | - app.mebranding.nl  alle omgevingen (Inertia), hieronder; inloggen via Fortify
 | Op het Forge-testadres delen ze één host; het portaal staat dan onder APP_PREFIX (zie config/mebranding.php).
 |
-| Elke omgeving heeft eigen routes (routes/portaal), controllers (app/Http/Controllers/<Omgeving>)
+| Elke omgeving heeft eigen routes (routes/portaal/<omgeving>/<module>.php), controllers (app/Http/Controllers/<Omgeving>)
 | en schermen (resources/js/pages/<omgeving>). De kern (statussen, tegoed, logboek) is gedeeld: app/Services.
 */
 
@@ -28,9 +28,14 @@ Route::domain(config('mebranding.domains.app'))->prefix(config('mebranding.app_p
         Route::post('inloggen-als/{user}', [PortaalController::class, 'inloggenAls'])->name('inloggen-als');
         Route::post('terug', [PortaalController::class, 'terug'])->name('terug');
 
-        Route::prefix('ondernemer')->name('ondernemer.')->middleware(AlleenOmgeving::class.':ondernemer')->group(base_path('routes/portaal/ondernemer.php'));
-        Route::prefix('creator')->name('creator.')->middleware(AlleenOmgeving::class.':creator')->group(base_path('routes/portaal/creator.php'));
-        Route::prefix('team')->name('team.')->middleware(AlleenOmgeving::class.':team')->group(base_path('routes/portaal/team.php'));
+        // Elke omgeving laadt al haar routebestanden (één bestand per module): routes/portaal/<omgeving>/*.php
+        foreach (['ondernemer', 'creator', 'team', 'academy'] as $omgeving) {
+            Route::prefix($omgeving)->name("{$omgeving}.")->middleware(AlleenOmgeving::class.":{$omgeving}")->group(function () use ($omgeving) {
+                foreach (glob(base_path("routes/portaal/{$omgeving}/*.php")) as $bestand) {
+                    require $bestand;
+                }
+            });
+        }
     });
 
     require __DIR__.'/settings.php';

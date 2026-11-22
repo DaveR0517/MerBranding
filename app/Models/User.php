@@ -74,6 +74,7 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
             $this->isTeam() => 'team',
             $this->creator()->exists() => 'creator',
             $this->companies()->exists() => 'ondernemer',
+            $this->hasRole('Student') => 'academy',
             default => 'geen',
         };
     }

@@ -8,7 +8,7 @@ import type { Auth } from '@/types/auth';
 export function OnderBalk() {
     const page = usePage();
     const { auth, unread } = page.props as unknown as { auth: Auth; unread: number };
-    const items = navigatie(auth.portal).filter((i) => i.mobile);
+    const items = navigatie(auth.portal, auth.permissions).filter((i) => i.mobile);
 
     return (
         <nav

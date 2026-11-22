@@ -23,16 +23,17 @@ class RolesSeeder extends Seeder
         'financieel.bekijken', 'financieel.beheren', 'tegoed.corrigeren',
         'academy.beheren',
         'team.beheren', 'instellingen.beheren', 'logboek.bekijken',
+        'statistieken.bekijken', 'klassement.beheren', 'planning.beheren', 'berichten.beheren', 'sales.beheren', 'koppelingen.beheren', 'support.beheren',
     ];
 
     /** Rechtensjablonen voor medewerkers. */
     public const TEMPLATES = [
-        'Accountmanager' => ['leads.bekijken', 'leads.beheren', 'bedrijven.bekijken', 'bedrijven.beheren', 'creators.bekijken', 'samenwerkingen.bekijken', 'samenwerkingen.koppelen', 'logboek.bekijken'],
-        'Contentcontrole' => ['creators.bekijken', 'creators.screenen', 'creators.beheren', 'samenwerkingen.bekijken', 'content.controleren'],
-        'Planning' => ['bedrijven.bekijken', 'creators.bekijken', 'samenwerkingen.bekijken', 'samenwerkingen.plannen'],
-        'Financieel' => ['bedrijven.bekijken', 'financieel.bekijken', 'financieel.beheren', 'tegoed.corrigeren', 'logboek.bekijken'],
+        'Accountmanager' => ['leads.bekijken', 'leads.beheren', 'bedrijven.bekijken', 'bedrijven.beheren', 'creators.bekijken', 'samenwerkingen.bekijken', 'samenwerkingen.koppelen', 'logboek.bekijken', 'statistieken.bekijken', 'berichten.beheren', 'support.beheren'],
+        'Contentcontrole' => ['creators.bekijken', 'creators.screenen', 'creators.beheren', 'samenwerkingen.bekijken', 'content.controleren', 'klassement.beheren', 'koppelingen.beheren'],
+        'Planning' => ['bedrijven.bekijken', 'creators.bekijken', 'samenwerkingen.bekijken', 'samenwerkingen.plannen', 'planning.beheren'],
+        'Financieel' => ['bedrijven.bekijken', 'financieel.bekijken', 'financieel.beheren', 'tegoed.corrigeren', 'logboek.bekijken', 'statistieken.bekijken'],
         'Academybeheer' => ['creators.bekijken', 'academy.beheren'],
-        'Sales' => ['leads.bekijken', 'leads.beheren', 'bedrijven.bekijken'],
+        'Sales' => ['leads.bekijken', 'leads.beheren', 'bedrijven.bekijken', 'sales.beheren'],
     ];
 
     /** Rollen buiten het team. Hun rechten gelden binnen het eigen bedrijf of de eigen klussen (policies, fase 1). */

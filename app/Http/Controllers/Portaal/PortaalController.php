@@ -25,6 +25,7 @@ class PortaalController extends Controller
             'team' => to_route('team.werkvoorraad'),
             'creator' => to_route('creator.overzicht'),
             'ondernemer' => to_route('ondernemer.overzicht'),
+            'academy' => to_route('academy.overzicht'),
             default => Inertia::render('geen-omgeving'),
         };
     }

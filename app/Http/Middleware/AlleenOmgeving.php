@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/** Laat alleen gebruikers van één omgeving door: team, creator of ondernemer. Super Admin mag overal kijken. */
+/** Laat alleen gebruikers van één omgeving door: team, creator, ondernemer of academy. */
 class AlleenOmgeving
 {
     public function handle(Request $request, Closure $next, string $omgeving): Response
@@ -16,6 +16,7 @@ class AlleenOmgeving
             'team' => $user->isTeam(),
             'creator' => $user->creator()->exists(),
             'ondernemer' => $user->companies()->exists(),
+            'academy' => $user->hasRole('Student') || $user->creator()->exists(),
             default => false,
         };
 

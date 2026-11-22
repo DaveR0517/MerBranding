@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\SamenwerkingGewijzigd;
 use App\Models\ActivityLog;
 use App\Models\Collaboration;
 use App\Models\Company;
@@ -467,6 +468,7 @@ class Samenwerking
         $c->status = $naar;
         $c->save();
         $this->logboek($c, $door, 'status', $van, $naar, $reden);
+        DB::afterCommit(fn () => SamenwerkingGewijzigd::dispatch($c, $van, $naar, $door));
     }
 
     private function vereisStatus(Collaboration $c, array $statussen): void

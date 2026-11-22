@@ -10,12 +10,13 @@ export type User = {
     [key: string]: unknown;
 };
 
-export type Portal = 'team' | 'creator' | 'ondernemer' | 'geen';
+export type Portal = 'team' | 'creator' | 'ondernemer' | 'academy' | 'geen';
 
 export type Auth = {
     user: User;
     portal: Portal | null;
     roles: string[];
+    permissions: string[];
     is_super_admin: boolean;
     impersonating: boolean;
 };

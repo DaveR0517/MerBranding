@@ -37,7 +37,7 @@ export function AppSidebar() {
             <SidebarContent>
                 <SidebarGroup className="px-2 py-0">
                     <SidebarMenu>
-                        {navigatie(auth.portal).map((item) => (
+                        {navigatie(auth.portal, auth.permissions).map((item) => (
                             <SidebarMenuItem key={item.title}>
                                 <SidebarMenuButton
                                     asChild
