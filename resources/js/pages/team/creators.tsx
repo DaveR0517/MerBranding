@@ -105,7 +105,7 @@ export default function Creators({ creators, levels, leads, can }: { creators: C
                             <>
                                 <ul className="space-y-2 md:hidden" data-test="creators">
                                     {creators.map((c) => (
-                                        <li key={c.id} className="flex items-start gap-3 rounded-2xl border bg-card p-4">
+                                        <li key={c.id} className="flex items-start gap-3 rounded-xl border bg-card p-4">
                                             <span className="grid size-10 shrink-0 place-items-center rounded-full bg-brand-gradient font-heading text-sm font-bold text-white" aria-hidden>
                                                 {initialen(c.name)}
                                             </span>
@@ -130,7 +130,7 @@ export default function Creators({ creators, levels, leads, can }: { creators: C
                                         </li>
                                     ))}
                                 </ul>
-                                <div className="hidden overflow-hidden rounded-2xl border bg-card md:block">
+                                <div className="hidden overflow-hidden rounded-xl border bg-card md:block">
                                     <table className="w-full text-sm">
                                         <thead className="bg-muted/60 text-left text-xs tracking-wide text-muted-foreground uppercase">
                                             <tr>

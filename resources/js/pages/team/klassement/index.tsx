@@ -302,7 +302,7 @@ export default function Klassement(props: Props) {
                                     </MeerLijst>
                                 </div>
 
-                                <div className="hidden overflow-x-auto rounded-2xl border bg-card lg:block">
+                                <div className="hidden overflow-x-auto rounded-xl border bg-card lg:block">
                                     <table className="w-full text-sm" data-test="ranglijst">
                                         <thead className="bg-muted/60 text-left text-xs tracking-wide text-muted-foreground uppercase">
                                             <tr>

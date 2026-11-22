@@ -66,7 +66,7 @@ export default function Index({
                             <li key={l.id}>
                                 <Link
                                     href={screening.toon.url(l.id)}
-                                    className={`flex items-start gap-3 rounded-2xl border bg-card p-4 transition hover:border-violet ${l.overdue ? "border-rood/40" : ""}`}
+                                    className={`flex items-start gap-3 rounded-xl border bg-card p-4 transition hover:border-violet ${l.overdue ? "border-rood/40" : ""}`}
                                 >
                                     <span
                                         className="grid size-10 shrink-0 place-items-center rounded-full bg-brand-gradient font-heading text-sm font-bold text-white"

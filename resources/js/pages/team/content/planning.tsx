@@ -108,7 +108,7 @@ export default function Planning({
                     }
                 />
 
-                <div className="flex flex-wrap items-end gap-3 rounded-2xl border bg-card p-3">
+                <div className="flex flex-wrap items-end gap-3 rounded-xl border bg-card p-3">
                     <div className="flex items-center gap-1">
                         <button
                             type="button"
@@ -227,7 +227,7 @@ export default function Planning({
                                 return (
                                     <section
                                         key={dag}
-                                        className="rounded-2xl border bg-card p-3"
+                                        className="rounded-xl border bg-card p-3"
                                     >
                                         <h3 className="mb-2 text-sm font-bold first-letter:uppercase">
                                             {datum(`${dag}T12:00:00`)}

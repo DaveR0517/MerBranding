@@ -252,7 +252,7 @@ export default function Berichtsjablonen({
                             </div>
                         ) : (
                             <ul
-                                className="max-h-[70vh] divide-y overflow-y-auto rounded-2xl border bg-card"
+                                className="max-h-[70vh] divide-y overflow-y-auto rounded-xl border bg-card"
                                 data-test="sjablonen"
                             >
                                 {lijst.map((s) => (
@@ -686,7 +686,7 @@ function Bewerken({
                     </Paneel>
                 </div>
 
-                <div className="sticky bottom-20 z-10 flex flex-wrap items-center justify-end gap-2 rounded-2xl border bg-card/95 p-3 shadow-sm backdrop-blur md:bottom-4">
+                <div className="sticky bottom-20 z-10 flex flex-wrap items-center justify-end gap-2 rounded-xl border bg-card/95 p-3 shadow-sm backdrop-blur md:bottom-4">
                     <p className="mr-auto text-xs text-muted-foreground">
                         {form.isDirty
                             ? "Niet opgeslagen wijzigingen."

@@ -109,7 +109,7 @@ export function Kaart({
 export function KaartRaster({ children, kolommen = 3, className }: { children: ReactNode; kolommen?: 2 | 3 | 4; className?: string }) {
     const lg = { 2: 'lg:grid-cols-2', 3: 'lg:grid-cols-3', 4: 'lg:grid-cols-4' }[kolommen];
 
-    return <div className={cn('grid gap-3 sm:grid-cols-2 md:gap-4', lg, className)}>{children}</div>;
+    return <div className={cn('grid grid-cols-1 gap-3 *:min-w-0 sm:grid-cols-2 md:gap-4', lg, className)}>{children}</div>;
 }
 
 /** Kerncijfer: label, groot getal, toelichting. Past in een KaartRaster. */

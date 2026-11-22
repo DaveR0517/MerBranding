@@ -15,6 +15,7 @@ import {
 import { datum, datumTijd, euro } from '@/lib/datum';
 import * as team from '@/routes/team';
 import type { SamenwerkingVol } from '@/types/samenwerking';
+import { Kaart, Pagina, PaginaKop, Tabs } from '@/components/pagina';
 import { Fouten, Label, Paneel, gebeurtenis, invoer } from './_onderdelen/basis';
 import { Contentcontrole } from './_onderdelen/controle';
 import { Matchlijst, Uitnodigingen } from './_onderdelen/koppelen';
@@ -189,7 +190,7 @@ function Annuleren({ c }: { c: SamenwerkingVol }) {
 
     return (
         <>
-            <Button variant="outline" size="sm" className="border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white" onClick={() => setOpen(true)}>
+            <Button variant="outline" className="h-10" onClick={() => setOpen(true)}>
                 Annuleren
             </Button>
             <Dialog open={open} onOpenChange={setOpen}>
@@ -307,51 +308,40 @@ export default function Samenwerking({
     return (
         <>
             <Head title={`${c.number} ${c.title}`} />
-            <div className="mx-auto w-full max-w-7xl space-y-4 p-4 md:p-6">
-                <header className="space-y-4 rounded-2xl bg-aubergine p-4 text-white md:p-6">
-                    <div className="flex flex-wrap items-start justify-between gap-3">
-                        <div className="min-w-0">
-                            <p className="font-mono text-xs text-white/70">{c.number}</p>
-                            <h1 className="mt-0.5 font-heading text-2xl font-extrabold md:text-3xl">{c.title}</h1>
-                            <p className="mt-1 text-sm text-white/80">
-                                {c.company}, {c.location}
-                                {c.creator && ` · creator ${c.creator}`}
-                            </p>
-                        </div>
-                        <div className="flex flex-wrap items-center gap-2">
-                            <span className="rounded-full bg-white p-0.5">
+            <Pagina>
+                <PaginaKop
+                    boven={c.number}
+                    titel={c.title}
+                    omschrijving={
+                        <>
+                            {c.company}, {c.location}
+                            {c.creator && ` · creator ${c.creator}`}
+                        </>
+                    }
+                    acties={
+                        <>
+                            <span className="inline-flex items-center">
                                 <StatusBadge status={c.status} />
                             </span>
                             {can.koppelen && annuleerbaar.includes(status) && <Annuleren c={c} />}
-                        </div>
-                    </div>
-                    <div className="rounded-xl bg-white p-2 text-foreground dark:bg-background">
-                        <Tijdlijn stappen={c.steps} />
-                        <Snelkoppelingen omgeving="team" id={c.id} status={c.status.value} />
-                    </div>
-                    {status === 'geannuleerd' && c.cancel_reason && (
-                        <p className="text-sm text-white/85">Geannuleerd: {c.cancel_reason}</p>
-                    )}
-                </header>
+                        </>
+                    }
+                    extra={
+                        <>
+                            <Kaart compact>
+                                <Tijdlijn stappen={c.steps} />
+                                <Snelkoppelingen omgeving="team" id={c.id} status={c.status.value} />
+                            </Kaart>
+                            {status === 'geannuleerd' && c.cancel_reason && <p className="text-sm text-muted-foreground">Geannuleerd: {c.cancel_reason}</p>}
+                        </>
+                    }
+                />
 
                 <Fouten />
 
                 {status === 'bezoek_gepland' && can.plannen && <NietVerschenen c={c} />}
 
-                <div role="tablist" aria-label="Onderdelen" className="-mx-4 flex gap-1 overflow-x-auto border-b px-4 md:mx-0 md:px-0">
-                    {tabs.map((t) => (
-                        <button
-                            key={t.key}
-                            type="button"
-                            role="tab"
-                            aria-selected={tab === t.key}
-                            onClick={() => setTab(t.key)}
-                            className={`-mb-px shrink-0 border-b-2 px-3 py-2 text-sm font-semibold transition ${tab === t.key ? 'border-violet text-violet' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
-                        >
-                            {t.naam}
-                        </button>
-                    ))}
-                </div>
+                <Tabs tabs={tabs.map((t) => ({ waarde: t.key, label: t.naam }))} actief={tab} onKies={setTab} />
 
                 <div role="tabpanel">
                     {tab === 'koppelen' && (
@@ -374,7 +364,7 @@ export default function Samenwerking({
                     )}
                     {tab === 'logboek' && <Logboek c={c} />}
                 </div>
-            </div>
+            </Pagina>
         </>
     );
 }

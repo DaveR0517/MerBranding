@@ -8,7 +8,7 @@ import { datum, datumTijd } from '@/lib/datum';
 import { cn } from '@/lib/utils';
 import * as team from '@/routes/team';
 import communicatie from '@/routes/team/communicatie';
-import { PaginaKop } from '@/components/pagina';
+import { Pagina, PaginaKop } from '@/components/pagina';
 import { Fouten, Label, Paneel, vandaag } from '../_onderdelen/basis';
 
 type Fase = { key: string; name: string };
@@ -75,7 +75,7 @@ export default function Sales({ stages, team: teamleden, leads }: Props) {
     return (
         <>
             <Head title="Sales-pipeline" />
-            <div className="mx-auto w-full max-w-[1600px] space-y-5 p-4 md:p-6">
+            <Pagina>
                 <PaginaKop
                     titel="Sales-pipeline"
                     omschrijving="Nieuwe ondernemers binnenhalen. Sleep een kaart naar de volgende fase, of open hem."
@@ -128,7 +128,7 @@ export default function Sales({ stages, team: teamleden, leads }: Props) {
                                             verplaats(lead, f.key);
                                         }
                                     }}
-                                    className={cn('min-w-0 rounded-2xl border border-t-4 bg-muted/40 p-2', faseKleur[f.key], boven === f.key && 'ring-2 ring-violet/40')}
+                                    className={cn('min-w-0 rounded-xl border border-t-4 bg-muted/40 p-2', faseKleur[f.key], boven === f.key && 'ring-2 ring-violet/40')}
                                     data-test={`fase-${f.key}`}
                                 >
                                     <h2 className="flex items-center justify-between px-1.5 py-1 text-sm font-bold">
@@ -147,7 +147,7 @@ export default function Sales({ stages, team: teamleden, leads }: Props) {
                         })}
                     </div>
                 ) : (
-                    <ul className="divide-y rounded-2xl border bg-card" data-test="pipeline-lijst">
+                    <ul className="divide-y rounded-xl border bg-card" data-test="pipeline-lijst">
                         {lijst.map((l) => (
                             <li key={l.id}>
                                 <button type="button" onClick={() => setGekozenId(l.id)} className="grid w-full gap-1 p-3 text-left hover:bg-muted/50 md:grid-cols-[2fr_1fr_2fr_1fr] md:items-center md:gap-3">
@@ -167,7 +167,7 @@ export default function Sales({ stages, team: teamleden, leads }: Props) {
                         ))}
                     </ul>
                 )}
-            </div>
+            </Pagina>
 
             <Sheet open={gekozen !== null} onOpenChange={(open) => !open && setGekozenId(null)}>
                 <SheetContent className="w-full overflow-y-auto sm:max-w-md">

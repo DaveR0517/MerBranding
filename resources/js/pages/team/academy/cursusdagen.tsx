@@ -39,7 +39,7 @@ export default function Cursusdagen({ days, open_exams, open_submissions, defaul
                                 <ul className="space-y-2 md:hidden">
                                     {days.map((d) => (
                                         <li key={d.id}>
-                                            <Link href={cursusdag.url(d.id)} className="block rounded-2xl border bg-card p-4 hover:border-violet">
+                                            <Link href={cursusdag.url(d.id)} className="block rounded-xl border bg-card p-4 hover:border-violet">
                                                 <p className="flex flex-wrap items-center gap-2 font-semibold">{d.title} <DagStatus dag={d} /></p>
                                                 <p className="text-sm text-muted-foreground first-letter:uppercase">{dagDatum(d.date, false)}, {d.location_name}, {d.city}</p>
                                                 <p className="mt-1 text-sm">Bezetting {d.taken}/{d.max_participants} · wachtlijst {d.waitlist} · betaald {d.paid}</p>
@@ -47,7 +47,7 @@ export default function Cursusdagen({ days, open_exams, open_submissions, defaul
                                         </li>
                                     ))}
                                 </ul>
-                                <div className="hidden overflow-hidden rounded-2xl border bg-card md:block">
+                                <div className="hidden overflow-hidden rounded-xl border bg-card md:block">
                                     <table className="w-full text-sm">
                                         <thead className="bg-muted/60 text-left text-xs tracking-wide text-muted-foreground uppercase">
                                             <tr>

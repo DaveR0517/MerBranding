@@ -361,7 +361,7 @@ function Tegel({
     nadruk?: boolean;
 }) {
     return (
-        <div className="min-w-0 rounded-2xl border bg-card p-4">
+        <div className="min-w-0 rounded-xl border bg-card p-4">
             <span className="block text-xs font-semibold tracking-wide text-muted-foreground uppercase">
                 {label}
             </span>

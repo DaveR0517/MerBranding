@@ -116,7 +116,7 @@ function Tegel({
             )}
         </>
     );
-    const klasse = "block min-w-0 rounded-2xl border bg-card p-4";
+    const klasse = "block min-w-0 rounded-xl border bg-card p-4";
 
     return href ? (
         <Link

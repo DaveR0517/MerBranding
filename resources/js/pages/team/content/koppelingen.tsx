@@ -106,7 +106,7 @@ export default function Koppelingen({
                     {platforms.map((p) => (
                         <div
                             key={p.platform}
-                            className="rounded-2xl border bg-card p-4"
+                            className="rounded-xl border bg-card p-4"
                         >
                             <p className="flex items-center gap-2 font-semibold">
                                 <PlugZap
@@ -125,7 +125,7 @@ export default function Koppelingen({
                             </p>
                         </div>
                     ))}
-                    <div className="rounded-2xl border bg-card p-4">
+                    <div className="rounded-xl border bg-card p-4">
                         <p className="font-heading text-2xl font-extrabold">
                             {accounts.length}
                         </p>
@@ -134,7 +134,7 @@ export default function Koppelingen({
                         </p>
                     </div>
                     <div
-                        className={`rounded-2xl border p-4 ${metWaarschuwing.length ? 'border-rood/40 bg-rood/5' : 'bg-card'}`}
+                        className={`rounded-xl border p-4 ${metWaarschuwing.length ? 'border-rood/40 bg-rood/5' : 'bg-card'}`}
                     >
                         <p className="font-heading text-2xl font-extrabold">
                             {metWaarschuwing.length}

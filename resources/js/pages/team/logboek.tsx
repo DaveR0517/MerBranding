@@ -52,7 +52,7 @@ export default function Logboek({ entries }: { entries: Regel[] }) {
                     <>
                         <ol className="space-y-2 md:hidden" data-test="logboek">
                             {entries.map((r, i) => (
-                                <li key={i} className="rounded-2xl border bg-card p-3 text-sm">
+                                <li key={i} className="rounded-xl border bg-card p-3 text-sm">
                                     <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
                                         <span>{datumTijd(r.at)}</span>
                                         <Onderwerp r={r} />
@@ -64,7 +64,7 @@ export default function Logboek({ entries }: { entries: Regel[] }) {
                                 </li>
                             ))}
                         </ol>
-                        <div className="hidden overflow-hidden rounded-2xl border bg-card md:block">
+                        <div className="hidden overflow-hidden rounded-xl border bg-card md:block">
                             <table className="w-full text-sm">
                                 <thead className="bg-muted/60 text-left text-xs tracking-wide text-muted-foreground uppercase">
                                     <tr>

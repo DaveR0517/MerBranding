@@ -183,7 +183,7 @@ export default function Cursusdag({ day, participants, waitlist, cancelled, crit
                         ['Aanwezig', `${aanwezig} van ${participants.length}`],
                         ['Gecertificeerd', String(gecertificeerd.length)],
                     ].map(([k, v]) => (
-                        <div key={k} className="rounded-2xl border bg-card p-3">
+                        <div key={k} className="rounded-xl border bg-card p-3">
                             <dt className="text-xs font-semibold text-muted-foreground uppercase">{k}</dt>
                             <dd className="font-heading text-2xl font-extrabold">{v}</dd>
                         </div>

@@ -31,7 +31,7 @@ export default function Studenten({ students, days }: Props) {
                         ) : (
                             <ul className="space-y-2">
                                 {students.map((s) => (
-                                    <li key={s.id} className="rounded-2xl border bg-card p-4 text-sm">
+                                    <li key={s.id} className="rounded-xl border bg-card p-4 text-sm">
                                         <div className="flex flex-wrap items-start justify-between gap-2">
                                             <div className="min-w-0">
                                                 <p className="flex flex-wrap items-center gap-1.5">
