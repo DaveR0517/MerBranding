@@ -73,7 +73,7 @@ return [
     |
     */
 
-    'home' => '/dashboard',
+    'home' => '/'.trim(env('APP_PREFIX', '').'/dashboard', '/'),
 
     /*
     |--------------------------------------------------------------------------
@@ -86,7 +86,7 @@ return [
     |
     */
 
-    'prefix' => '',
+    'prefix' => env('APP_PREFIX', ''),
 
     'domain' => env('APP_DOMAIN', 'app.mebranding.nl'),
 

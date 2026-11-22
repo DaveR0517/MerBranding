@@ -36,3 +36,18 @@ test('rechtensjablonen geven alleen hun eigen rechten', function () {
     expect($user->can('content.controleren'))->toBeTrue()
         ->and($user->can('financieel.beheren'))->toBeFalse();
 });
+
+test('op één testadres staat het portaal onder APP_PREFIX', function () {
+    $proces = new Symfony\Component\Process\Process(
+        [PHP_BINARY, 'artisan', 'route:list', '--json'],
+        base_path(),
+        ['SITE_DOMAIN' => 'mebranding.on-forge.com', 'APP_DOMAIN' => 'mebranding.on-forge.com', 'APP_PREFIX' => 'app'],
+    );
+    $proces->mustRun();
+    $routes = collect(json_decode($proces->getOutput(), true))->keyBy('name');
+
+    expect($routes['site.home']['uri'])->toBe('/')
+        ->and($routes['login']['uri'])->toBe('app/login')
+        ->and($routes['dashboard']['uri'])->toBe('app/dashboard')
+        ->and($routes['site.home']['domain'])->toBe('mebranding.on-forge.com');
+});

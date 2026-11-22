@@ -12,6 +12,12 @@ return [
     ],
 
     /*
+    | Pad van het portaal. Leeg op app.mebranding.nl. Alleen zolang website en portaal
+    | hetzelfde testadres delen (Forge-testdomein, voor de DNS-overstap): APP_PREFIX=app.
+    */
+    'app_prefix' => env('APP_PREFIX', ''),
+
+    /*
     | Wie de meldingen van nieuwe aanmeldingen van de website krijgt.
     */
     'team_email' => env('MEBRANDING_TEAM_EMAIL', 'info@mebranding.nl'),
