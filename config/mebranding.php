@@ -65,4 +65,20 @@ return [
     */
     'contract_version' => '0.1-concept',
 
+    /*
+    | Vaste accounts voor de eigenaren van MEBRANDING, uit de .env op de server (nooit in Git):
+    | DAIVE_ACCOUNT_{n}_EMAIL, _NAAM, _ROL, _WACHTWOORD. Rol "eigenaar" wordt Super Admin.
+    | Aangemaakt door php artisan mebranding:accounts (draait bij elke deploy).
+    */
+    'accounts' => collect(range(1, 10))
+        ->map(fn ($n) => [
+            'email' => env("DAIVE_ACCOUNT_{$n}_EMAIL"),
+            'naam' => env("DAIVE_ACCOUNT_{$n}_NAAM"),
+            'rol' => env("DAIVE_ACCOUNT_{$n}_ROL", 'eigenaar'),
+            'wachtwoord' => env("DAIVE_ACCOUNT_{$n}_WACHTWOORD"),
+        ])
+        ->filter(fn ($a) => filled($a['email']) && filled($a['wachtwoord']))
+        ->values()
+        ->all(),
+
 ];

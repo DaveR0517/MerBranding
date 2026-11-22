@@ -3,6 +3,7 @@
 use App\Models\User;
 use Database\Seeders\RolesSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Symfony\Component\Process\Process;
 
 uses(RefreshDatabase::class);
@@ -51,4 +52,17 @@ test('op één testadres staat het portaal onder APP_PREFIX', function () {
         ->and($routes['login']['uri'])->toBe('app/login')
         ->and($routes['dashboard']['uri'])->toBe('app/dashboard')
         ->and($routes['site.home']['domain'])->toBe('mebranding.on-forge.com');
+});
+
+test('vaste accounts uit de env worden Super Admin, wachtwoord blijft bij bestaande accounts staan', function () {
+    config(['mebranding.accounts' => [['email' => 'Eigenaar@Voorbeeld.nl', 'naam' => 'Eigenaar', 'rol' => 'eigenaar', 'wachtwoord' => 'Geheim-123!']]]);
+
+    $this->artisan('mebranding:accounts')->assertSuccessful();
+    $user = User::where('email', 'eigenaar@voorbeeld.nl')->sole();
+    expect($user->hasRole('Super Admin'))->toBeTrue()
+        ->and(Hash::check('Geheim-123!', $user->password))->toBeTrue();
+
+    config(['mebranding.accounts.0.wachtwoord' => 'Anders-456!']);
+    $this->artisan('mebranding:accounts')->assertSuccessful();
+    expect(Hash::check('Geheim-123!', $user->fresh()->password))->toBeTrue();
 });
