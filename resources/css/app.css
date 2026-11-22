@@ -163,11 +163,20 @@
     }
 }
 
-/* Scrollbalken in huisstijl: dun, afgerond, zonder pijltjes. Licht op de pagina, transparant-wit in de donkere zijbalk. */
+/* Scrollbalken in huisstijl: dun, afgerond, zonder pijltjes. Licht op de pagina, transparant-wit in de donkere zijbalk.
+   Chrome en Edge: alleen de ::-webkit-regels (de standaardeigenschappen zouden daar de pijltjes van Windows terugbrengen).
+   Firefox: de standaardeigenschappen. */
 @layer base {
-    * {
-        scrollbar-width: thin;
-        scrollbar-color: color-mix(in oklab, var(--color-lila) 55%, transparent) transparent;
+    @supports not selector(::-webkit-scrollbar) {
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: color-mix(in oklab, var(--color-lila) 55%, transparent) transparent;
+        }
+
+        [data-sidebar='sidebar'],
+        [data-sidebar='sidebar'] * {
+            scrollbar-color: rgb(255 255 255 / 0.22) transparent;
+        }
     }
 
     *::-webkit-scrollbar {
@@ -175,7 +184,8 @@
         height: 8px;
     }
 
-    *::-webkit-scrollbar-track {
+    *::-webkit-scrollbar-track,
+    *::-webkit-scrollbar-corner {
         background: transparent;
     }
 
@@ -192,11 +202,8 @@
 
     *::-webkit-scrollbar-button {
         display: none;
-    }
-
-    [data-sidebar='sidebar'],
-    [data-sidebar='sidebar'] * {
-        scrollbar-color: rgb(255 255 255 / 0.22) transparent;
+        width: 0;
+        height: 0;
     }
 
     [data-sidebar='sidebar'] *::-webkit-scrollbar-thumb {
