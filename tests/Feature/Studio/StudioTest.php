@@ -63,25 +63,31 @@ test('de huisstijlsjablonen zijn idempotent en hebben vakken', function () {
     expect($video->fresh()->name)->toBe('Eigen naam');
 });
 
-test('nieuw ontwerp in een formaat, opslaan als geheel en weer laden', function () {
-    $this->actingAs($this->eva)->post(STUDIO_APP.'/team/studio/ontwerpen', ['formaat' => 'story'])->assertRedirect();
+test('nieuw ontwerp start vanuit een merkbasis, opslaan als geheel en weer laden', function () {
+    // Nooit blanco: zonder merkbasis geen nieuw ontwerp.
+    $this->actingAs($this->eva)->post(STUDIO_APP.'/team/studio/ontwerpen', ['formaat' => 'story'])->assertSessionHasErrors('basis');
+    $this->actingAs($this->eva)->post(STUDIO_APP.'/team/studio/ontwerpen', ['formaat' => 'story', 'basis' => 'donker'])->assertRedirect();
     $ontwerp = StudioDesign::sole();
     expect($ontwerp->width)->toBe(1080)->and($ontwerp->height)->toBe(1920)->and($ontwerp->status)->toBe('concept');
 
+    $paginas = $ontwerp->pages;
+    $kop = collect($paginas[0]['lagen'])->search(fn ($l) => ($l['stijl'] ?? null) === 'kop');
+    $paginas[0]['lagen'][$kop]['tekst'] = 'Hallo Friesland';
+
     $jpg = 'data:image/jpeg;base64,'.base64_encode(UploadedFile::fake()->image('v.jpg', 60, 100)->getContent());
-    $this->actingAs($this->eva)->putJson(STUDIO_APP."/team/studio/ontwerpen/{$ontwerp->id}", ['name' => 'Story december', 'pages' => $this->paginas, 'voorvertoning' => $jpg])
+    $this->actingAs($this->eva)->putJson(STUDIO_APP."/team/studio/ontwerpen/{$ontwerp->id}", ['name' => 'Story december', 'pages' => $paginas, 'voorvertoning' => $jpg])
         ->assertOk()->assertJson(['ok' => true, 'heeft_video' => false]);
 
     $ontwerp->refresh();
-    expect($ontwerp->name)->toBe('Story december')->and($ontwerp->pages[0]['lagen'][0]['tekst'])->toBe('Hallo Friesland');
+    expect($ontwerp->name)->toBe('Story december')->and($ontwerp->pages[0]['lagen'][$kop]['tekst'])->toBe('Hallo Friesland');
     Storage::disk('local')->assertExists($ontwerp->preview_path);
 
     $this->actingAs($this->eva)->get(STUDIO_APP."/team/studio/ontwerpen/{$ontwerp->id}")->assertOk()
-        ->assertInertia(fn (AssertableInertia $p) => $p->component('team/studio/editor')->where('item.pages.0.lagen.0.tekst', 'Hallo Friesland')->has('logos'));
+        ->assertInertia(fn (AssertableInertia $p) => $p->component('team/studio/editor')->where("item.pages.0.lagen.{$kop}.tekst", 'Hallo Friesland')->has('logos')->has('merkkit.stijlen.kop'));
     $this->actingAs($this->eva)->get(STUDIO_APP."/team/studio/ontwerpen/{$ontwerp->id}/voorvertoning")->assertOk();
 
     // Geen tweede pagina buiten een carrousel; onbekende laagsoort geweigerd.
-    $this->actingAs($this->eva)->putJson(STUDIO_APP."/team/studio/ontwerpen/{$ontwerp->id}", ['name' => 'x', 'pages' => [...$this->paginas, ...$this->paginas]])->assertStatus(422);
+    $this->actingAs($this->eva)->putJson(STUDIO_APP."/team/studio/ontwerpen/{$ontwerp->id}", ['name' => 'x', 'pages' => [...$paginas, ...$paginas]])->assertStatus(422);
     $this->actingAs($this->eva)->putJson(STUDIO_APP."/team/studio/ontwerpen/{$ontwerp->id}", ['name' => 'x', 'pages' => [['lagen' => [['id' => 'a', 'soort' => 'script']]]]])->assertStatus(422);
 });
 
@@ -94,13 +100,16 @@ test('sjabloon gebruiken maakt een kopie; het sjabloon blijft onaangeroerd', fun
     expect($ontwerp->template_id)->toBe($sjabloon->id)->and($ontwerp->pages)->toBe($origineel)
         ->and($ontwerp->width)->toBe(1080)->and($ontwerp->height)->toBe(1350);
 
-    $this->actingAs($this->eva)->putJson(STUDIO_APP."/team/studio/ontwerpen/{$ontwerp->id}", ['name' => 'Gewijzigd', 'pages' => $this->paginas])->assertOk();
+    $paginas = $ontwerp->pages;
+    $naam = collect($paginas[0]['lagen'])->search(fn ($l) => ($l['vakNaam'] ?? null) === 'Naam creator');
+    $paginas[0]['lagen'][$naam]['tekst'] = 'Sophie';
+    $this->actingAs($this->eva)->putJson(STUDIO_APP."/team/studio/ontwerpen/{$ontwerp->id}", ['name' => 'Gewijzigd', 'pages' => $paginas])->assertOk();
     expect($sjabloon->fresh()->pages)->toBe($origineel);
 
     // Opslaan als sjabloon, dupliceren, hernoemen, archiveren (niet meer te gebruiken) en terugzetten.
     $this->actingAs($this->eva)->post(STUDIO_APP."/team/studio/ontwerpen/{$ontwerp->id}/sjabloon", ['name' => 'Mijn sjabloon'])->assertRedirect();
     $eigen = StudioTemplate::where('name', 'Mijn sjabloon')->sole();
-    expect($eigen->is_builtin)->toBeFalse()->and($eigen->pages)->toBe($this->paginas);
+    expect($eigen->is_builtin)->toBeFalse()->and($eigen->pages[0]['lagen'][$naam]['tekst'])->toBe('Sophie');
 
     $this->actingAs($this->eva)->post(STUDIO_APP."/team/studio/sjablonen/{$eigen->id}/dupliceren");
     expect(StudioTemplate::where('name', 'Mijn sjabloon (kopie)')->exists())->toBeTrue();
@@ -140,7 +149,7 @@ test('mediatheek: upload privé, beveiligd bekijken, grens per bestand', functio
 });
 
 test('export uploaden en alleen via de beveiligde route downloaden; carrousel als zip', function () {
-    $this->actingAs($this->eva)->post(STUDIO_APP.'/team/studio/ontwerpen', ['formaat' => 'carrousel']);
+    $this->actingAs($this->eva)->post(STUDIO_APP.'/team/studio/ontwerpen', ['formaat' => 'carrousel', 'basis' => 'licht']);
     $ontwerp = StudioDesign::sole();
     expect(count($ontwerp->pages))->toBe(3);
 
@@ -168,7 +177,7 @@ test('export uploaden en alleen via de beveiligde route downloaden; carrousel al
 });
 
 test('videoverslag: webm gaat op de queue en wordt met ffmpeg een MP4', function () {
-    $this->actingAs($this->eva)->post(STUDIO_APP.'/team/studio/ontwerpen', ['formaat' => 'story']);
+    $this->actingAs($this->eva)->post(STUDIO_APP.'/team/studio/ontwerpen', ['formaat' => 'story', 'basis' => 'verloop']);
     $ontwerp = StudioDesign::sole();
 
     Queue::fake();
@@ -203,7 +212,7 @@ test('echte ffmpeg zet een webm om naar H.264/AAC', function () {
     if (! $ffmpeg) {
         $this->markTestSkipped('ffmpeg is niet aanwezig.');
     }
-    $this->actingAs($this->eva)->post(STUDIO_APP.'/team/studio/ontwerpen', ['formaat' => 'story']);
+    $this->actingAs($this->eva)->post(STUDIO_APP.'/team/studio/ontwerpen', ['formaat' => 'story', 'basis' => 'verloop']);
     $ontwerp = StudioDesign::sole();
     $pad = Storage::disk('local')->path('studio/exports/test.webm');
     @mkdir(dirname($pad), 0777, true);

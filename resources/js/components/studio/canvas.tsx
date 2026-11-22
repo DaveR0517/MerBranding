@@ -5,6 +5,7 @@
 import Konva from 'konva';
 import { useEffect, useRef } from 'react';
 import { Ellipse, Group, Image as KImage, Rect, Text } from 'react-konva';
+import { weergaveTekst } from './merk';
 import { useAfbeelding, useVideo } from './media';
 import type { Laag, Pagina } from './typen';
 import { bronUrl } from './typen';
@@ -50,14 +51,21 @@ export function dekking(w: number, h: number, mw: number, mh: number, u: { x: nu
 
 type Handlers = {
     onKies?: (id: string, laag: Laag) => void;
-    onWijzig?: (id: string, patch: Partial<Laag>) => void;
+    onWijzig?: (id: string, patch: Partial<Laag>, sleutel?: string) => void;
     onSleepStart?: (node: Konva.Node) => void;
     onSleep?: (node: Konva.Node) => void;
     onSleepEind?: () => void;
     onDubbel?: (laag: Laag) => void;
+    /** Muis boven een gevuld vak (de editor toont dan de hint om te verschuiven). */
+    onBovenVak?: (laag: Laag | null) => void;
 };
 
-function MediaVak({ laag, modus, uitsnedeModus, onWijzig }: { laag: Laag; modus: Modus; uitsnedeModus: boolean } & Handlers) {
+/** Vak uit een sjabloon of merkbasis: het kader staat vast, alleen de inhoud verschuift en zoomt. */
+export function isVastVak(l: Laag): boolean {
+    return !!l.vak && (l.soort === 'foto' || l.soort === 'video') && l.vergrendeld;
+}
+
+function MediaVak({ laag, modus, uitsnedeModus, onWijzig, onBovenVak }: { laag: Laag; modus: Modus; uitsnedeModus: boolean } & Handlers) {
     const url = bronUrl(laag.bron);
     const img = useAfbeelding(laag.soort === 'foto' ? url : null);
     const vid = useVideo(laag.soort === 'video' ? url : null);
@@ -97,6 +105,15 @@ function MediaVak({ laag, modus, uitsnedeModus, onWijzig }: { laag: Laag; modus:
     const mw = media instanceof HTMLVideoElement ? media.videoWidth : media.naturalWidth;
     const mh = media instanceof HTMLVideoElement ? media.videoHeight : media.naturalHeight;
     const d = dekking(w, h, mw || w, mh || h, u);
+    // Een vast vak verschuift de inhoud direct bij slepen; een losse foto alleen in de modus "verschuiven".
+    const inhoudSleepbaar = modus === 'editor' && (isVastVak(laag) || uitsnedeModus);
+    const zetCursor = (e: Konva.KonvaEventObject<MouseEvent>, cursor: string) => {
+        const c = e.target.getStage()?.container();
+
+        if (c) {
+            c.style.cursor = cursor;
+        }
+    };
 
     return (
         <Group clipFunc={(ctx) => afgerond(ctx, w, h, r)}>
@@ -106,9 +123,34 @@ function MediaVak({ laag, modus, uitsnedeModus, onWijzig }: { laag: Laag; modus:
                 y={d.y}
                 width={d.dw}
                 height={d.dh}
-                draggable={uitsnedeModus}
+                draggable={inhoudSleepbaar}
+                onMouseEnter={(e) => {
+                    if (inhoudSleepbaar) {
+                        zetCursor(e, 'move');
+                        onBovenVak?.(laag);
+                    }
+                }}
+                onMouseLeave={(e) => {
+                    zetCursor(e, '');
+                    onBovenVak?.(null);
+                }}
+                onWheel={(e) => {
+                    if (!inhoudSleepbaar) {
+                        return;
+                    }
+
+                    // Zoomen met muiswiel of knijpen op het touchpad, minimaal 100% (vult het vak).
+                    e.evt.preventDefault();
+                    e.cancelBubble = true;
+                    const zoom = Math.min(4, Math.max(1, u.zoom * (e.evt.deltaY < 0 ? 1.06 : 1 / 1.06)));
+                    onWijzig?.(laag.id, { uitsnede: { ...u, zoom } }, 'zoom');
+                }}
+                onDragStart={(e) => {
+                    e.cancelBubble = true;
+                }}
                 onDragMove={(e) => {
-                    // Binnen het vak blijven: de media dekt het vak altijd.
+                    // Begrensd op de uitsnede: er ontstaat nooit een lege rand in het vak.
+                    e.cancelBubble = true;
                     e.target.x(Math.min(0, Math.max(w - d.dw, e.target.x())));
                     e.target.y(Math.min(0, Math.max(h - d.dh, e.target.y())));
                 }}
@@ -133,7 +175,7 @@ function Inhoud({ laag, modus, uitsnedeModus, ...h }: { laag: Laag; modus: Modus
             return (
                 <Text
                     width={laag.breedte}
-                    text={laag.tekst ?? ''}
+                    text={weergaveTekst(laag)}
                     fontFamily={laag.lettertype ?? 'Montserrat Variable'}
                     fontStyle={String(laag.gewicht ?? 400)}
                     fontSize={laag.grootte ?? 48}
@@ -195,6 +237,7 @@ export function PaginaInhoud({
     modus,
     selectie = null,
     uitsnedeModus = false,
+    kaderBewerken = null,
     speelt = false,
     ...handlers
 }: {
@@ -204,6 +247,8 @@ export function PaginaInhoud({
     modus: Modus;
     selectie?: string | null;
     uitsnedeModus?: boolean;
+    /** Super Admin past het kader van deze (vergrendelde) laag aan. */
+    kaderBewerken?: string | null;
     /** Video's spelen (editor: stil, export: met geluid; de opname bepaalt dat). */
     speelt?: boolean;
 } & Handlers) {
@@ -216,62 +261,73 @@ export function PaginaInhoud({
     return (
         <Group ref={ref}>
             <Rect name="achtergrond" width={W} height={H} fill={pagina.achtergrond || '#FFFFFF'} listening={interactief} />
-            {pagina.lagen.map((laag) => (
-                <Group
-                    key={laag.id}
-                    id={laag.id}
-                    name="laag"
-                    x={laag.x}
-                    y={laag.y}
-                    rotation={laag.rotatie}
-                    opacity={laag.dekking ?? 1}
-                    visible={laag.zichtbaar}
-                    // Vergrendeld: niet te kiezen op het canvas (wel in het lagenpaneel), zodat een klik erop de keuze opheft.
-                    listening={interactief && !laag.vergrendeld}
-                    draggable={interactief && !laag.vergrendeld && !(uitsnedeModus && selectie === laag.id)}
-                    onMouseDown={(e) => {
-                        if (!interactief) {
-                            return;
-                        }
+            {pagina.lagen.map((laag) => {
+                const kader = kaderBewerken === laag.id;
+                // Alleen events van de laag zelf; die van de inhoud van een vak (de foto) niet.
+                const eigen = (e: Konva.KonvaEventObject<Event>) => e.target === e.currentTarget;
 
-                        e.cancelBubble = true;
-                        handlers.onKies?.(laag.id, laag);
-                    }}
-                    onTap={(e) => {
-                        e.cancelBubble = true;
-                        handlers.onKies?.(laag.id, laag);
-                    }}
-                    onDblClick={() => handlers.onDubbel?.(laag)}
-                    onDblTap={() => handlers.onDubbel?.(laag)}
-                    onDragStart={(e) => handlers.onSleepStart?.(e.target)}
-                    onDragMove={(e) => handlers.onSleep?.(e.target)}
-                    onDragEnd={(e) => {
-                        handlers.onSleepEind?.();
-                        handlers.onWijzig?.(laag.id, { x: Math.round(e.target.x()), y: Math.round(e.target.y()) });
-                    }}
-                    onTransformEnd={(e) => {
-                        const n = e.target;
-                        const sx = n.scaleX();
-                        const sy = n.scaleY();
-                        n.scale({ x: 1, y: 1 });
-                        const patch: Partial<Laag> = {
-                            x: Math.round(n.x()),
-                            y: Math.round(n.y()),
-                            rotatie: Math.round(n.rotation() * 10) / 10,
-                            breedte: Math.max(10, Math.round(laag.breedte * sx)),
-                            hoogte: Math.max(10, Math.round(laag.hoogte * sy)),
-                        };
+                return (
+                    <Group
+                        key={laag.id}
+                        id={laag.id}
+                        name="laag"
+                        x={laag.x}
+                        y={laag.y}
+                        rotation={laag.rotatie}
+                        opacity={laag.dekking ?? 1}
+                        visible={laag.zichtbaar}
+                        // Vergrendeld: niet te kiezen op het canvas (wel in het lagenpaneel). Een vast vak wel: je verschuift er de inhoud.
+                        listening={interactief && (!laag.vergrendeld || isVastVak(laag) || kader)}
+                        draggable={interactief && (kader || (!laag.vergrendeld && !(uitsnedeModus && selectie === laag.id)))}
+                        onMouseDown={(e) => {
+                            if (!interactief) {
+                                return;
+                            }
 
-                        if (laag.soort === 'tekst' && Math.abs(sy - 1) > 0.01) {
-                            patch.grootte = Math.max(8, Math.round((laag.grootte ?? 48) * sy));
-                        }
+                            e.cancelBubble = true;
+                            handlers.onKies?.(laag.id, laag);
+                        }}
+                        onTap={(e) => {
+                            e.cancelBubble = true;
+                            handlers.onKies?.(laag.id, laag);
+                        }}
+                        onDblClick={() => handlers.onDubbel?.(laag)}
+                        onDblTap={() => handlers.onDubbel?.(laag)}
+                        onDragStart={(e) => eigen(e) && handlers.onSleepStart?.(e.target)}
+                        onDragMove={(e) => eigen(e) && handlers.onSleep?.(e.target)}
+                        onDragEnd={(e) => {
+                            if (!eigen(e)) {
+                                return;
+                            }
 
-                        handlers.onWijzig?.(laag.id, patch);
-                    }}
-                >
-                    <Inhoud laag={laag} modus={modus} uitsnedeModus={uitsnedeModus && selectie === laag.id} {...handlers} />
-                </Group>
-            ))}
+                            handlers.onSleepEind?.();
+                            handlers.onWijzig?.(laag.id, { x: Math.round(e.target.x()), y: Math.round(e.target.y()) });
+                        }}
+                        onTransformEnd={(e) => {
+                            const n = e.target;
+                            const sx = n.scaleX();
+                            const sy = n.scaleY();
+                            n.scale({ x: 1, y: 1 });
+                            const patch: Partial<Laag> = {
+                                x: Math.round(n.x()),
+                                y: Math.round(n.y()),
+                                rotatie: Math.round(n.rotation() * 10) / 10,
+                                breedte: Math.max(10, Math.round(laag.breedte * sx)),
+                                hoogte: Math.max(10, Math.round(laag.hoogte * sy)),
+                            };
+
+                            // Tekst op een merkstijl houdt zijn grootte; alleen vrije tekst (Super Admin) schaalt mee.
+                            if (laag.soort === 'tekst' && (!laag.stijl || laag.vrij) && Math.abs(sy - 1) > 0.01) {
+                                patch.grootte = Math.max(8, Math.round((laag.grootte ?? 48) * sy));
+                            }
+
+                            handlers.onWijzig?.(laag.id, patch);
+                        }}
+                    >
+                        <Inhoud laag={laag} modus={modus} uitsnedeModus={uitsnedeModus && selectie === laag.id} {...handlers} />
+                    </Group>
+                );
+            })}
         </Group>
     );
 }

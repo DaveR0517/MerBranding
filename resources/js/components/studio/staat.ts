@@ -112,6 +112,9 @@ export function useOntwerpStaat(begin: Pagina[]) {
 
     const paginaWeg = useCallback((index: number) => zet((p) => (p.length > 1 ? p.filter((_, i) => i !== index) : p)), [zet]);
 
+    /** Alle pagina's in één stap aanpassen (bijvoorbeeld herstel door de merkcontrole). */
+    const vervang = useCallback((maak: (p: Pagina[]) => Pagina[]) => zet(maak), [zet]);
+
     const ongedaan = useCallback(() => setStand((s) => ({ ...s, plek: Math.max(0, s.plek - 1) })), []);
     const opnieuw = useCallback(() => setStand((s) => ({ ...s, plek: Math.min(s.stappen.length - 1, s.plek + 1) })), []);
 
@@ -125,6 +128,7 @@ export function useOntwerpStaat(begin: Pagina[]) {
         verschuif,
         paginaErbij,
         paginaWeg,
+        vervang,
         ongedaan,
         opnieuw,
         kanOngedaan: stand.plek > 0,

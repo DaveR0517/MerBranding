@@ -53,7 +53,8 @@ class SjablonenController extends StudioController
     public function opslaan(Request $request, StudioTemplate $sjabloon): JsonResponse|RedirectResponse
     {
         $data = $request->validate(['name' => ['required', 'string', 'max:120'], ...$this->paginaRegels()]);
-        $sjabloon->fill(['name' => $data['name'], 'pages' => $request->input('pages')]);
+        $this->bewaakMerklagen($sjabloon->pages ?? [], $request->input('pages'), $request);
+        $sjabloon->fill(['name' => $data['name'], 'pages' => $this->merkkit()->pasToe($request->input('pages'), $sjabloon->format)]);
         if ($pad = $this->bewaarVoorvertoning($data['voorvertoning'] ?? null, "sjabloon-{$sjabloon->id}")) {
             $sjabloon->preview_path = $pad;
         }

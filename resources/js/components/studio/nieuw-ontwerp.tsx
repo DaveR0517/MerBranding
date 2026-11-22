@@ -6,11 +6,24 @@ import ontwerpen from '@/routes/team/studio/ontwerpen';
 import { Miniatuur } from './miniatuur';
 import type { Formaat, OntwerpItem } from './typen';
 
-/** Kies een leeg formaat of begin vanaf een sjabloon. */
-export function NieuwOntwerp({ open, onOpenChange, formaten, sjablonen }: { open: boolean; onOpenChange: (o: boolean) => void; formaten: Record<string, Formaat>; sjablonen: OntwerpItem[] }) {
+/** Nooit blanco: begin vanaf een huisstijlsjabloon of vanaf een merkbasis (licht, donker of verloop) in een formaat. */
+export function NieuwOntwerp({
+    open,
+    onOpenChange,
+    formaten,
+    basissen,
+    sjablonen,
+}: {
+    open: boolean;
+    onOpenChange: (o: boolean) => void;
+    formaten: Record<string, Formaat>;
+    basissen: Record<string, string>;
+    sjablonen: OntwerpItem[];
+}) {
     const [tab, setTab] = useState<'sjabloon' | 'formaat'>('sjabloon');
+    const [formaat, setFormaat] = useState('instagram_post');
     const [bezig, setBezig] = useState(false);
-    const maak = (data: { formaat: string } | { sjabloon: number }) => {
+    const maak = (data: { formaat: string; basis: string } | { sjabloon: number }) => {
         setBezig(true);
         router.post(ontwerpen.store.url(), data, { onFinish: () => setBezig(false) });
     };
@@ -20,37 +33,69 @@ export function NieuwOntwerp({ open, onOpenChange, formaten, sjablonen }: { open
             <DialogContent className="max-h-[88dvh] overflow-y-auto sm:max-w-3xl">
                 <DialogHeader>
                     <DialogTitle>Nieuw ontwerp</DialogTitle>
-                    <DialogDescription>Begin vanaf een huisstijlsjabloon of kies een leeg formaat. Een sjabloon gebruiken maakt een kopie; het sjabloon blijft zoals het is.</DialogDescription>
+                    <DialogDescription>Begin vanaf een huisstijlsjabloon of een merkbasis: altijd met logo, merkkleuren en tekststijlen. Een sjabloon gebruiken maakt een kopie; het sjabloon blijft zoals het is.</DialogDescription>
                 </DialogHeader>
                 <Tabs
                     tabs={[
                         { waarde: 'sjabloon', label: 'Vanaf sjabloon', aantal: sjablonen.length },
-                        { waarde: 'formaat', label: 'Leeg formaat' },
+                        { waarde: 'formaat', label: 'Merkbasis' },
                     ]}
                     actief={tab}
                     onKies={setTab}
                 />
                 {tab === 'formaat' ? (
-                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                        {Object.entries(formaten).map(([sleutel, f]) => (
-                            <button
-                                key={sleutel}
-                                type="button"
-                                disabled={bezig}
-                                data-test={`studio-formaat-${sleutel}`}
-                                onClick={() => maak({ formaat: sleutel })}
-                                className="flex flex-col items-center gap-2 rounded-xl border bg-card p-3 text-center hover:border-violet"
-                            >
-                                <span className="grid h-20 w-full place-items-center">
-                                    <span className="block rounded-sm bg-brand-gradient" style={{ width: f.breedte >= f.hoogte ? 64 : (64 * f.breedte) / f.hoogte, height: f.hoogte >= f.breedte ? 64 : (64 * f.hoogte) / f.breedte }} />
-                                </span>
-                                <span className="text-sm font-semibold">{f.naam}</span>
-                                <span className="text-xs text-muted-foreground tabular-nums">
-                                    {f.breedte} x {f.hoogte}
-                                    {sleutel === 'carrousel' ? ", 3 pagina's" : ''}
-                                </span>
-                            </button>
-                        ))}
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                            <p className="text-sm font-semibold">1. Formaat</p>
+                            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3" role="radiogroup" aria-label="Formaat">
+                                {Object.entries(formaten).map(([sleutel, f]) => (
+                                    <button
+                                        key={sleutel}
+                                        type="button"
+                                        role="radio"
+                                        aria-checked={formaat === sleutel}
+                                        data-test={`studio-formaat-${sleutel}`}
+                                        onClick={() => setFormaat(sleutel)}
+                                        className={`flex items-center gap-3 rounded-xl border bg-card p-2.5 text-left ${formaat === sleutel ? 'border-violet ring-2 ring-violet/30' : 'hover:border-violet'}`}
+                                    >
+                                        <span className="grid size-10 shrink-0 place-items-center">
+                                            <span className="block rounded-sm bg-lila" style={{ width: f.breedte >= f.hoogte ? 36 : (36 * f.breedte) / f.hoogte, height: f.hoogte >= f.breedte ? 36 : (36 * f.hoogte) / f.breedte }} />
+                                        </span>
+                                        <span className="min-w-0">
+                                            <span className="block truncate text-sm font-semibold">{f.naam}</span>
+                                            <span className="block text-xs text-muted-foreground tabular-nums">
+                                                {f.breedte} x {f.hoogte}
+                                                {sleutel === 'carrousel' ? ", 3 pagina's" : ''}
+                                            </span>
+                                        </span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <p className="text-sm font-semibold">2. Merkbasis</p>
+                            <div className="grid grid-cols-3 gap-2">
+                                {Object.entries(basissen).map(([sleutel, label]) => (
+                                    <button
+                                        key={sleutel}
+                                        type="button"
+                                        disabled={bezig}
+                                        data-test={`studio-basis-${sleutel}`}
+                                        onClick={() => maak({ formaat, basis: sleutel })}
+                                        className="space-y-1.5 rounded-xl border bg-card p-2 text-center hover:border-violet"
+                                    >
+                                        <span
+                                            className={`flex aspect-square flex-col justify-between rounded-lg p-2 text-left ${sleutel === 'licht' ? 'bg-[#F6F5F9]' : sleutel === 'donker' ? 'bg-aubergine-dark' : 'bg-brand-gradient'}`}
+                                        >
+                                            {sleutel !== 'verloop' && <span className="-mx-2 -mt-2 block h-1.5 rounded-t-lg bg-brand-gradient" />}
+                                            <span className={`block text-xs font-extrabold ${sleutel === 'licht' ? 'text-aubergine' : 'text-white'}`}>Jouw kop</span>
+                                            <span className={`block h-1.5 w-10 rounded ${sleutel === 'licht' ? 'bg-aubergine' : 'bg-white'}`} />
+                                        </span>
+                                        <span className="block text-sm font-semibold">{label}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 ) : (
                     <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">

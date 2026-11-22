@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Team\Studio;
 
 use App\Jobs\ZetStudioVideoOm;
+use App\Models\ActivityLog;
 use App\Models\StudioDesign;
 use App\Models\StudioTemplate;
+use App\Services\Studio\Merkkit;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -33,37 +35,31 @@ class OntwerpenController extends StudioController
             'ontwerpen' => $ontwerpen->map(fn ($d) => $this->ontwerp($d)),
             'filters' => ['formaat' => $filters['formaat'] ?? null, 'status' => $filters['status'] ?? null],
             'formaten' => $this->formaten(),
+            'basissen' => Merkkit::BASISSEN,
             'statussen' => config('studio.statussen'),
             'sjablonen' => StudioTemplate::actief()->orderByDesc('is_builtin')->orderBy('name')->get()->map(fn ($s) => $this->sjabloon($s)),
             'totaal' => StudioDesign::count(),
         ]);
     }
 
-    /** Nieuw ontwerp: leeg in een formaat, of als kopie van een sjabloon. */
+    /** Nieuw ontwerp: nooit blanco. Vanaf een merkbasis (licht, donker, verloop) in een formaat, of als kopie van een sjabloon. */
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
             'formaat' => ['required_without:sjabloon', 'nullable', Rule::in(array_keys($this->formaten()))],
+            'basis' => ['required_without:sjabloon', 'nullable', Rule::in(array_keys(Merkkit::BASISSEN))],
             'sjabloon' => ['nullable', 'integer', 'exists:studio_templates,id'],
         ]);
 
         $ontwerp = isset($data['sjabloon'])
             ? $this->nieuwVanSjabloon(StudioTemplate::findOrFail($data['sjabloon']), $request)
-            : $this->leeg($data['formaat'], $request);
+            : StudioDesign::create([
+                'user_id' => $request->user()->id, 'name' => 'Nieuw ontwerp, '.$this->formaten()[$data['formaat']]['naam'], 'format' => $data['formaat'],
+                'width' => $this->formaten()[$data['formaat']]['breedte'], 'height' => $this->formaten()[$data['formaat']]['hoogte'], 'status' => 'concept',
+                'pages' => $this->merkkit()->basis($data['formaat'], $data['basis']),
+            ]);
 
         return redirect()->route('team.studio.ontwerpen.bewerken', $ontwerp);
-    }
-
-    private function leeg(string $formaat, Request $request): StudioDesign
-    {
-        $f = $this->formaten()[$formaat];
-        $aantal = $formaat === 'carrousel' ? 3 : 1;
-
-        return StudioDesign::create([
-            'user_id' => $request->user()->id, 'name' => 'Nieuw ontwerp, '.$f['naam'], 'format' => $formaat,
-            'width' => $f['breedte'], 'height' => $f['hoogte'], 'status' => 'concept',
-            'pages' => array_fill(0, $aantal, ['achtergrond' => '#FFFFFF', 'lagen' => []]),
-        ]);
     }
 
     public function bewerken(StudioDesign $ontwerp): Response
@@ -90,7 +86,8 @@ class OntwerpenController extends StudioController
             abort_if(count($data['pages']) > 1, 422, 'Alleen een carrousel heeft meerdere pagina\'s.');
         }
 
-        $ontwerp->fill(['name' => $data['name'], 'pages' => $request->input('pages')]);
+        $this->bewaakMerklagen($ontwerp->pages ?? [], $request->input('pages'), $request);
+        $ontwerp->fill(['name' => $data['name'], 'pages' => $this->merkkit()->pasToe($request->input('pages'), $ontwerp->format)]);
         if ($pad = $this->bewaarVoorvertoning($data['voorvertoning'] ?? null, "ontwerp-{$ontwerp->id}")) {
             $ontwerp->preview_path = $pad;
         }
@@ -134,6 +131,20 @@ class OntwerpenController extends StudioController
         ]);
 
         return redirect()->route('team.studio.sjablonen.index')->with('melding', "Sjabloon \"{$sjabloon->name}\" opgeslagen.");
+    }
+
+    /** Super Admin exporteert ondanks een rode merkcontrole: alleen met reden, altijd in het logboek. */
+    public function merkcontrole(Request $request, StudioDesign $ontwerp): JsonResponse
+    {
+        abort_unless($request->user()->hasRole('Super Admin'), 403, 'Alleen Super Admin kan exporteren ondanks de merkcontrole.');
+        $data = $request->validate(['reden' => ['required', 'string', 'min:5', 'max:500'], 'bevindingen' => ['array', 'max:50'], 'bevindingen.*' => ['string', 'max:300']]);
+
+        ActivityLog::create([
+            'user_id' => $request->user()->id, 'subject_type' => StudioDesign::class, 'subject_id' => $ontwerp->id,
+            'event' => 'merkcontrole_overgeslagen', 'reason' => $data['reden'], 'data' => ['bevindingen' => $data['bevindingen'] ?? []],
+        ]);
+
+        return response()->json(['ok' => true]);
     }
 
     public function voorvertoning(StudioDesign $ontwerp): BinaryFileResponse

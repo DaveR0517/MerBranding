@@ -25,8 +25,15 @@ export type Laag = {
     /** Benoemd vak in een sjabloon: hier zet je een foto, video of eigen tekst in. */
     vak?: boolean;
     vakNaam?: string | null;
+    /** Merkelement (logo, merkbalk, merkverloop): vast voor gewone teamleden, alleen Super Admin ontgrendelt. */
+    merk?: boolean;
     // tekst
     tekst?: string;
+    /** Tekststijl uit de merkkit; grootte, gewicht en lettertype volgen de stijl. */
+    stijl?: StijlSleutel;
+    /** Alleen Super Admin: eigen grootte en gewicht in plaats van de stijl (Geavanceerd). */
+    vrij?: boolean;
+    hoofdletters?: boolean;
     lettertype?: string;
     grootte?: number;
     gewicht?: number;
@@ -113,19 +120,32 @@ export type Export = {
     url: string;
 };
 
-/** Vaste huisstijlkleuren. */
-export const PALET = [
-    { kleur: '#3A3659', naam: 'Aubergine' },
-    { kleur: '#2E2B48', naam: 'Aubergine donker' },
-    { kleur: '#6D6794', naam: 'Lila' },
-    { kleur: '#614ED9', naam: 'Violet' },
-    { kleur: '#D9303E', naam: 'Rood' },
-    { kleur: '#FFFFFF', naam: 'Wit' },
-    { kleur: '#F6F5F9', naam: 'Licht' },
-    { kleur: '#2A2840', naam: 'Inkt' },
-];
+export type StijlSleutel = 'kop' | 'subkop' | 'tekst' | 'label' | 'cijfer';
 
-export const LETTERTYPES = ['Montserrat Variable', 'Noto Sans Variable'];
+export type Stijl = { naam: string; lettertype: string; grootte: number; gewicht: number; regelafstand: number; hoofdletters: boolean };
+
+/** De merkkit uit App\Services\Studio\Merkkit: de ene bron voor de huisstijl. */
+export type Merkkit = {
+    palet: { kleur: string; naam: string }[];
+    verloop: { van: string; naar: string; hoek: number };
+    lettertypes: string[];
+    stijlen: Record<StijlSleutel, Stijl>;
+    logos: { wit: string; aubergine: string; verloop: string };
+    formaten: Record<string, Formaat & { marge: number; veilig_boven: number; veilig_onder: number; schaal: number }>;
+    raster: number;
+    controle: {
+        min_tekst: number;
+        contrast_klein: number;
+        contrast_groot: number;
+        groot_vanaf_scherm_px: number;
+        schermbreedte: number;
+        logo_min_breedte: number;
+        max_stijlen: number;
+    };
+    basissen: Record<string, string>;
+};
+
+export const STIJLEN: StijlSleutel[] = ['kop', 'subkop', 'tekst', 'label', 'cijfer'];
 
 export const STATUS_LABEL: Record<string, string> = { concept: 'Concept', klaar: 'Klaar', ingepland: 'Ingepland', geplaatst: 'Geplaatst' };
 
@@ -153,23 +173,37 @@ export function nieuwId(soort: string): string {
     return `${soort}-${Date.now().toString(36)}${teller}`;
 }
 
-/** Nieuwe laag in het midden van het canvas. */
-export function nieuweLaag(soort: Soort, W: number, H: number, extra: Partial<Laag> = {}): Laag {
+/** Waarden van een tekststijl in een formaat (zelfde rekensom als Merkkit::stijl op de server). */
+export function stijlWaarden(merk: Merkkit, stijl: StijlSleutel, formaat: string): Partial<Laag> {
+    const s = merk.stijlen[stijl];
+
+    return {
+        lettertype: s.lettertype,
+        grootte: Math.round(s.grootte * (merk.formaten[formaat]?.schaal ?? 1)),
+        gewicht: s.gewicht,
+        regelafstand: s.regelafstand,
+        hoofdletters: s.hoofdletters,
+    };
+}
+
+/** Nieuwe laag in het midden van het canvas, in de huisstijl van de merkkit. */
+export function nieuweLaag(soort: Soort, W: number, H: number, merk: Merkkit, formaat: string, extra: Partial<Laag> = {}): Laag {
     const basis = { id: nieuwId(soort), soort, rotatie: 0, zichtbaar: true, vergrendeld: false };
     const midden = (b: number, h: number) => ({ x: Math.round((W - b) / 2), y: Math.round((H - h) / 2), breedte: b, hoogte: h });
+    const marge = merk.formaten[formaat]?.marge ?? 60;
 
     switch (soort) {
         case 'tekst':
-            return { ...basis, naam: 'Tekst', ...midden(W * 0.8, 96), tekst: 'Jouw tekst', lettertype: 'Montserrat Variable', grootte: 80, gewicht: 800, kleur: '#3A3659', uitlijning: 'center', regelafstand: 1.2, ...extra };
+            return { ...basis, naam: 'Tekst', ...midden(W - 2 * marge, 96), tekst: 'Jouw tekst', stijl: 'tekst', ...stijlWaarden(merk, 'tekst', formaat), kleur: '#3A3659', uitlijning: 'left', ...extra };
         case 'foto':
         case 'video':
             return { ...basis, naam: soort === 'foto' ? 'Foto' : 'Video', ...midden(W * 0.7, H * 0.5), bron: null, uitsnede: { x: 0.5, y: 0.5, zoom: 1 }, hoekafronding: 24, ...extra };
         case 'vorm':
-            return { ...basis, naam: extra.vorm === 'cirkel' ? 'Cirkel' : 'Rechthoek', ...midden(W * 0.4, W * 0.4), vorm: 'rechthoek', vulling: '#614ED9', hoekafronding: 0, dekking: 1, ...extra };
+            return { ...basis, naam: extra.vorm === 'cirkel' ? 'Cirkel' : 'Rechthoek', ...midden(W * 0.4, W * 0.4), vorm: 'rechthoek', vulling: merk.palet[3]?.kleur ?? '#614ED9', hoekafronding: 0, dekking: 1, ...extra };
         case 'verloop':
-            return { ...basis, naam: 'Merkverloop', ...midden(W, H), x: 0, y: 0, van: '#D9303E', naar: '#614ED9', hoek: 135, hoekafronding: 0, ...extra };
+            return { ...basis, naam: 'Merkverloop', ...midden(W, H), x: 0, y: 0, ...merk.verloop, hoekafronding: 0, ...extra };
         case 'logo':
-            return { ...basis, naam: 'Logo', ...midden(W * 0.4, (W * 0.4) / 6.274), bron: { soort: 'logo', naam: 'mebranding-logo-wit.svg' }, ...extra };
+            return { ...basis, naam: 'Logo', ...midden(280 * (W / 1080), (280 * (W / 1080)) / 6.274), bron: { soort: 'logo', naam: merk.logos.wit }, ...extra };
     }
 }
 

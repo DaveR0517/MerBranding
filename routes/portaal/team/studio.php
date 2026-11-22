@@ -3,6 +3,7 @@
 use App\Http\Controllers\Team\Studio\ExportController;
 use App\Http\Controllers\Team\Studio\FeedplannerController;
 use App\Http\Controllers\Team\Studio\MediatheekController;
+use App\Http\Controllers\Team\Studio\MerkkitController;
 use App\Http\Controllers\Team\Studio\OntwerpenController;
 use App\Http\Controllers\Team\Studio\SjablonenController;
 use Illuminate\Support\Facades\Route;
@@ -21,6 +22,7 @@ Route::prefix('studio')->name('studio.')->middleware('can:studio.gebruiken')->gr
         Route::post('{ontwerp}/dupliceren', 'dupliceren')->name('dupliceren');
         Route::post('{ontwerp}/sjabloon', 'alsSjabloon')->name('sjabloon');
         Route::get('{ontwerp}/voorvertoning', 'voorvertoning')->name('voorvertoning');
+        Route::post('{ontwerp}/merkcontrole', 'merkcontrole')->name('merkcontrole');
     });
 
     Route::controller(ExportController::class)->group(function () {
@@ -39,6 +41,11 @@ Route::prefix('studio')->name('studio.')->middleware('can:studio.gebruiken')->gr
         Route::post('{sjabloon}/dupliceren', 'dupliceren')->name('dupliceren');
         Route::patch('{sjabloon}/naam', 'hernoemen')->name('hernoemen');
         Route::post('{sjabloon}/archiveren', 'archiveren')->name('archiveren');
+    });
+
+    Route::controller(MerkkitController::class)->prefix('merkkit')->name('merkkit.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::put('/', 'opslaan')->name('opslaan');
     });
 
     Route::controller(FeedplannerController::class)->prefix('feedplanner')->name('feedplanner.')->group(function () {

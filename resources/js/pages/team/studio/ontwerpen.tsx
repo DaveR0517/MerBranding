@@ -12,6 +12,7 @@ type Props = {
     ontwerpen: OntwerpItem[];
     filters: { formaat: string | null; status: string | null };
     formaten: Record<string, Formaat>;
+    basissen: Record<string, string>;
     statussen: Record<string, string>;
     sjablonen: OntwerpItem[];
     totaal: number;
@@ -20,7 +21,7 @@ type Props = {
 const kiesVeld = 'h-10 rounded-lg border bg-card px-3 text-sm';
 
 /** MeStudio, startscherm: recente ontwerpen voor de eigen marketing, filters en een nieuw ontwerp. */
-export default function Ontwerpen({ ontwerpen: lijst, filters, formaten, statussen, sjablonen, totaal }: Props) {
+export default function Ontwerpen({ ontwerpen: lijst, filters, formaten, basissen, statussen, sjablonen, totaal }: Props) {
     const [nieuw, setNieuw] = useState(false);
     const filter = (wijziging: Partial<Props['filters']>) =>
         router.get(
@@ -115,7 +116,7 @@ export default function Ontwerpen({ ontwerpen: lijst, filters, formaten, statuss
                     </MeerLijst>
                 )}
             </Pagina>
-            <NieuwOntwerp open={nieuw} onOpenChange={setNieuw} formaten={formaten} sjablonen={sjablonen} />
+            <NieuwOntwerp open={nieuw} onOpenChange={setNieuw} formaten={formaten} basissen={basissen} sjablonen={sjablonen} />
         </>
     );
 }

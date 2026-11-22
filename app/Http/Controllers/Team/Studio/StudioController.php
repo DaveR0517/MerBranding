@@ -8,8 +8,10 @@ use App\Models\StudioDesign;
 use App\Models\StudioMedia;
 use App\Models\StudioTemplate;
 use App\Models\UsageRight;
+use App\Services\Studio\Merkkit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Basis voor MeStudio (team; het recht studio.gebruiken staat op de routegroep). Eén plek voor rechten, formaten, voorvertoningen
@@ -25,8 +27,45 @@ abstract class StudioController extends Controller
         return StudioDesign::create([
             'user_id' => $request->user()->id, 'template_id' => $sjabloon->id, 'name' => $sjabloon->name,
             'format' => $sjabloon->format, 'width' => $sjabloon->width, 'height' => $sjabloon->height,
-            'pages' => $sjabloon->pages, 'status' => 'concept',
+            'pages' => $this->merkkit()->pasToe($sjabloon->pages, $sjabloon->format), 'status' => 'concept',
         ]);
+    }
+
+    protected function merkkit(): Merkkit
+    {
+        return app(Merkkit::class);
+    }
+
+    /**
+     * Merkslot: logo's en merkbalken (merk) en vergrendelde foto- of videovakken uit een sjabloon of merkbasis
+     * staan vast. Alleen Super Admin mag ze verplaatsen, aanpassen of weghalen.
+     */
+    protected function bewaakMerklagen(array $oud, array $nieuw, Request $request): void
+    {
+        if ($request->user()->hasRole('Super Admin')) {
+            return;
+        }
+
+        $nieuweLagen = collect($nieuw)->flatMap(fn ($p) => $p['lagen'] ?? [])->keyBy('id');
+        $velden = ['x', 'y', 'breedte', 'hoogte', 'rotatie', 'hoekafronding', 'bron', 'zichtbaar', 'vergrendeld'];
+
+        foreach (collect($oud)->flatMap(fn ($p) => $p['lagen'] ?? []) as $laag) {
+            $vastVak = ! empty($laag['vak']) && in_array($laag['soort'] ?? null, ['foto', 'video'], true) && ! empty($laag['vergrendeld']);
+            if (empty($laag['merk']) && ! $vastVak) {
+                continue;
+            }
+
+            $na = $nieuweLagen->get($laag['id']);
+            // Bij een vak mag de inhoud (bron en uitsnede) wel wisselen; het kader niet.
+            $teControleren = $vastVak ? array_diff($velden, ['bron']) : $velden;
+            $gewijzigd = ! $na || collect($teControleren)->contains(fn ($v) => is_numeric($laag[$v] ?? null)
+                ? abs((float) $laag[$v] - (float) ($na[$v] ?? 0)) > 0.5
+                : ($laag[$v] ?? null) != ($na[$v] ?? null));
+
+            if ($gewijzigd) {
+                throw ValidationException::withMessages(['pages' => "\"{$laag['naam']}\" staat vast (merkslot). Alleen Super Admin kan dit aanpassen."]);
+            }
+        }
     }
 
     /** @return array<string, array{naam: string, breedte: int, hoogte: int}> */
@@ -85,7 +124,7 @@ abstract class StudioController extends Controller
             'updated_at' => $d->updated_at?->toIso8601String(),
             'heeft_video' => $d->heeftVideo(),
             // Zonder voorvertoning tekent de browser het ontwerp zelf (klein).
-            'pages' => $metLagen || ! $d->preview_path ? $d->pages : null,
+            'pages' => $metLagen || ! $d->preview_path ? $this->merkkit()->pasToe($d->pages ?? [], $d->format) : null,
         ];
     }
 
@@ -99,7 +138,7 @@ abstract class StudioController extends Controller
             'width' => $s->width,
             'height' => $s->height,
             'aantal_paginas' => count($s->pages ?? []),
-            'pages' => $s->pages,
+            'pages' => $this->merkkit()->pasToe($s->pages ?? [], $s->format),
             'is_builtin' => $s->is_builtin,
             'archived' => $s->archived_at !== null,
             'maker' => $s->user?->name,
@@ -123,6 +162,7 @@ abstract class StudioController extends Controller
             'media' => StudioMedia::with('user')->latest('id')->limit(300)->get()->map(fn ($m) => $this->media($m)),
             'creatorVideos' => $this->creatorVideos(),
             'logos' => self::logos(),
+            'merkkit' => $this->merkkit()->voorScherm(),
         ];
     }
 

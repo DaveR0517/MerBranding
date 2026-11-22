@@ -1,4 +1,4 @@
-import { CalendarHeart, FolderOpen, LayoutTemplate, Palette } from 'lucide-react';
+import { CalendarHeart, FolderOpen, LayoutTemplate, Palette, ShieldCheck } from 'lucide-react';
 import type { NavModule } from '@/lib/portaal';
 import studio from '@/routes/team/studio';
 
@@ -9,6 +9,7 @@ const nav: NavModule = {
         { title: 'Sjablonen', href: () => studio.sjablonen.index.url(), icon: LayoutTemplate, order: 2, permission: 'studio.gebruiken' },
         { title: 'Feedplanner', href: () => studio.feedplanner.index.url(), icon: CalendarHeart, order: 3, permission: 'studio.gebruiken' },
         { title: 'Mediatheek', href: () => studio.mediatheek.index.url(), icon: FolderOpen, order: 4, permission: 'studio.gebruiken' },
+        { title: 'Merkkit', href: () => studio.merkkit.index.url(), icon: ShieldCheck, order: 5, permission: 'studio.gebruiken' },
     ],
 };
 
