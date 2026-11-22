@@ -8,7 +8,7 @@ use Symfony\Component\Process\Process;
 uses(RefreshDatabase::class);
 
 test('portaal stuurt gasten naar inloggen', function () {
-    $this->get('http://app.mebranding.test/')->assertRedirect('http://app.mebranding.test/dashboard');
+    $this->get('http://app.mebranding.test/')->assertRedirect('http://app.mebranding.test/login');
     $this->get('http://app.mebranding.test/dashboard')->assertRedirect('http://app.mebranding.test/login');
     $this->get('http://app.mebranding.test/login')->assertOk();
 });

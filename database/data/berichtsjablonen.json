@@ -1,0 +1,3821 @@
+{
+ "meta": {
+  "versie": "concept 18-11-2026",
+  "status": "Voorstel: alle lopende teksten zijn concepttekst; onderwerpregels met bron FO §3.6 komen uit het functioneel ontwerp",
+  "afzender": "MEBRANDING",
+  "spelregels": [
+   "Kanalen: in-app, e-mail en push. Sms voor bezoekherinneringen later.",
+   "Verplicht (niet uit te zetten): beveiliging, geld, juridische zaken en alles wat de voortgang blokkeert.",
+   "In-app staat altijd aan voor alles wat actie vraagt. Alleen e-mail en push zijn instelbaar.",
+   "Feedback met meerdere opmerkingen geeft één melding, pas na \"Feedback versturen\".",
+   "Push niet tussen 21:00 en 08:00, behalve beveiliging en een bezoek van vandaag.",
+   "Onderwerpregels kort, belangrijkste woord eerst, geen uitroeptekens. Eén hoofdknop met deeplink.",
+   "Push maximaal ongeveer 90 tekens."
+  ],
+  "placeholders": [
+   "aantal",
+   "adres",
+   "am",
+   "apparaat",
+   "bedrag",
+   "creator",
+   "cursusdag",
+   "dagen",
+   "datum",
+   "maand",
+   "n",
+   "naam",
+   "nieuw",
+   "niveau",
+   "nummer",
+   "omschrijving",
+   "oud",
+   "pakket",
+   "percentage",
+   "plaats",
+   "platform",
+   "plek",
+   "reden",
+   "regio",
+   "rol",
+   "rollen",
+   "samenwerking",
+   "score",
+   "soort",
+   "sterren",
+   "tijd",
+   "toelichting",
+   "vestiging",
+   "views",
+   "voornaam",
+   "vraag",
+   "wie",
+   "wijziging",
+   "zaak"
+  ],
+  "rollen": {
+   "o": "Ondernemer",
+   "c": "Creator",
+   "t": "Team",
+   "a": "Deelnemer academy",
+   "g": "Iedereen (account)"
+  },
+  "soorten": [
+   "Samenwerking",
+   "Bezoek",
+   "Content en controle",
+   "Publicatie en cijfers",
+   "Creator en niveau",
+   "Koppelingen",
+   "Academy",
+   "Account en beveiliging",
+   "Abonnement en geld",
+   "Teamsignalen"
+  ],
+  "aantal": 99
+ },
+ "sjablonen": [
+  {
+   "id": "o-aangevraagd",
+   "rol": "o",
+   "rolnaam": "Ondernemer",
+   "soort": "Samenwerking",
+   "gebeurtenis": "Samenwerking aangevraagd (status 1)",
+   "ontvanger": "Eigenaar en leden van de vestiging",
+   "moment": "Direct na versturen van de aanvraag",
+   "kanalen": {
+    "inapp": "aan",
+    "email": "aan",
+    "push": "uit"
+   },
+   "uitzetten": "Ja (e-mail)",
+   "onderwerp": "Samenwerking ontvangen",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "We hebben je aanvraag \"{samenwerking}\" voor {vestiging} goed ontvangen. Nummer: {nummer}.",
+     "We zoeken nu een creator die bij {zaak} past. Binnen {aantal} werkdagen hoor je van ons wie er langskomt."
+    ],
+    "knop": "Bekijk je aanvraag",
+    "deeplink": "SamenwerkingDetail/s1"
+   },
+   "push": "Aanvraag ontvangen: {samenwerking}. We zoeken nu een creator voor je.",
+   "inapp": "We hebben je aanvraag \"{samenwerking}\" ontvangen. We zoeken een creator die bij je past.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Franeker",
+    "plaats": "Leeuwarden",
+    "creator": "Sophie de Vries",
+    "samenwerking": "Kerstlunch Franeker",
+    "datum": "do 19 nov",
+    "tijd": "14:00",
+    "nummer": "SW-2026-0148",
+    "aantal": "2"
+   }
+  },
+  {
+   "id": "o-vraag",
+   "rol": "o",
+   "rolnaam": "Ondernemer",
+   "soort": "Samenwerking",
+   "gebeurtenis": "Vraag van MEBRANDING",
+   "ontvanger": "Eigenaar of aanvrager",
+   "moment": "Als het team iets nodig heeft om verder te kunnen",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "aan"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Vraag over je samenwerking",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "{am} heeft een vraag over \"{samenwerking}\":",
+     "\"{vraag}\"",
+     "Zodra je antwoordt, gaan we verder."
+    ],
+    "knop": "Beantwoord de vraag",
+    "deeplink": "N_berichten"
+   },
+   "push": "{am} heeft een vraag over {samenwerking}. Tik om te antwoorden.",
+   "inapp": "Vraag van {am} over \"{samenwerking}\". We wachten op je antwoord.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "creator": "Sophie de Vries",
+    "samenwerking": "Kerstlunch Franeker",
+    "datum": "do 19 nov",
+    "tijd": "14:00",
+    "am": "Eva",
+    "vraag": "Mag de creator ook in de keuken filmen?"
+   }
+  },
+  {
+   "id": "o-creator-gekozen",
+   "rol": "o",
+   "rolnaam": "Ondernemer",
+   "soort": "Samenwerking",
+   "gebeurtenis": "Creator heeft ja gezegd (status 3)",
+   "ontvanger": "Eigenaar en leden van de vestiging",
+   "moment": "Zodra de creator de uitnodiging accepteert (besluit W1)",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "aan",
+    "push": "aan"
+   },
+   "uitzetten": "Ja (e-mail)",
+   "onderwerp": "Creator gevonden: {creator}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Goed nieuws: {creator} komt bij {zaak} in {vestiging} langs voor \"{samenwerking}\".",
+     "{creator} kiest nu een tijdvak uit de bezoektijden van je vestiging. Je krijgt bericht zodra het bezoek vaststaat."
+    ],
+    "knop": "Bekijk de creator",
+    "deeplink": "SamenwerkingDetail/s3"
+   },
+   "push": "{creator} komt langs voor {samenwerking}. Het bezoek wordt nu gepland.",
+   "inapp": "{creator} doet de samenwerking. Het bezoek wordt nu gepland.",
+   "bron": "Besluit W1",
+   "status": "Voorstel",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "creator": "Sophie de Vries",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 19 nov",
+    "tijd": "14:00"
+   }
+  },
+  {
+   "id": "o-bezoek-bevestigen",
+   "rol": "o",
+   "rolnaam": "Ondernemer",
+   "soort": "Bezoek",
+   "gebeurtenis": "Bezoek voorgesteld (alleen bij instelling \"zelf bevestigen\")",
+   "ontvanger": "Eigenaar en bedrijfsleider van de vestiging",
+   "moment": "Na keuze tijdvak door de creator. Zonder reactie binnen 24 uur staat het bezoek vast (W2)",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "aan"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Bevestig het bezoek van {creator}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "{creator} wil op {datum} om {tijd} langskomen bij {vestiging}.",
+     "Past dat? Bevestig of kies een ander moment. Reageer je niet binnen 24 uur, dan staat het bezoek vast."
+    ],
+    "knop": "Bevestig of verplaats",
+    "deeplink": "SamenwerkingDetail/s4"
+   },
+   "push": "Bevestig het bezoek van {creator}: {datum} om {tijd}. Binnen 24 uur.",
+   "inapp": "Bevestig of verplaats het bezoek van {creator} op {datum}, {tijd}.",
+   "bron": "FO §3.6, besluit W2",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "creator": "Sophie de Vries",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 19 nov",
+    "tijd": "14:00"
+   }
+  },
+  {
+   "id": "o-bezoek-vast",
+   "rol": "o",
+   "rolnaam": "Ondernemer",
+   "soort": "Bezoek",
+   "gebeurtenis": "Bezoek staat vast (status 4)",
+   "ontvanger": "Eigenaar en bedrijfsleider van de vestiging",
+   "moment": "Direct na keuze tijdvak, of na bevestiging",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "nee"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Bezoek {creator} op {datum}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Het bezoek staat vast: {creator} komt op {datum} om {tijd} bij {vestiging}.",
+     "In de bijlage vind je de agenda-uitnodiging. Zorg dat er iemand is die {creator} ontvangt en het gerecht of product klaar heeft."
+    ],
+    "knop": "Bekijk het bezoek",
+    "deeplink": "SamenwerkingDetail/s4"
+   },
+   "push": "Bezoek staat vast: {creator} op {datum} om {tijd}.",
+   "inapp": "Bezoek van {creator} staat vast op {datum} om {tijd}.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "creator": "Sophie de Vries",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 19 nov",
+    "tijd": "14:00"
+   }
+  },
+  {
+   "id": "o-bezoek-morgen",
+   "rol": "o",
+   "rolnaam": "Ondernemer",
+   "soort": "Bezoek",
+   "gebeurtenis": "Herinnering bezoek, 1 dag vooraf",
+   "ontvanger": "Eigenaar en bedrijfsleider van de vestiging",
+   "moment": "Dag voor het bezoek, 09:00",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "aan",
+    "push": "aan"
+   },
+   "uitzetten": "Ja (e-mail)",
+   "onderwerp": "Morgen: bezoek bij {vestiging}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Morgen om {tijd} komt {creator} bij {vestiging}.",
+     "Tip: zet het gerecht klaar en zorg voor goed licht bij het raam."
+    ],
+    "knop": "Bekijk de details",
+    "deeplink": "SamenwerkingDetail/s4"
+   },
+   "push": "Morgen om {tijd} komt {creator} bij {vestiging}.",
+   "inapp": "Morgen om {tijd}: bezoek van {creator}.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "creator": "Sophie de Vries",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "wo 18 nov",
+    "tijd": "14:00"
+   }
+  },
+  {
+   "id": "o-bezoek-gewijzigd",
+   "rol": "o",
+   "rolnaam": "Ondernemer",
+   "soort": "Bezoek",
+   "gebeurtenis": "Bezoek verzet of geannuleerd",
+   "ontvanger": "Eigenaar en bedrijfsleider, ook de creator en planning",
+   "moment": "Direct na de wijziging",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "aan"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Bezoek gewijzigd: {vestiging}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Het bezoek van {creator} bij {vestiging} is gewijzigd.",
+     "Nieuw moment: {datum} om {tijd}. Past dit niet? Kies een ander moment."
+    ],
+    "knop": "Bekijk de wijziging",
+    "deeplink": "SamenwerkingDetail/s4"
+   },
+   "push": "Bezoek gewijzigd: {creator} komt nu op {datum} om {tijd}.",
+   "inapp": "Bezoek van {creator} gewijzigd naar {datum}, {tijd}.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "creator": "Sophie de Vries",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "vr 20 nov",
+    "tijd": "14:00"
+   }
+  },
+  {
+   "id": "o-niet-verschenen",
+   "rol": "o",
+   "rolnaam": "Ondernemer",
+   "soort": "Bezoek",
+   "gebeurtenis": "Niet verschenen",
+   "ontvanger": "Eigenaar (bij creator die niet kwam), planning",
+   "moment": "Na vastleggen door het team",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "nee"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Over het bezoek van {datum}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Het spijt ons: {creator} is op {datum} niet bij {vestiging} geweest.",
+     "Je tegoed voor deze samenwerking staat weer klaar. We zoeken direct een nieuwe creator en laten je weten wie er komt."
+    ],
+    "knop": "Bekijk de samenwerking",
+    "deeplink": "SamenwerkingDetail/snv"
+   },
+   "push": "Bezoek {datum} ging niet door. Je tegoed staat weer klaar.",
+   "inapp": "{creator} is niet verschenen. Je tegoed staat weer klaar, we zoeken een nieuwe creator.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "creator": "Sophie de Vries",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 19 nov",
+    "tijd": "14:00"
+   }
+  },
+  {
+   "id": "o-content-keuren",
+   "rol": "o",
+   "rolnaam": "Ondernemer",
+   "soort": "Content en controle",
+   "gebeurtenis": "Content aangeleverd (alleen bij instelling A: ondernemer keurt)",
+   "ontvanger": "Eigenaar of aangewezen keurder",
+   "moment": "Na aanlevering; herinnering na 3 en 6 werkdagen, daarna neemt MEBRANDING over (W3)",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "nee"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Keur de content van {creator}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "{creator} heeft de video voor \"{samenwerking}\" aangeleverd.",
+     "Bekijk hem en keur goed of geef feedback. Na 6 werkdagen zonder reactie neemt MEBRANDING de beoordeling over."
+    ],
+    "knop": "Bekijk de video",
+    "deeplink": "Beoordelen"
+   },
+   "push": "De video van {creator} staat klaar. Keur goed of geef feedback.",
+   "inapp": "Video van {creator} staat klaar om te keuren.",
+   "bron": "FO §3.6, besluit W3",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "creator": "Sophie de Vries",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 19 nov",
+    "tijd": "14:00"
+   }
+  },
+  {
+   "id": "o-meekijken",
+   "rol": "o",
+   "rolnaam": "Ondernemer",
+   "soort": "Content en controle",
+   "gebeurtenis": "Video ter controle bij MEBRANDING (standaard, optie B)",
+   "ontvanger": "Eigenaar",
+   "moment": "Na aanlevering door de creator (W3: het team keurt, de ondernemer kijkt mee)",
+   "kanalen": {
+    "inapp": "aan",
+    "email": "uit",
+    "push": "uit"
+   },
+   "uitzetten": "Ja",
+   "onderwerp": "Video in controle: {samenwerking}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "{creator} heeft de video aangeleverd. Ons team controleert hem vandaag nog.",
+     "Je kunt alvast meekijken en een opmerking achterlaten."
+    ],
+    "knop": "Kijk mee",
+    "deeplink": "SamenwerkingDetail/s7"
+   },
+   "push": "De video van {creator} is binnen. We controleren hem vandaag.",
+   "inapp": "Video van {creator} is in controle. Je kunt meekijken.",
+   "bron": "Besluit W3 en W4",
+   "status": "Voorstel",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "creator": "Sophie de Vries",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 19 nov",
+    "tijd": "14:00"
+   }
+  },
+  {
+   "id": "o-laatste-ronde",
+   "rol": "o",
+   "rolnaam": "Ondernemer",
+   "soort": "Content en controle",
+   "gebeurtenis": "Laatste feedbackronde",
+   "ontvanger": "Eigenaar, ook de accountmanager",
+   "moment": "Bij start van de laatste toegestane ronde",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "aan",
+    "push": "aan"
+   },
+   "uitzetten": "Ja (e-mail)",
+   "onderwerp": "Laatste feedbackronde: {samenwerking}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Dit is de laatste feedbackronde voor \"{samenwerking}\".",
+     "Zet al je opmerkingen in één keer klaar. Een extra ronde vraag je aan bij je accountmanager."
+    ],
+    "knop": "Geef je feedback",
+    "deeplink": "Beoordelen"
+   },
+   "push": "Laatste feedbackronde voor {samenwerking}. Zet alles in één keer klaar.",
+   "inapp": "Laatste feedbackronde voor \"{samenwerking}\".",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "creator": "Sophie de Vries",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 19 nov",
+    "tijd": "14:00"
+   }
+  },
+  {
+   "id": "o-goedgekeurd",
+   "rol": "o",
+   "rolnaam": "Ondernemer",
+   "soort": "Content en controle",
+   "gebeurtenis": "Goedgekeurd met publicatiedatum (status 9)",
+   "ontvanger": "Eigenaar",
+   "moment": "Na goedkeuring door het team",
+   "kanalen": {
+    "inapp": "aan",
+    "email": "uit",
+    "push": "uit"
+   },
+   "uitzetten": "Ja",
+   "onderwerp": "Goedgekeurd: {samenwerking}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "De video van {creator} is goedgekeurd.",
+     "{creator} plaatst hem op {datum} op het eigen account. Daarna zie je hier de cijfers."
+    ],
+    "knop": "Bekijk de video",
+    "deeplink": "SamenwerkingDetail/s9"
+   },
+   "push": "Goedgekeurd: {samenwerking} gaat live op {datum}.",
+   "inapp": "Goedgekeurd. Publicatie op {datum}.",
+   "bron": "FO §3.6, besluit W4 en W5",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "creator": "Sophie de Vries",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 26 nov",
+    "tijd": "14:00"
+   }
+  },
+  {
+   "id": "o-live",
+   "rol": "o",
+   "rolnaam": "Ondernemer",
+   "soort": "Publicatie en cijfers",
+   "gebeurtenis": "Live (status 10)",
+   "ontvanger": "Eigenaar en leden van de vestiging",
+   "moment": "Zodra de creator de postlink koppelt",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "aan",
+    "push": "aan"
+   },
+   "uitzetten": "Ja (e-mail)",
+   "onderwerp": "Live: {creator} over {zaak}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "De post van {creator} over {zaak} staat live.",
+     "De eerste cijfers zie je morgen. We meten 14 dagen lang."
+    ],
+    "knop": "Bekijk de post",
+    "deeplink": "SamenwerkingDetail/s10"
+   },
+   "push": "Live: {creator} heeft de post over {zaak} geplaatst.",
+   "inapp": "De post van {creator} staat live. Eerste cijfers volgen morgen.",
+   "bron": "FO §3.6, besluit W6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "creator": "Sophie de Vries",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 26 nov",
+    "tijd": "14:00"
+   }
+  },
+  {
+   "id": "o-eerste-cijfers",
+   "rol": "o",
+   "rolnaam": "Ondernemer",
+   "soort": "Publicatie en cijfers",
+   "gebeurtenis": "Eerste cijfers",
+   "ontvanger": "Eigenaar",
+   "moment": "24 uur na Live",
+   "kanalen": {
+    "inapp": "aan",
+    "email": "aan",
+    "push": "aan"
+   },
+   "uitzetten": "Ja",
+   "onderwerp": "Eerste cijfers: {views} views voor {samenwerking}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Na 24 uur heeft de post van {creator} al {views} views.",
+     "We blijven meten tot {datum}. Daarna krijg je het eindresultaat."
+    ],
+    "knop": "Bekijk de cijfers",
+    "deeplink": "Resultaten"
+   },
+   "push": "{views} views na 24 uur voor {samenwerking}.",
+   "inapp": "Eerste cijfers binnen: {views} views na 24 uur.",
+   "bron": "flows_spec flow 6",
+   "status": "Voorstel",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "creator": "Sophie de Vries",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 10 dec",
+    "tijd": "14:00",
+    "views": "3.412"
+   }
+  },
+  {
+   "id": "o-beoordelen",
+   "rol": "o",
+   "rolnaam": "Ondernemer",
+   "soort": "Publicatie en cijfers",
+   "gebeurtenis": "Afgerond (status 11), beoordeling gevraagd",
+   "ontvanger": "Eigenaar",
+   "moment": "Na de meetperiode van 14 dagen",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "aan",
+    "push": "aan"
+   },
+   "uitzetten": "Ja (e-mail)",
+   "onderwerp": "Hoe ging het met {creator}?",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "\"{samenwerking}\" is afgerond. In het eindrapport zie je views, bereik en interactie.",
+     "Hoe was de samenwerking met {creator}? Je oordeel helpt ons de beste creator voor je te kiezen."
+    ],
+    "knop": "Geef je oordeel",
+    "deeplink": "SamenwerkingDetail/s11"
+   },
+   "push": "Afgerond: hoe ging het met {creator}? Geef je oordeel.",
+   "inapp": "Afgerond. Geef je oordeel over {creator}.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "creator": "Sophie de Vries",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 10 dec",
+    "tijd": "14:00"
+   }
+  },
+  {
+   "id": "o-gestopt",
+   "rol": "o",
+   "rolnaam": "Ondernemer",
+   "soort": "Samenwerking",
+   "gebeurtenis": "Samenwerking geannuleerd",
+   "ontvanger": "Eigenaar, creator (als gekoppeld)",
+   "moment": "Na annuleren door ondernemer of team",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "nee"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Samenwerking gestopt: {samenwerking}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "De samenwerking \"{samenwerking}\" is gestopt.",
+     "Je tegoed staat weer klaar. Wil je een nieuwe samenwerking aanvragen?"
+    ],
+    "knop": "Nieuwe samenwerking",
+    "deeplink": "Aanvraag"
+   },
+   "push": "Samenwerking {samenwerking} gestopt. Je tegoed staat weer klaar.",
+   "inapp": "\"{samenwerking}\" is gestopt. Je tegoed staat weer klaar.",
+   "bron": "flows_spec flow 4",
+   "status": "Voorstel",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "creator": "Sophie de Vries",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 19 nov",
+    "tijd": "14:00"
+   }
+  },
+  {
+   "id": "o-concept",
+   "rol": "o",
+   "rolnaam": "Ondernemer",
+   "soort": "Samenwerking",
+   "gebeurtenis": "Concept-aanvraag niet afgemaakt",
+   "ontvanger": "Aanvrager",
+   "moment": "3 dagen na opslaan als concept",
+   "kanalen": {
+    "inapp": "aan",
+    "email": "aan",
+    "push": "uit"
+   },
+   "uitzetten": "Ja",
+   "onderwerp": "Je aanvraag staat nog klaar",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Je bent begonnen aan een aanvraag voor {vestiging}, maar hebt hem nog niet verstuurd.",
+     "Maak hem af, dan gaan we direct op zoek naar een creator."
+    ],
+    "knop": "Aanvraag afmaken",
+    "deeplink": "Aanvraag"
+   },
+   "push": "Je aanvraag voor {vestiging} staat nog klaar. Maak hem af.",
+   "inapp": "Concept-aanvraag voor {vestiging} nog niet verstuurd.",
+   "bron": "flows_spec flow 1",
+   "status": "Voorstel",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "creator": "Sophie de Vries",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 19 nov",
+    "tijd": "14:00"
+   }
+  },
+  {
+   "id": "o-maandoverzicht",
+   "rol": "o",
+   "rolnaam": "Ondernemer",
+   "soort": "Publicatie en cijfers",
+   "gebeurtenis": "Maandoverzicht",
+   "ontvanger": "Eigenaar en leden",
+   "moment": "Eerste werkdag van de maand, 08:00 (alleen als er iets liep)",
+   "kanalen": {
+    "inapp": "aan",
+    "email": "aan",
+    "push": "uit"
+   },
+   "uitzetten": "Ja",
+   "onderwerp": "Je maand bij MEBRANDING: {aantal} posts live, {views} views",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Zo ging {maand} voor {zaak}: {aantal} posts live en samen {views} views.",
+     "In het maandrapport zie je de beste post, het bereik in je regio en wat er deze maand gepland staat."
+    ],
+    "knop": "Open het maandrapport",
+    "deeplink": "N_maandrapport"
+   },
+   "push": "Je maandrapport van {maand} staat klaar: {views} views.",
+   "inapp": "Maandrapport {maand} staat klaar.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "creator": "Sophie de Vries",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 19 nov",
+    "tijd": "14:00",
+    "maand": "november",
+    "aantal": "3",
+    "views": "18.240"
+   }
+  },
+  {
+   "id": "o-rechten",
+   "rol": "o",
+   "rolnaam": "Ondernemer",
+   "soort": "Publicatie en cijfers",
+   "gebeurtenis": "Gebruiksrechten verlopen",
+   "ontvanger": "Eigenaar",
+   "moment": "30 en 7 dagen voor de einddatum",
+   "kanalen": {
+    "inapp": "aan",
+    "email": "aan",
+    "push": "uit"
+   },
+   "uitzetten": "Ja",
+   "onderwerp": "Rechten op {aantal} video's verlopen op {datum}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "De gebruiksrechten voor advertenties op \"{samenwerking}\" verlopen op {datum}.",
+     "Wil je de video langer gebruiken? Vraag een verlenging aan."
+    ],
+    "knop": "Rechten verlengen",
+    "deeplink": "N_gebruiksrechten/sverlengen"
+   },
+   "push": "Rechten op {samenwerking} verlopen op {datum}.",
+   "inapp": "Gebruiksrechten verlopen op {datum}.",
+   "bron": "flows_spec flow 6",
+   "status": "Voorstel",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "creator": "Sophie de Vries",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "vr 26 feb 2027",
+    "tijd": "14:00",
+    "aantal": "2"
+   }
+  },
+  {
+   "id": "c-uitnodiging",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Samenwerking",
+   "gebeurtenis": "Uitnodiging voor een samenwerking (creator toegewezen)",
+   "ontvanger": "Creator",
+   "moment": "Bij uitnodigen; status 3 begint pas bij acceptatie (W1)",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "aan"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Nieuwe samenwerking: {zaak} in {plaats}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "{zaak} in {plaats} zoekt een creator voor \"{samenwerking}\". Vergoeding: {bedrag}.",
+     "Lees de briefing en zeg ja of nee. Bij ja kies je direct een tijdvak voor het bezoek."
+    ],
+    "knop": "Bekijk de uitnodiging",
+    "deeplink": "CreatorUitnodiging"
+   },
+   "push": "Nieuwe samenwerking: {zaak} in {plaats}, {bedrag}. Ja of nee?",
+   "inapp": "Uitnodiging van {zaak} in {plaats}. Reageer binnen {aantal} uur.",
+   "bron": "FO §3.6, besluit W1",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Marit",
+    "zaak": "Lunchroom Bloesem",
+    "plaats": "Franeker",
+    "niveau": "Bronze",
+    "samenwerking": "Kerstlunch Franeker",
+    "bedrag": "gratis bezoek (kerstlunch)",
+    "aantal": "48"
+   }
+  },
+  {
+   "id": "c-herinnering-reageer",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Samenwerking",
+   "gebeurtenis": "Geen reactie op uitnodiging",
+   "ontvanger": "Creator, ook planning",
+   "moment": "{aantal} uur na de uitnodiging",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "aan",
+    "push": "aan"
+   },
+   "uitzetten": "Ja (e-mail)",
+   "onderwerp": "Herinnering: reageer op {zaak}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Je hebt nog niet gereageerd op de uitnodiging van {zaak}.",
+     "Zonder reactie vervalt de uitnodiging over {aantal} uur en gaat hij naar een andere creator."
+    ],
+    "knop": "Reageer nu",
+    "deeplink": "CreatorUitnodiging"
+   },
+   "push": "Reageer nog op {zaak}. De uitnodiging vervalt over {aantal} uur.",
+   "inapp": "Uitnodiging van {zaak} wacht op je antwoord.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Marit",
+    "zaak": "Lunchroom Bloesem",
+    "plaats": "Franeker",
+    "niveau": "Bronze",
+    "aantal": "24"
+   }
+  },
+  {
+   "id": "c-tijdvak",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Bezoek",
+   "gebeurtenis": "Kies een tijdvak",
+   "ontvanger": "Creator",
+   "moment": "Direct na accepteren (W2: tijdvak kiezen staat direct vast)",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "nee"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Kies je bezoekmoment bij {zaak}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Fijn dat je meedoet. Kies nu een tijdvak uit de bezoektijden van {vestiging}.",
+     "Het moment staat direct vast, tenzij {zaak} zelf bevestigt. Dan hoor je het binnen 24 uur."
+    ],
+    "knop": "Kies een tijdvak",
+    "deeplink": "CreatorOpdracht/s3"
+   },
+   "push": "Kies je tijdvak voor het bezoek bij {zaak}.",
+   "inapp": "Kies een tijdvak voor {zaak}.",
+   "bron": "Besluit W2",
+   "status": "Voorstel",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sophie",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 19 nov",
+    "tijd": "14:00",
+    "bedrag": "€ 125"
+   }
+  },
+  {
+   "id": "c-bezoek-vast",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Bezoek",
+   "gebeurtenis": "Bezoek staat vast (status 4)",
+   "ontvanger": "Creator",
+   "moment": "Na keuze tijdvak of bevestiging",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "nee"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Bezoek {zaak} op {datum}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Je bezoek bij {zaak} in {vestiging} staat vast: {datum} om {tijd}.",
+     "Adres, parkeren en de shotlist staan in de samenwerking. De agenda-uitnodiging zit in de bijlage."
+    ],
+    "knop": "Bekijk de briefing",
+    "deeplink": "CreatorOpdracht/s4"
+   },
+   "push": "Bezoek staat vast: {zaak}, {datum} om {tijd}.",
+   "inapp": "Bezoek bij {zaak} op {datum} om {tijd}.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sophie",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 19 nov",
+    "tijd": "14:00",
+    "bedrag": "€ 125"
+   }
+  },
+  {
+   "id": "c-bezoek-morgen",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Bezoek",
+   "gebeurtenis": "Herinnering bezoek, 1 dag vooraf",
+   "ontvanger": "Creator",
+   "moment": "Dag voor het bezoek, 09:00",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "aan",
+    "push": "aan"
+   },
+   "uitzetten": "Ja (e-mail)",
+   "onderwerp": "Morgen: bezoek bij {vestiging}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Morgen om {tijd} ben je bij {zaak} in {vestiging}.",
+     "Neem je shotlist door en zorg dat je telefoon is opgeladen."
+    ],
+    "knop": "Bekijk de shotlist",
+    "deeplink": "N_video_ideeen"
+   },
+   "push": "Morgen {tijd}: bezoek bij {zaak} in {vestiging}.",
+   "inapp": "Morgen om {tijd} bij {zaak}.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sophie",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 19 nov",
+    "tijd": "14:00",
+    "bedrag": "€ 125"
+   }
+  },
+  {
+   "id": "c-bezoek-gewijzigd",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Bezoek",
+   "gebeurtenis": "Bezoek verzet of geannuleerd",
+   "ontvanger": "Creator",
+   "moment": "Direct na de wijziging",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "aan"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Bezoek gewijzigd: {vestiging}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "{zaak} heeft het bezoek gewijzigd.",
+     "Nieuw moment: {datum} om {tijd}. Past dit niet? Kies een ander tijdvak."
+    ],
+    "knop": "Bekijk de wijziging",
+    "deeplink": "CreatorOpdracht/s4"
+   },
+   "push": "Bezoek bij {zaak} gewijzigd naar {datum}, {tijd}.",
+   "inapp": "Bezoek gewijzigd naar {datum}, {tijd}.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sophie",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "vr 20 nov",
+    "tijd": "14:00",
+    "bedrag": "€ 125"
+   }
+  },
+  {
+   "id": "c-niet-verschenen",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Bezoek",
+   "gebeurtenis": "Niet verschenen",
+   "ontvanger": "Creator",
+   "moment": "Na vastleggen door het team",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "nee"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Over het bezoek van {datum}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Volgens {zaak} ben je op {datum} niet langs geweest.",
+     "Klopt dat niet, of was er iets aan de hand? Laat het ons binnen 2 werkdagen weten. Dit telt mee voor je Betrouwbaarheid."
+    ],
+    "knop": "Reageer",
+    "deeplink": "Help/sc"
+   },
+   "push": "Je was niet bij {zaak} op {datum}. Laat ons weten wat er was.",
+   "inapp": "Niet verschenen bij {zaak}. Reageer binnen 2 werkdagen.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sophie",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 19 nov",
+    "tijd": "14:00",
+    "bedrag": "€ 125"
+   }
+  },
+  {
+   "id": "c-deadline",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Content en controle",
+   "gebeurtenis": "Deadline over 48 uur",
+   "ontvanger": "Creator",
+   "moment": "48 uur voor de deadline",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "aan",
+    "push": "aan"
+   },
+   "uitzetten": "Ja (e-mail)",
+   "onderwerp": "Nog 48 uur voor {zaak}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Over 48 uur moet je video voor {zaak} binnen zijn ({datum}).",
+     "Lukt het niet? Vraag op tijd uitstel aan, dan telt het niet als te laat."
+    ],
+    "knop": "Video uploaden",
+    "deeplink": "CreatorUpload"
+   },
+   "push": "Nog 48 uur: lever je video voor {zaak} aan.",
+   "inapp": "Deadline {zaak}: {datum}.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sophie",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "ma 23 nov",
+    "tijd": "14:00",
+    "bedrag": "€ 125"
+   }
+  },
+  {
+   "id": "c-te-laat",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Content en controle",
+   "gebeurtenis": "Te laat",
+   "ontvanger": "Creator, ook de accountmanager",
+   "moment": "Direct na het verstrijken van de deadline",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "nee"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Te laat: content voor {zaak}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "De deadline voor {zaak} is verstreken. Je kunt nog steeds uploaden.",
+     "Te laat aanleveren telt mee voor je Betrouwbaarheid. Lever zo snel mogelijk aan of neem contact op."
+    ],
+    "knop": "Nu uploaden",
+    "deeplink": "CreatorUpload"
+   },
+   "push": "Te laat: je video voor {zaak} is nog niet binnen.",
+   "inapp": "Deadline {zaak} verstreken. Upload zo snel mogelijk.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sophie",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 19 nov",
+    "tijd": "14:00",
+    "bedrag": "€ 125"
+   }
+  },
+  {
+   "id": "c-feedback",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Content en controle",
+   "gebeurtenis": "Feedback gegeven (status 8)",
+   "ontvanger": "Creator",
+   "moment": "Na \"Feedback versturen\", gebundeld",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "aan"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Feedback op je content voor {zaak}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Er is feedback op je video voor {zaak}: {aantal} opmerkingen.",
+     "Pas de video aan en upload een nieuwe versie voor {datum}."
+    ],
+    "knop": "Bekijk de feedback",
+    "deeplink": "CreatorOpdracht/s8"
+   },
+   "push": "Feedback op je video voor {zaak}: {aantal} opmerkingen.",
+   "inapp": "Feedback van {zaak}: {aantal} punten.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sophie",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "wo 25 nov",
+    "tijd": "14:00",
+    "bedrag": "€ 125",
+    "aantal": "2"
+   }
+  },
+  {
+   "id": "c-goedgekeurd",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Content en controle",
+   "gebeurtenis": "Goedgekeurd met publicatiedatum (status 9)",
+   "ontvanger": "Creator",
+   "moment": "Zelfde werkdag als aanleveren (na 16:00: volgende werkdag, W4)",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "aan"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Goedgekeurd: plaats je post voor {datum}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Je video voor {zaak} is goedgekeurd.",
+     "Plaats hem op {datum} op je eigen account met het reclamelabel en koppel daarna de link in de app."
+    ],
+    "knop": "Bekijk de planning",
+    "deeplink": "CreatorOpdracht/s9"
+   },
+   "push": "Goedgekeurd. Plaats je post voor {zaak} op {datum}.",
+   "inapp": "Goedgekeurd. Publiceren op {datum}.",
+   "bron": "FO §3.6, besluit W4 en W5",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sophie",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 26 nov",
+    "tijd": "14:00",
+    "bedrag": "€ 125"
+   }
+  },
+  {
+   "id": "c-publiceer-vandaag",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Publicatie en cijfers",
+   "gebeurtenis": "Publicatiedag",
+   "ontvanger": "Creator",
+   "moment": "Op de publicatiedatum, 09:00 (W5)",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "aan"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Vandaag posten: {zaak}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Vandaag is de publicatiedag voor {zaak}.",
+     "Plaats de goedgekeurde video met het reclamelabel en koppel de link. Dan gaat de samenwerking live en is je vergoeding opeisbaar."
+    ],
+    "knop": "Link koppelen",
+    "deeplink": "CreatorOpdracht/s9"
+   },
+   "push": "Vandaag posten voor {zaak}. Koppel daarna de link.",
+   "inapp": "Publicatiedag {zaak}: post en koppel de link.",
+   "bron": "Besluit W5 en W7",
+   "status": "Voorstel",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sophie",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 26 nov",
+    "tijd": "14:00",
+    "bedrag": "€ 125"
+   }
+  },
+  {
+   "id": "c-herinnering-post",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Publicatie en cijfers",
+   "gebeurtenis": "Herinnering publiceren, 2 dagen na 9",
+   "ontvanger": "Creator",
+   "moment": "2 dagen na goedkeuring zonder gekoppelde link",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "aan"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Vergeet niet te posten: {zaak}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "We zien nog geen post voor {zaak}. De publicatiedatum was {datum}.",
+     "Plaats de video en koppel de link, dan gaat je vergoeding mee in de eerstvolgende betaalrun."
+    ],
+    "knop": "Link koppelen",
+    "deeplink": "CreatorOpdracht/s9"
+   },
+   "push": "Nog geen post gezien voor {zaak}. Plaats en koppel de link.",
+   "inapp": "Post voor {zaak} nog niet gekoppeld.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sophie",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 26 nov",
+    "tijd": "14:00",
+    "bedrag": "€ 125"
+   }
+  },
+  {
+   "id": "c-live",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Publicatie en cijfers",
+   "gebeurtenis": "Live (status 10)",
+   "ontvanger": "Creator",
+   "moment": "Na koppelen van de link",
+   "kanalen": {
+    "inapp": "aan",
+    "email": "uit",
+    "push": "aan"
+   },
+   "uitzetten": "Ja",
+   "onderwerp": "Live: {zaak}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Je post voor {zaak} staat live. Goed gedaan.",
+     "Je vergoeding van {bedrag} gaat mee in de betaalrun van vrijdag {datum}. We meten de cijfers 14 dagen."
+    ],
+    "knop": "Bekijk je cijfers",
+    "deeplink": "CreatorOpdracht/s10"
+   },
+   "push": "Live. {bedrag} gaat mee in de betaalrun van vrijdag.",
+   "inapp": "Live bij {zaak}. Vergoeding opeisbaar.",
+   "bron": "FO §3.6, besluit W6 en W7",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sophie",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "27 nov",
+    "tijd": "14:00",
+    "bedrag": "€ 125"
+   }
+  },
+  {
+   "id": "c-post-weg",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Publicatie en cijfers",
+   "gebeurtenis": "Post niet gevonden in de meetperiode",
+   "ontvanger": "Creator, ook contentcontrole (taak)",
+   "moment": "Na 2 mislukte controles met 2 uur ertussen (W8)",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "aan"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Je post voor {zaak} is niet te vinden",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Bij de laatste meting konden we je post voor {zaak} niet vinden. Een gearchiveerde post telt als verwijderd.",
+     "Zet hem binnen 24 uur terug en laat het ons weten. Over wat er gebeurt als dat niet lukt, maken we nog afspraken (open punt)."
+    ],
+    "knop": "Post terugzetten",
+    "deeplink": "CreatorOpdracht/s10"
+   },
+   "push": "Je post voor {zaak} is weg. Zet hem binnen 24 uur terug.",
+   "inapp": "Post {zaak} niet gevonden. 24 uur om terug te zetten.",
+   "bron": "Besluit W8",
+   "status": "Voorstel",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sophie",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 19 nov",
+    "tijd": "14:00",
+    "bedrag": "€ 125"
+   }
+  },
+  {
+   "id": "c-publicatie-beoordeeld",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Publicatie en cijfers",
+   "gebeurtenis": "Handmatige publicatie of cijfers goed- of afgekeurd",
+   "ontvanger": "Indiener",
+   "moment": "Na beoordeling door contentcontrole",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "nee"
+   },
+   "uitzetten": "Goedgekeurd ja, afgekeurd nee",
+   "onderwerp": "Je publicatie is goedgekeurd",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Je handmatig ingediende publicatie voor {zaak} is goedgekeurd.",
+     "Bij afkeuren lees je in de app waarom en wat je kunt doen."
+    ],
+    "knop": "Bekijk",
+    "deeplink": "CreatorOpdracht/s10"
+   },
+   "push": "Je publicatie voor {zaak} is goedgekeurd.",
+   "inapp": "Handmatige publicatie goedgekeurd.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sophie",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 19 nov",
+    "tijd": "14:00",
+    "bedrag": "€ 125"
+   }
+  },
+  {
+   "id": "c-beoordeling",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Creator en niveau",
+   "gebeurtenis": "Beoordeling ontvangen",
+   "ontvanger": "Creator",
+   "moment": "Na beoordeling door de ondernemer",
+   "kanalen": {
+    "inapp": "aan",
+    "email": "uit",
+    "push": "aan"
+   },
+   "uitzetten": "Ja",
+   "onderwerp": "{zaak} gaf je {sterren} sterren",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "{zaak} heeft de samenwerking beoordeeld: {sterren} van 5 sterren.",
+     "Je oordeel telt mee in je Klantoordeel en je score."
+    ],
+    "knop": "Bekijk je score",
+    "deeplink": "CreatorScore"
+   },
+   "push": "{zaak} gaf je {sterren} sterren.",
+   "inapp": "Beoordeling van {zaak}: {sterren} sterren.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sophie",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 19 nov",
+    "tijd": "14:00",
+    "bedrag": "€ 125",
+    "sterren": "5"
+   }
+  },
+  {
+   "id": "c-aanmelding",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Creator en niveau",
+   "gebeurtenis": "Aanmelding ingediend",
+   "ontvanger": "Aanmelder (contentcontrole krijgt een werkblok)",
+   "moment": "Direct na versturen",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "nee"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "We hebben je aanmelding ontvangen",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Bedankt voor je aanmelding als creator bij MEBRANDING.",
+     "We bekijken je profiel en voorbeeldwerk binnen 5 werkdagen. Je ziet de status altijd in de app."
+    ],
+    "knop": "Bekijk je aanmelding",
+    "deeplink": "CreatorIntake/singediend"
+   },
+   "push": "Aanmelding ontvangen. Binnen 5 werkdagen hoor je van ons.",
+   "inapp": "Je aanmelding is in behandeling.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Marit",
+    "zaak": "Lunchroom Bloesem",
+    "plaats": "Franeker",
+    "niveau": "Bronze"
+   }
+  },
+  {
+   "id": "c-aanvulling",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Creator en niveau",
+   "gebeurtenis": "Aanvulling nodig",
+   "ontvanger": "Aanmelder",
+   "moment": "Na screening door contentcontrole",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "aan"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "We missen nog iets",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "We hebben je aanmelding bekeken. Er ontbreekt nog één ding:",
+     "\"{toelichting}\"",
+     "Vul het aan, dan staat je aanmelding weer bovenaan."
+    ],
+    "knop": "Nu aanvullen",
+    "deeplink": "CreatorIntake/saanvulling"
+   },
+   "push": "We missen nog iets in je aanmelding. Tik om aan te vullen.",
+   "inapp": "Aanvulling nodig: {toelichting}",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Marit",
+    "zaak": "Lunchroom Bloesem",
+    "plaats": "Franeker",
+    "niveau": "Bronze",
+    "toelichting": "Zet je Instagram om naar een professioneel account."
+   }
+  },
+  {
+   "id": "c-welkom",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Creator en niveau",
+   "gebeurtenis": "Aanmelding goedgekeurd",
+   "ontvanger": "Aanmelder",
+   "moment": "Na goedkeuring",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "aan"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Welkom bij MEBRANDING",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Je bent goedgekeurd als creator. Je start op niveau {niveau}.",
+     "Rond je checklist af: koppelingen, uitbetaalgegevens en je werkgebied. Daarna kun je uitgenodigd worden."
+    ],
+    "knop": "Checklist afronden",
+    "deeplink": "CreatorOverzicht/swelkom"
+   },
+   "push": "Welkom bij MEBRANDING. Rond je checklist af.",
+   "inapp": "Goedgekeurd. Start op {niveau}.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Marit",
+    "zaak": "Lunchroom Bloesem",
+    "plaats": "Franeker",
+    "niveau": "Bronze"
+   }
+  },
+  {
+   "id": "c-afgewezen",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Creator en niveau",
+   "gebeurtenis": "Aanmelding afgewezen",
+   "ontvanger": "Aanmelder",
+   "moment": "Na beoordeling",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "nee"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Over je aanmelding",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Bedankt voor je aanmelding. We kunnen je op dit moment niet toelaten als creator.",
+     "Reden: {reden}. Je kunt over 90 dagen opnieuw aanmelden. De academy is een goede manier om je voor te bereiden."
+    ],
+    "knop": "Bekijk de academy",
+    "deeplink": "AcademyOverzicht"
+   },
+   "push": "Je aanmelding is bekeken. Lees de toelichting in de app.",
+   "inapp": "Aanmelding niet goedgekeurd. Opnieuw na 90 dagen.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Marit",
+    "zaak": "Lunchroom Bloesem",
+    "plaats": "Franeker",
+    "niveau": "Bronze",
+    "reden": "te weinig voorbeeldwerk"
+   }
+  },
+  {
+   "id": "c-niveau-omhoog",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Creator en niveau",
+   "gebeurtenis": "Niveau omhoog",
+   "ontvanger": "Creator",
+   "moment": "Na de herberekening",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "aan",
+    "push": "aan"
+   },
+   "uitzetten": "Ja (e-mail)",
+   "onderwerp": "Je bent nu {niveau}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Gefeliciteerd: je bent gestegen naar {niveau}.",
+     "Je vergoeding per samenwerking gaat omhoog en je krijgt eerder uitnodigingen."
+    ],
+    "knop": "Bekijk je niveau",
+    "deeplink": "CreatorScore"
+   },
+   "push": "Gefeliciteerd, je bent nu {niveau}.",
+   "inapp": "Nieuw niveau: {niveau}.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Marit",
+    "zaak": "Lunchroom Bloesem",
+    "plaats": "Franeker",
+    "niveau": "Silver"
+   }
+  },
+  {
+   "id": "c-niveau-gevaar",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Creator en niveau",
+   "gebeurtenis": "Niveau in gevaar",
+   "ontvanger": "Creator",
+   "moment": "14 dagen voor herberekening",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "aan",
+    "push": "aan"
+   },
+   "uitzetten": "Ja (e-mail)",
+   "onderwerp": "Je {niveau}-niveau staat onder druk",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Je score ligt nu net onder de grens voor {niveau}.",
+     "Je hebt nog 14 dagen. Op tijd aanleveren en goede beoordelingen helpen het meest."
+    ],
+    "knop": "Bekijk je score",
+    "deeplink": "CreatorScore"
+   },
+   "push": "Je {niveau}-niveau staat onder druk. Nog 14 dagen.",
+   "inapp": "Niveau {niveau} onder druk.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sophie",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 19 nov",
+    "tijd": "14:00",
+    "bedrag": "€ 125",
+    "niveau": "Elite"
+   }
+  },
+  {
+   "id": "c-niveau-omlaag",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Creator en niveau",
+   "gebeurtenis": "Niveau omlaag",
+   "ontvanger": "Creator",
+   "moment": "Na de herberekening",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "aan"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Je niveau is aangepast naar {niveau}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Na de herberekening is je niveau aangepast naar {niveau}. Dit raakt je vergoeding per samenwerking.",
+     "In je score zie je per onderdeel wat je kunt verbeteren."
+    ],
+    "knop": "Bekijk je score",
+    "deeplink": "CreatorScore"
+   },
+   "push": "Je niveau is aangepast naar {niveau}.",
+   "inapp": "Niveau aangepast naar {niveau}.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sophie",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 19 nov",
+    "tijd": "14:00",
+    "bedrag": "€ 125",
+    "niveau": "Platinum"
+   }
+  },
+  {
+   "id": "c-maandscore",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Creator en niveau",
+   "gebeurtenis": "Maandscore",
+   "ontvanger": "Creator",
+   "moment": "Eerste werkdag van de maand",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "aan",
+    "push": "aan"
+   },
+   "uitzetten": "Ja (e-mail)",
+   "onderwerp": "Je score over {maand}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Je score over {maand} is {score}.",
+     "Je staat op plek {plek} in het klassement van {regio}."
+    ],
+    "knop": "Bekijk je score",
+    "deeplink": "CreatorScore"
+   },
+   "push": "Je score over {maand}: {score}. Plek {plek} in {regio}.",
+   "inapp": "Maandscore {maand}: {score}.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sophie",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 19 nov",
+    "tijd": "14:00",
+    "bedrag": "€ 125",
+    "maand": "november",
+    "score": "96",
+    "plek": "1",
+    "regio": "Friesland"
+   }
+  },
+  {
+   "id": "c-koppeling-verloopt",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Koppelingen",
+   "gebeurtenis": "Koppeling verloopt binnenkort",
+   "ontvanger": "Eigenaar van het account",
+   "moment": "7 dagen vooraf",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "aan"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Je {platform}-koppeling verloopt op {datum}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Je koppeling met {platform} verloopt op {datum}.",
+     "Vernieuw hem nu, dan blijven we je cijfers zonder onderbreking meten."
+    ],
+    "knop": "Koppeling vernieuwen",
+    "deeplink": "CreatorKoppelingen/sverloopt"
+   },
+   "push": "Je {platform}-koppeling verloopt op {datum}. Vernieuw nu.",
+   "inapp": "{platform}-koppeling verloopt op {datum}.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sophie",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "ma 30 nov",
+    "tijd": "14:00",
+    "bedrag": "€ 125",
+    "platform": "Instagram"
+   }
+  },
+  {
+   "id": "c-koppeling-weg",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Koppelingen",
+   "gebeurtenis": "Koppeling verlopen of verbroken",
+   "ontvanger": "Eigenaar van het account, ook de accountmanager",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "aan"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Koppel {platform} opnieuw",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "We kunnen {platform} niet meer uitlezen. De koppeling is verlopen of ingetrokken.",
+     "Koppel opnieuw, anders missen we cijfers van je posts."
+    ],
+    "knop": "Opnieuw koppelen",
+    "deeplink": "CreatorKoppelingen/sverbroken"
+   },
+   "push": "Koppel {platform} opnieuw. We missen nu cijfers.",
+   "inapp": "{platform} is ontkoppeld.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sophie",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 19 nov",
+    "tijd": "14:00",
+    "bedrag": "€ 125",
+    "platform": "TikTok"
+   }
+  },
+  {
+   "id": "o-koppeling-verloopt",
+   "rol": "o",
+   "rolnaam": "Ondernemer",
+   "soort": "Koppelingen",
+   "gebeurtenis": "Koppeling verloopt binnenkort",
+   "ontvanger": "Eigenaar van het account",
+   "moment": "7 dagen vooraf",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "aan"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Je {platform}-koppeling verloopt op {datum}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Je koppeling met {platform} verloopt op {datum}.",
+     "Vernieuw hem nu, dan blijven we je cijfers zonder onderbreking meten."
+    ],
+    "knop": "Koppeling vernieuwen",
+    "deeplink": "OndernemerKoppelingen/sverloopt"
+   },
+   "push": "Je {platform}-koppeling verloopt op {datum}. Vernieuw nu.",
+   "inapp": "{platform}-koppeling verloopt op {datum}.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "creator": "Sophie de Vries",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "ma 30 nov",
+    "tijd": "14:00",
+    "platform": "Instagram"
+   }
+  },
+  {
+   "id": "o-koppeling-weg",
+   "rol": "o",
+   "rolnaam": "Ondernemer",
+   "soort": "Koppelingen",
+   "gebeurtenis": "Koppeling verlopen of verbroken",
+   "ontvanger": "Eigenaar van het account, ook de accountmanager",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "aan"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Koppel {platform} opnieuw",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "We kunnen {platform} niet meer uitlezen. De koppeling is verlopen of ingetrokken.",
+     "Koppel opnieuw, anders missen we cijfers van je posts."
+    ],
+    "knop": "Opnieuw koppelen",
+    "deeplink": "OndernemerKoppelingen"
+   },
+   "push": "Koppel {platform} opnieuw. We missen nu cijfers.",
+   "inapp": "{platform} is ontkoppeld.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "creator": "Sophie de Vries",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 19 nov",
+    "tijd": "14:00",
+    "platform": "TikTok"
+   }
+  },
+  {
+   "id": "a-ingeschreven",
+   "rol": "a",
+   "rolnaam": "Deelnemer academy",
+   "soort": "Academy",
+   "gebeurtenis": "Ingeschreven en betaald",
+   "ontvanger": "Deelnemer (academybeheer in-app)",
+   "moment": "Direct na betaling",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "nee"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Je plek op {cursusdag} is zeker",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Je bent ingeschreven voor {cursusdag} op {datum} in {plaats}.",
+     "De agenda-uitnodiging zit in de bijlage. Een week vooraf sturen we het programma en wat je meeneemt."
+    ],
+    "knop": "Bekijk je inschrijving",
+    "deeplink": "CreatorAcademy"
+   },
+   "push": "Je plek op {cursusdag} op {datum} is zeker.",
+   "inapp": "Ingeschreven voor {cursusdag}.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Marit",
+    "cursusdag": "Cursusdag Content maken",
+    "datum": "za 24 okt",
+    "plaats": "Harlingen"
+   }
+  },
+  {
+   "id": "a-wachtlijst",
+   "rol": "a",
+   "rolnaam": "Deelnemer academy",
+   "soort": "Academy",
+   "gebeurtenis": "Op wachtlijst",
+   "ontvanger": "Deelnemer",
+   "moment": "Bij inschrijven op een volle dag",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "nee"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Je staat op de wachtlijst voor {cursusdag}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "{cursusdag} op {datum} is vol. Je staat op plek {plek} van de wachtlijst.",
+     "Komt er een plek vrij, dan krijg je direct bericht."
+    ],
+    "knop": "Bekijk andere data",
+    "deeplink": "AcademyOverzicht"
+   },
+   "push": "Je staat op de wachtlijst voor {cursusdag}.",
+   "inapp": "Wachtlijst {cursusdag}: plek {plek}.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Marit",
+    "cursusdag": "Cursusdag Content maken",
+    "datum": "za 12 dec",
+    "plek": "2"
+   }
+  },
+  {
+   "id": "a-plek-vrij",
+   "rol": "a",
+   "rolnaam": "Deelnemer academy",
+   "soort": "Academy",
+   "gebeurtenis": "Plek vrij voor wachtlijst",
+   "ontvanger": "Deelnemer",
+   "moment": "Zodra een plek vrijkomt",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "aan"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Er is een plek vrij: betaal voor {tijd}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Er is een plek vrijgekomen op {cursusdag} op {datum}.",
+     "Betaal voor {tijd} om hem te reserveren. Daarna gaat hij naar de volgende op de lijst."
+    ],
+    "knop": "Plek reserveren",
+    "deeplink": "AcademyCursusdag"
+   },
+   "push": "Plek vrij op {cursusdag}. Betaal voor {tijd}.",
+   "inapp": "Plek vrij. Reserveer voor {tijd}.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Marit",
+    "cursusdag": "Cursusdag Content maken",
+    "datum": "za 12 dec",
+    "tijd": "di 17 nov 18:00"
+   }
+  },
+  {
+   "id": "a-herinnering",
+   "rol": "a",
+   "rolnaam": "Deelnemer academy",
+   "soort": "Academy",
+   "gebeurtenis": "Herinnering 7 dagen en 1 dag vooraf",
+   "ontvanger": "Deelnemer",
+   "moment": "7 dagen en 1 dag voor de cursusdag",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "nee"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Over {n} dagen: {cursusdag} in {plaats}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Over {n} dagen is {cursusdag} in {plaats}. We beginnen om {tijd}.",
+     "Adres: {adres}. Neem je telefoon mee, volledig opgeladen, en een powerbank."
+    ],
+    "knop": "Programma bekijken",
+    "deeplink": "AcademyCursusdag"
+   },
+   "push": "Over {n} dagen: {cursusdag} in {plaats}, {tijd}.",
+   "inapp": "{cursusdag} over {n} dagen.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Marit",
+    "cursusdag": "Cursusdag Content maken",
+    "n": "7",
+    "plaats": "Harlingen",
+    "tijd": "09:30",
+    "adres": "Hotel Wadzicht, Harlingen"
+   }
+  },
+  {
+   "id": "a-gewijzigd",
+   "rol": "a",
+   "rolnaam": "Deelnemer academy",
+   "soort": "Academy",
+   "gebeurtenis": "Cursusdag gewijzigd of geannuleerd",
+   "ontvanger": "Deelnemers en docent",
+   "moment": "Direct na de wijziging",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "aan"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Wijziging: {cursusdag}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Er is iets veranderd aan {cursusdag}: {wijziging}.",
+     "Past het nieuwe moment niet? Kies een andere datum of vraag je geld terug."
+    ],
+    "knop": "Bekijk de wijziging",
+    "deeplink": "AcademyCursusdag"
+   },
+   "push": "Wijziging in {cursusdag}: {wijziging}.",
+   "inapp": "Wijziging: {cursusdag}.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Marit",
+    "cursusdag": "Cursusdag Content maken",
+    "wijziging": "start nu om 10:00"
+   }
+  },
+  {
+   "id": "a-certificaat",
+   "rol": "a",
+   "rolnaam": "Deelnemer academy",
+   "soort": "Academy",
+   "gebeurtenis": "Certificaat uitgereikt",
+   "ontvanger": "Deelnemer",
+   "moment": "Na het praktijkexamen",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "nee"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Je certificaat {nummer} staat klaar",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Gefeliciteerd, je bent geslaagd voor het praktijkexamen.",
+     "Je certificaat {nummer} staat klaar om te downloaden. Je examenvideo telt als voorbeeldwerk als je creator wordt."
+    ],
+    "knop": "Certificaat downloaden",
+    "deeplink": "CreatorAcademy"
+   },
+   "push": "Geslaagd. Je certificaat {nummer} staat klaar.",
+   "inapp": "Certificaat {nummer} staat klaar.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Marit",
+    "nummer": "MBA-2026-0312"
+   }
+  },
+  {
+   "id": "a-word-creator",
+   "rol": "a",
+   "rolnaam": "Deelnemer academy",
+   "soort": "Academy",
+   "gebeurtenis": "Uitnodiging creatorprofiel",
+   "ontvanger": "Deelnemer met status Aanwezig",
+   "moment": "Na uitreiking certificaat",
+   "kanalen": {
+    "inapp": "aan",
+    "email": "aan",
+    "push": "uit"
+   },
+   "uitzetten": "Ja",
+   "onderwerp": "Word creator bij MEBRANDING",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Je hebt de cursusdag gevolgd. Wil je ook echt samenwerkingen doen?",
+     "Je gegevens uit de academy staan al klaar. Aanmelden duurt 3 minuten."
+    ],
+    "knop": "Aanmelden als creator",
+    "deeplink": "WebsiteCreator/sacademy"
+   },
+   "push": "Word creator: je gegevens staan al klaar.",
+   "inapp": "Meld je aan als creator.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Marit"
+   }
+  },
+  {
+   "id": "g-uitnodiging",
+   "rol": "g",
+   "rolnaam": "Iedereen (account)",
+   "soort": "Account en beveiliging",
+   "gebeurtenis": "Uitnodiging (gebruiker, medewerker, creator)",
+   "ontvanger": "Genodigde",
+   "moment": "Bij uitnodigen",
+   "kanalen": {
+    "inapp": "nee",
+    "email": "verplicht",
+    "push": "nee"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "{naam} nodigt je uit voor {zaak}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "{naam} nodigt je uit om mee te werken in het portaal van {zaak} als {rol}.",
+     "De uitnodiging is 7 dagen geldig."
+    ],
+    "knop": "Uitnodiging accepteren",
+    "deeplink": "Inloggen"
+   },
+   "push": "",
+   "inapp": "",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Jorrit",
+    "naam": "Sanne Hiemstra",
+    "zaak": "Lunchroom Bloesem",
+    "rol": "Lid (Sneek)"
+   }
+  },
+  {
+   "id": "g-uitnodiging-verloopt",
+   "rol": "g",
+   "rolnaam": "Iedereen (account)",
+   "soort": "Account en beveiliging",
+   "gebeurtenis": "Uitnodiging verloopt over 2 dagen",
+   "ontvanger": "Genodigde",
+   "moment": "5 dagen na uitnodigen",
+   "kanalen": {
+    "inapp": "nee",
+    "email": "verplicht",
+    "push": "nee"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Je uitnodiging verloopt bijna",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Je uitnodiging voor {zaak} verloopt over 2 dagen.",
+     "Accepteer hem nu, of vraag {naam} om een nieuwe."
+    ],
+    "knop": "Uitnodiging accepteren",
+    "deeplink": "Inloggen"
+   },
+   "push": "",
+   "inapp": "",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Jorrit",
+    "naam": "Sanne",
+    "zaak": "Lunchroom Bloesem"
+   }
+  },
+  {
+   "id": "g-bevestig-email",
+   "rol": "g",
+   "rolnaam": "Iedereen (account)",
+   "soort": "Account en beveiliging",
+   "gebeurtenis": "E-mail bevestigen",
+   "ontvanger": "Gebruiker",
+   "moment": "Bij aanmaken account of wijzigen e-mailadres",
+   "kanalen": {
+    "inapp": "nee",
+    "email": "verplicht",
+    "push": "nee"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Bevestig je e-mailadres",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Bevestig dat dit je e-mailadres is. De link is 24 uur geldig."
+    ],
+    "knop": "E-mailadres bevestigen",
+    "deeplink": "Inloggen"
+   },
+   "push": "",
+   "inapp": "",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne"
+   }
+  },
+  {
+   "id": "g-wachtwoord-vergeten",
+   "rol": "g",
+   "rolnaam": "Iedereen (account)",
+   "soort": "Account en beveiliging",
+   "gebeurtenis": "Wachtwoord vergeten",
+   "ontvanger": "Gebruiker",
+   "moment": "Na aanvraag op het inlogscherm",
+   "kanalen": {
+    "inapp": "nee",
+    "email": "verplicht",
+    "push": "nee"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Stel je wachtwoord opnieuw in",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Je hebt gevraagd om een nieuw wachtwoord. De link is 60 minuten geldig.",
+     "Heb je dit niet zelf gevraagd? Dan hoef je niets te doen."
+    ],
+    "knop": "Nieuw wachtwoord instellen",
+    "deeplink": "Inloggen/sreset"
+   },
+   "push": "",
+   "inapp": "",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne"
+   }
+  },
+  {
+   "id": "g-beveiliging",
+   "rol": "g",
+   "rolnaam": "Iedereen (account)",
+   "soort": "Account en beveiliging",
+   "gebeurtenis": "Wachtwoord, tweestaps, herstelcode, nieuw apparaat, rol gewijzigd",
+   "ontvanger": "Gebruiker",
+   "moment": "Direct na de wijziging (ook in stille uren)",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "verplicht"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Je wachtwoord is gewijzigd",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Het wachtwoord van je MEBRANDING-account is gewijzigd op {datum} om {tijd}.",
+     "Was jij dit niet? Zet direct je account op slot."
+    ],
+    "knop": "Dit was ik niet",
+    "deeplink": "AccountInstellingen/so"
+   },
+   "push": "Je wachtwoord is gewijzigd. Was jij dit niet? Tik hier.",
+   "inapp": "Wachtwoord gewijzigd op {datum}, {tijd}.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne",
+    "datum": "ma 16 nov",
+    "tijd": "09:12"
+   }
+  },
+  {
+   "id": "g-nieuw-apparaat",
+   "rol": "g",
+   "rolnaam": "Iedereen (account)",
+   "soort": "Account en beveiliging",
+   "gebeurtenis": "Inloggen op een nieuw apparaat",
+   "ontvanger": "Gebruiker",
+   "moment": "Direct (ook in stille uren)",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "verplicht"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Nieuwe inlog op {apparaat}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Er is ingelogd op je account vanaf {apparaat} in {plaats}, op {datum} om {tijd}.",
+     "Was jij dit niet? Wijzig je wachtwoord en log overal uit."
+    ],
+    "knop": "Dit was ik niet",
+    "deeplink": "AccountInstellingen/so"
+   },
+   "push": "Nieuwe inlog op {apparaat} in {plaats}. Jij?",
+   "inapp": "Nieuwe inlog vanaf {apparaat}.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne",
+    "apparaat": "iPhone",
+    "plaats": "Leeuwarden",
+    "datum": "ma 16 nov",
+    "tijd": "07:58"
+   }
+  },
+  {
+   "id": "o-factuur",
+   "rol": "o",
+   "rolnaam": "Ondernemer",
+   "soort": "Abonnement en geld",
+   "gebeurtenis": "Factuur beschikbaar",
+   "ontvanger": "Eigenaar en factuurcontact",
+   "moment": "Bij aanmaken van de factuur (1e van de maand)",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "nee"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Factuur {nummer} van MEBRANDING",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Je factuur {nummer} voor {omschrijving} staat klaar. Totaal {bedrag} inclusief btw.",
+     "Het bedrag wordt rond {datum} afgeschreven via de betaalpartij."
+    ],
+    "knop": "Factuur bekijken",
+    "deeplink": "FactuurDocument"
+   },
+   "push": "Factuur {nummer} staat klaar: {bedrag}.",
+   "inapp": "Factuur {nummer}, {bedrag}.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne",
+    "nummer": "MB-2026-1110",
+    "omschrijving": "abonnement Groei, november",
+    "bedrag": "€ 961,95",
+    "datum": "di 10 nov"
+   }
+  },
+  {
+   "id": "o-factuur-vervallen",
+   "rol": "o",
+   "rolnaam": "Ondernemer",
+   "soort": "Abonnement en geld",
+   "gebeurtenis": "Factuur vervallen",
+   "ontvanger": "Eigenaar en factuurcontact, ook de accountmanager",
+   "moment": "Dag na de vervaldatum, daarna na 7 dagen",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "nee"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Herinnering: factuur {nummer}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Factuur {nummer} van {bedrag} staat nog open. De vervaldatum was {datum}.",
+     "Betaal via de link, of neem contact op als er iets niet klopt."
+    ],
+    "knop": "Factuur betalen",
+    "deeplink": "FactuurDocument/sopen"
+   },
+   "push": "Factuur {nummer} staat nog open.",
+   "inapp": "Factuur {nummer} over de vervaldatum.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne",
+    "nummer": "MB-2026-1110",
+    "bedrag": "€ 961,95",
+    "datum": "ma 16 nov"
+   }
+  },
+  {
+   "id": "o-tegoed",
+   "rol": "o",
+   "rolnaam": "Ondernemer",
+   "soort": "Abonnement en geld",
+   "gebeurtenis": "Tegoed bijna op",
+   "ontvanger": "Eigenaar",
+   "moment": "Bij 1 resterende samenwerking",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "aan",
+    "push": "aan"
+   },
+   "uitzetten": "Ja (e-mail)",
+   "onderwerp": "Nog {n} samenwerkingen deze maand",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Je hebt deze maand nog {n} samenwerking over in je abonnement {pakket}.",
+     "Meer nodig? Voeg een losse samenwerking toe of kies een groter pakket."
+    ],
+    "knop": "Bekijk je tegoed",
+    "deeplink": "Abonnement/sbijna"
+   },
+   "push": "Nog {n} samenwerking deze maand in je {pakket}-abonnement.",
+   "inapp": "Tegoed: nog {n} deze maand.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne",
+    "n": "1",
+    "pakket": "Groei"
+   }
+  },
+  {
+   "id": "o-betaalmethode",
+   "rol": "o",
+   "rolnaam": "Ondernemer",
+   "soort": "Abonnement en geld",
+   "gebeurtenis": "Betaalmethode ontbreekt of eerste betaling mislukt",
+   "ontvanger": "Eigenaar, ook Financieel",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "aan"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Rond je betaalmethode af",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "We konden je betaalmethode nog niet bevestigen. Tot die rond is, kun je geen nieuwe samenwerkingen aanvragen.",
+     "Het afronden duurt 2 minuten."
+    ],
+    "knop": "Betaalmethode afronden",
+    "deeplink": "Abonnement"
+   },
+   "push": "Rond je betaalmethode af om te kunnen aanvragen.",
+   "inapp": "Betaalmethode ontbreekt. Aanvragen staat uit.",
+   "bron": "flows_spec flow 1",
+   "status": "Voorstel",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne"
+   }
+  },
+  {
+   "id": "o-abonnement",
+   "rol": "o",
+   "rolnaam": "Ondernemer",
+   "soort": "Abonnement en geld",
+   "gebeurtenis": "Abonnement gewijzigd of opgezegd",
+   "ontvanger": "Eigenaar, ook de accountmanager",
+   "moment": "Direct na de wijziging",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "nee"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Je abonnement is gewijzigd",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Je abonnement is gewijzigd van {oud} naar {nieuw}, met ingang van {datum}.",
+     "Je tegoed en het nieuwe maandbedrag zie je in je abonnement."
+    ],
+    "knop": "Bekijk je abonnement",
+    "deeplink": "Abonnement"
+   },
+   "push": "Je abonnement is gewijzigd naar {nieuw} per {datum}.",
+   "inapp": "Abonnement: {nieuw} per {datum}.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne",
+    "oud": "Groei",
+    "nieuw": "Regio",
+    "datum": "di 1 dec"
+   }
+  },
+  {
+   "id": "c-uitbetaling-gepland",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Abonnement en geld",
+   "gebeurtenis": "Uitbetaling gepland",
+   "ontvanger": "Creator",
+   "moment": "Bij Live: opeisbaar, mee in de eerstvolgende betaalrun (W7)",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "aan",
+    "push": "aan"
+   },
+   "uitzetten": "Ja (e-mail)",
+   "onderwerp": "{bedrag} gaat vrijdag naar je rekening",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Je vergoeding van {bedrag} voor {zaak} staat klaar voor de betaalrun van vrijdag {datum}.",
+     "De specificatie vind je in de app."
+    ],
+    "knop": "Bekijk de specificatie",
+    "deeplink": "SpecificatieDocument/sgepland"
+   },
+   "push": "{bedrag} gaat vrijdag {datum} naar je rekening.",
+   "inapp": "Uitbetaling {bedrag} gepland op {datum}.",
+   "bron": "FO §3.6, besluit W7",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sophie",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "27 nov",
+    "tijd": "14:00",
+    "bedrag": "€ 125"
+   }
+  },
+  {
+   "id": "c-uitbetaling-verstuurd",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Abonnement en geld",
+   "gebeurtenis": "Uitbetaling verstuurd",
+   "ontvanger": "Creator",
+   "moment": "Na de betaalrun op vrijdag",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "nee"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "{bedrag} is naar je rekening gestuurd",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "We hebben {bedrag} naar je rekening gestuurd voor {zaak}.",
+     "Het staat meestal binnen 1 werkdag op je rekening. De specificatie staat in de app."
+    ],
+    "knop": "Specificatie bekijken",
+    "deeplink": "SpecificatieDocument"
+   },
+   "push": "{bedrag} is naar je rekening gestuurd.",
+   "inapp": "Uitbetaald: {bedrag}.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sophie",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "do 19 nov",
+    "tijd": "14:00",
+    "bedrag": "€ 151,25"
+   }
+  },
+  {
+   "id": "c-uitbetaling-mislukt",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Abonnement en geld",
+   "gebeurtenis": "Uitbetaling mislukt",
+   "ontvanger": "Creator, ook Financieel",
+   "moment": "Na terugmelding van de betaalpartij",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "aan"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Uitbetaling niet gelukt: {bedrag}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Je uitbetaling van {bedrag} is niet gelukt. Reden: {reden}.",
+     "Controleer je gegevens. We sturen het bedrag mee in de volgende betaalrun op {datum}."
+    ],
+    "knop": "Gegevens controleren",
+    "deeplink": "N_uitbetalingen"
+   },
+   "push": "Uitbetaling {bedrag} niet gelukt. Controleer je gegevens.",
+   "inapp": "Uitbetaling mislukt: {reden}.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sophie",
+    "zaak": "Lunchroom Bloesem",
+    "vestiging": "Leeuwarden",
+    "plaats": "Leeuwarden",
+    "samenwerking": "Wintersoep en appeltaart",
+    "datum": "vr 4 dec",
+    "tijd": "14:00",
+    "bedrag": "€ 151,25",
+    "reden": "rekeningnummer onbekend"
+   }
+  },
+  {
+   "id": "c-gegevens-ontbreken",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Abonnement en geld",
+   "gebeurtenis": "Uitbetaalgegevens ontbreken",
+   "ontvanger": "Creator",
+   "moment": "Bij Live en voor elke betaalrun",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "aan"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Vul je uitbetaalgegevens in",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Je hebt {bedrag} tegoed, maar we missen nog je uitbetaalgegevens of btw-status.",
+     "Vul ze voor donderdag in, dan gaat het mee in de betaalrun van vrijdag."
+    ],
+    "knop": "Gegevens invullen",
+    "deeplink": "N_uitbetalingen"
+   },
+   "push": "Vul je uitbetaalgegevens in om {bedrag} te ontvangen.",
+   "inapp": "Uitbetaalgegevens ontbreken.",
+   "bron": "FO §3.6",
+   "status": "FO",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Lotte",
+    "zaak": "Lunchroom Bloesem",
+    "plaats": "Leeuwarden",
+    "niveau": "Platinum",
+    "bedrag": "€ 110"
+   }
+  },
+  {
+   "id": "t-nieuw",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Nieuwe samenwerking (status 1)",
+   "ontvanger": "Accountmanager, collaborations.manage",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "aan",
+    "push": "aan"
+   },
+   "uitzetten": "E-mail per medewerker",
+   "onderwerp": "Nieuwe samenwerking: {zaak}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "{zaak} heeft \"{samenwerking}\" aangevraagd voor {vestiging}.",
+     "Zoek een creator binnen de afgesproken termijn."
+    ],
+    "knop": "Koppelen",
+    "deeplink": "AdminKoppelen"
+   },
+   "push": "Nieuwe samenwerking: {zaak}, {samenwerking}.",
+   "inapp": "Nieuwe aanvraag van {zaak}: {samenwerking}.",
+   "bron": "FO §8.4",
+   "status": "FO",
+   "urgentie": "Hoog",
+   "voorbeeld": {
+    "voornaam": "Eva",
+    "zaak": "Lunchroom Bloesem",
+    "samenwerking": "Kerstlunch Franeker",
+    "creator": "Sophie de Vries",
+    "vestiging": "Franeker"
+   }
+  },
+  {
+   "id": "t-zoeken-lang",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Langer dan [termijn] in Creator zoeken",
+   "ontvanger": "collaborations.assign",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "aan",
+    "push": "aan"
+   },
+   "uitzetten": "E-mail per medewerker",
+   "onderwerp": "Nog geen creator: {samenwerking}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "\"{samenwerking}\" van {zaak} staat al {dagen} werkdagen in Creator zoeken."
+    ],
+    "knop": "Koppelen",
+    "deeplink": "AdminKoppelen"
+   },
+   "push": "Al {dagen} dagen geen creator voor {samenwerking}.",
+   "inapp": "Nog geen creator voor {samenwerking} ({dagen} dagen).",
+   "bron": "FO §8.4",
+   "status": "FO",
+   "urgentie": "Hoog",
+   "voorbeeld": {
+    "voornaam": "Eva",
+    "zaak": "Lunchroom Bloesem",
+    "samenwerking": "Kerstlunch Franeker",
+    "creator": "Sophie de Vries",
+    "dagen": "3"
+   }
+  },
+  {
+   "id": "t-geweigerd",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Creator weigert of reageert niet",
+   "ontvanger": "collaborations.assign, planning",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "aan",
+    "push": "aan"
+   },
+   "uitzetten": "E-mail per medewerker",
+   "onderwerp": "Geweigerd: {samenwerking}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "{creator} heeft de uitnodiging voor \"{samenwerking}\" geweigerd of niet op tijd gereageerd.",
+     "De volgende suggestie staat bovenaan."
+    ],
+    "knop": "Volgende suggestie",
+    "deeplink": "AdminKoppelen/s2"
+   },
+   "push": "{creator} weigerde {samenwerking}. Kies de volgende.",
+   "inapp": "Uitnodiging {samenwerking} geweigerd door {creator}.",
+   "bron": "FO §8.4",
+   "status": "FO",
+   "urgentie": "Hoog",
+   "voorbeeld": {
+    "voornaam": "Eva",
+    "zaak": "Lunchroom Bloesem",
+    "samenwerking": "Kerstlunch Franeker",
+    "creator": "Marit Hylkema"
+   }
+  },
+  {
+   "id": "t-bezoek-onbevestigd",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Bezoek morgen nog niet bevestigd",
+   "ontvanger": "visits.plan",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "aan",
+    "push": "aan"
+   },
+   "uitzetten": "E-mail per medewerker",
+   "onderwerp": "Bezoek morgen niet bevestigd: {zaak}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Het bezoek van {creator} bij {zaak} morgen om {tijd} is nog niet bevestigd."
+    ],
+    "knop": "Planning openen",
+    "deeplink": "AdminPlanning"
+   },
+   "push": "Bezoek morgen bij {zaak} niet bevestigd.",
+   "inapp": "Bezoek morgen niet bevestigd: {zaak}.",
+   "bron": "FO §8.4",
+   "status": "FO",
+   "urgentie": "Hoog",
+   "voorbeeld": {
+    "voornaam": "Eva",
+    "zaak": "Lunchroom Bloesem",
+    "samenwerking": "Kerstlunch Franeker",
+    "creator": "Sophie de Vries",
+    "tijd": "10:00"
+   }
+  },
+  {
+   "id": "t-bezoek-gewijzigd",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Bezoek verplaatst of geannuleerd door creator of vestiging",
+   "ontvanger": "Accountmanager",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "aan",
+    "push": "aan"
+   },
+   "uitzetten": "E-mail per medewerker",
+   "onderwerp": "Bezoek gewijzigd: {zaak}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "{wie} heeft het bezoek voor \"{samenwerking}\" verplaatst naar {datum}."
+    ],
+    "knop": "Bekijk",
+    "deeplink": "AdminSamenwerkingDetail"
+   },
+   "push": "Bezoek {zaak} verplaatst naar {datum}.",
+   "inapp": "Bezoek {zaak} gewijzigd.",
+   "bron": "FO §8.4",
+   "status": "FO",
+   "urgentie": "Hoog",
+   "voorbeeld": {
+    "voornaam": "Eva",
+    "zaak": "Lunchroom Bloesem",
+    "samenwerking": "Kerstlunch Franeker",
+    "creator": "Sophie de Vries",
+    "wie": "Sophie",
+    "datum": "vr 20 nov"
+   }
+  },
+  {
+   "id": "t-niet-verschenen",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Niet verschenen vastgelegd",
+   "ontvanger": "Accountmanager",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "uit",
+    "push": "uit"
+   },
+   "uitzetten": "E-mail per medewerker",
+   "onderwerp": "Niet verschenen: {samenwerking}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Bij \"{samenwerking}\" is Niet verschenen vastgelegd. Tegoed is teruggezet."
+    ],
+    "knop": "Bekijk",
+    "deeplink": "AdminSamenwerkingDetail/snv"
+   },
+   "push": "Niet verschenen bij {zaak}.",
+   "inapp": "Niet verschenen: {samenwerking}.",
+   "bron": "FO §8.4",
+   "status": "FO",
+   "urgentie": "Hoog",
+   "voorbeeld": {
+    "voornaam": "Eva",
+    "zaak": "Lunchroom Bloesem",
+    "samenwerking": "Kerstlunch Franeker",
+    "creator": "Sophie de Vries"
+   }
+  },
+  {
+   "id": "t-content-laat",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Content niet binnen [termijn] na bezoek",
+   "ontvanger": "Accountmanager",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "aan",
+    "push": "aan"
+   },
+   "uitzetten": "E-mail per medewerker",
+   "onderwerp": "Content te laat: {zaak}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "{creator} heeft de content voor \"{samenwerking}\" nog niet aangeleverd."
+    ],
+    "knop": "Creator herinneren",
+    "deeplink": "AdminWerkvoorraad"
+   },
+   "push": "Content {zaak} te laat.",
+   "inapp": "Content te laat van {creator}.",
+   "bron": "FO §8.4",
+   "status": "FO",
+   "urgentie": "Hoog",
+   "voorbeeld": {
+    "voornaam": "Eva",
+    "zaak": "Lunchroom Bloesem",
+    "samenwerking": "Kerstlunch Franeker",
+    "creator": "Sophie de Vries"
+   }
+  },
+  {
+   "id": "t-ter-controle",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Concept aangeleverd (status 7)",
+   "ontvanger": "content.review",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "uit",
+    "push": "uit"
+   },
+   "uitzetten": "E-mail per medewerker",
+   "onderwerp": "Ter controle: {zaak}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Nieuwe video van {creator} voor {zaak}. Controleer vandaag (binnen na 16:00: volgende werkdag)."
+    ],
+    "knop": "Controleren",
+    "deeplink": "AdminControle"
+   },
+   "push": "Ter controle: {zaak}, video van {creator}.",
+   "inapp": "Ter controle: {zaak}.",
+   "bron": "FO §8.4, besluit W4",
+   "status": "FO",
+   "urgentie": "Normaal",
+   "voorbeeld": {
+    "voornaam": "Ruben",
+    "zaak": "Lunchroom Bloesem",
+    "samenwerking": "Kerstlunch Franeker",
+    "creator": "Sophie de Vries"
+   }
+  },
+  {
+   "id": "t-controle-lang",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Ter controle langer dan [termijn]",
+   "ontvanger": "content.review",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "aan",
+    "push": "aan"
+   },
+   "uitzetten": "E-mail per medewerker",
+   "onderwerp": "Controle loopt uit: {zaak}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "De video voor \"{samenwerking}\" staat langer dan een werkdag ter controle."
+    ],
+    "knop": "Controleren",
+    "deeplink": "AdminControle"
+   },
+   "push": "Controle {zaak} loopt uit.",
+   "inapp": "Ter controle langer dan een werkdag: {zaak}.",
+   "bron": "FO §8.4, besluit W4",
+   "status": "FO",
+   "urgentie": "Hoog",
+   "voorbeeld": {
+    "voornaam": "Ruben",
+    "zaak": "Lunchroom Bloesem",
+    "samenwerking": "Kerstlunch Franeker",
+    "creator": "Sophie de Vries"
+   }
+  },
+  {
+   "id": "t-ondernemer-stil",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Ondernemer (optie A) reageert niet binnen [termijn]",
+   "ontvanger": "Accountmanager",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "uit",
+    "push": "uit"
+   },
+   "uitzetten": "E-mail per medewerker",
+   "onderwerp": "Wacht op ondernemer: {zaak}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "{zaak} heeft na 6 werkdagen niet gereageerd op de video. MEBRANDING kan de beoordeling overnemen."
+    ],
+    "knop": "Overnemen",
+    "deeplink": "AdminControle"
+   },
+   "push": "{zaak} reageert niet. Neem de beoordeling over.",
+   "inapp": "Ondernemer reageert niet: {zaak}.",
+   "bron": "FO §8.4, besluit W3",
+   "status": "FO",
+   "urgentie": "Normaal",
+   "voorbeeld": {
+    "voornaam": "Eva",
+    "zaak": "Lunchroom Bloesem",
+    "samenwerking": "Kerstlunch Franeker",
+    "creator": "Sophie de Vries"
+   }
+  },
+  {
+   "id": "t-max-rondes",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Maximum feedbackrondes bereikt",
+   "ontvanger": "Accountmanager",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "uit",
+    "push": "uit"
+   },
+   "uitzetten": "E-mail per medewerker",
+   "onderwerp": "Maximum rondes: {samenwerking}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Bij \"{samenwerking}\" is het maximum aantal feedbackrondes bereikt. Een medewerker beslist."
+    ],
+    "knop": "Beslissen",
+    "deeplink": "AdminSamenwerkingDetail"
+   },
+   "push": "Max rondes bij {samenwerking}.",
+   "inapp": "Maximum feedbackrondes bereikt.",
+   "bron": "FO §8.4",
+   "status": "FO",
+   "urgentie": "Normaal",
+   "voorbeeld": {
+    "voornaam": "Eva",
+    "zaak": "Lunchroom Bloesem",
+    "samenwerking": "Kerstlunch Franeker",
+    "creator": "Sophie de Vries"
+   }
+  },
+  {
+   "id": "t-link-ontbreekt",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Publicatielink ontbreekt na [termijn]",
+   "ontvanger": "publications.manage",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "samenvatting",
+    "push": "uit"
+   },
+   "uitzetten": "E-mail per medewerker",
+   "onderwerp": "Publicatielink ontbreekt: {aantal} samenwerkingen",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Bij {aantal} goedgekeurde samenwerkingen is na de publicatiedatum nog geen link gekoppeld."
+    ],
+    "knop": "Werkvoorraad",
+    "deeplink": "AdminWerkvoorraad"
+   },
+   "push": "{aantal} posts zonder link.",
+   "inapp": "Publicatielink ontbreekt bij {aantal} samenwerkingen.",
+   "bron": "FO §8.4",
+   "status": "FO",
+   "urgentie": "Normaal",
+   "voorbeeld": {
+    "voornaam": "Eva",
+    "zaak": "Lunchroom Bloesem",
+    "samenwerking": "Kerstlunch Franeker",
+    "creator": "Sophie de Vries",
+    "aantal": "2"
+   }
+  },
+  {
+   "id": "t-post-weg",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Post niet gevonden in de meetperiode",
+   "ontvanger": "content.review",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "aan",
+    "push": "aan"
+   },
+   "uitzetten": "E-mail per medewerker",
+   "onderwerp": "Post niet gevonden: {zaak}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "De post van {creator} voor {zaak} is 2 keer niet gevonden. De creator heeft 24 uur om hem terug te zetten."
+    ],
+    "knop": "Bekijk",
+    "deeplink": "AdminSamenwerkingDetail/s10-weg"
+   },
+   "push": "Post {creator} voor {zaak} niet gevonden.",
+   "inapp": "Post niet gevonden: {zaak}. Creator heeft 24 uur.",
+   "bron": "Besluit W8",
+   "status": "Voorstel",
+   "urgentie": "Hoog",
+   "voorbeeld": {
+    "voornaam": "Eva",
+    "zaak": "Lunchroom Bloesem",
+    "samenwerking": "Kerstlunch Franeker",
+    "creator": "Sophie de Vries"
+   }
+  },
+  {
+   "id": "t-reclamelabel",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Reclamelabel ontbreekt in live post",
+   "ontvanger": "content.review, Super Admin",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "verplicht"
+   },
+   "uitzetten": "E-mail per medewerker",
+   "onderwerp": "Reclamelabel ontbreekt: {zaak}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "In de live post van {creator} voor {zaak} ontbreekt het reclamelabel. Vraag de creator het direct toe te voegen."
+    ],
+    "knop": "Bekijk post",
+    "deeplink": "AdminSamenwerkingDetail"
+   },
+   "push": "Reclamelabel ontbreekt in post {zaak}.",
+   "inapp": "Kritiek: reclamelabel ontbreekt bij {zaak}.",
+   "bron": "FO §8.4",
+   "status": "FO",
+   "urgentie": "Kritiek",
+   "voorbeeld": {
+    "voornaam": "Eva",
+    "zaak": "Lunchroom Bloesem",
+    "samenwerking": "Kerstlunch Franeker",
+    "creator": "Sophie de Vries"
+   }
+  },
+  {
+   "id": "t-oordeel-laag",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Oordeel ondernemer lager dan [drempel]",
+   "ontvanger": "Accountmanager, Super Admin",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "aan",
+    "push": "aan"
+   },
+   "uitzetten": "E-mail per medewerker",
+   "onderwerp": "Laag oordeel: {zaak}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "{zaak} gaf {sterren} sterren voor \"{samenwerking}\". Neem contact op."
+    ],
+    "knop": "Bekijk",
+    "deeplink": "AdminSamenwerkingDetail"
+   },
+   "push": "{zaak} gaf {sterren} sterren.",
+   "inapp": "Laag oordeel van {zaak}: {sterren} sterren.",
+   "bron": "FO §8.4",
+   "status": "FO",
+   "urgentie": "Hoog",
+   "voorbeeld": {
+    "voornaam": "Eva",
+    "zaak": "Lunchroom Bloesem",
+    "samenwerking": "Kerstlunch Franeker",
+    "creator": "Sophie de Vries",
+    "sterren": "2"
+   }
+  },
+  {
+   "id": "t-tegoed-niet-benut",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Tegoed niet benut, einde maand nadert",
+   "ontvanger": "Accountmanager",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "samenvatting",
+    "push": "uit"
+   },
+   "uitzetten": "E-mail per medewerker",
+   "onderwerp": "Tegoed niet benut: {aantal} ondernemers",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "{aantal} ondernemers hebben nog tegoed over en de maand eindigt over {dagen} dagen."
+    ],
+    "knop": "Ondernemers",
+    "deeplink": "AdminOndernemers"
+   },
+   "push": "{aantal} ondernemers met tegoed over.",
+   "inapp": "Tegoed niet benut bij {aantal} ondernemers.",
+   "bron": "FO §8.4",
+   "status": "FO",
+   "urgentie": "Normaal",
+   "voorbeeld": {
+    "voornaam": "Eva",
+    "zaak": "Lunchroom Bloesem",
+    "samenwerking": "Kerstlunch Franeker",
+    "creator": "Sophie de Vries",
+    "aantal": "4",
+    "dagen": "7"
+   }
+  },
+  {
+   "id": "t-opgezegd",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Abonnement opgezegd of afgewaardeerd",
+   "ontvanger": "Accountmanager, Super Admin",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "aan",
+    "push": "aan"
+   },
+   "uitzetten": "E-mail per medewerker",
+   "onderwerp": "Opgezegd: {zaak}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "{zaak} heeft het abonnement {pakket} opgezegd per {datum}."
+    ],
+    "knop": "Ondernemer openen",
+    "deeplink": "AdminOndernemers"
+   },
+   "push": "{zaak} zegt op per {datum}.",
+   "inapp": "Opzegging {zaak}.",
+   "bron": "FO §8.4",
+   "status": "FO",
+   "urgentie": "Hoog",
+   "voorbeeld": {
+    "voornaam": "Eva",
+    "zaak": "Bakkerij Van der Molen",
+    "samenwerking": "Kerstlunch Franeker",
+    "creator": "Sophie de Vries",
+    "pakket": "Lokaal",
+    "datum": "vr 1 jan 2027"
+   }
+  },
+  {
+   "id": "t-aanmelding",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Nieuwe aanmelding creator",
+   "ontvanger": "creators.screen",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "samenvatting",
+    "push": "uit"
+   },
+   "uitzetten": "E-mail per medewerker",
+   "onderwerp": "Nieuwe aanmelding: {naam}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "{naam} uit {plaats} heeft zich aangemeld als {soort}."
+    ],
+    "knop": "Screenen",
+    "deeplink": "AdminCreators"
+   },
+   "push": "Nieuwe aanmelding: {naam}, {plaats}.",
+   "inapp": "Nieuwe creator-aanmelding: {naam}.",
+   "bron": "FO §8.4",
+   "status": "FO",
+   "urgentie": "Normaal",
+   "voorbeeld": {
+    "voornaam": "Ruben",
+    "naam": "Marit Hylkema",
+    "plaats": "Franeker",
+    "soort": "Beide"
+   }
+  },
+  {
+   "id": "t-cijfers-handmatig",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Handmatige cijfers ingediend",
+   "ontvanger": "stats.correct",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "uit",
+    "push": "uit"
+   },
+   "uitzetten": "E-mail per medewerker",
+   "onderwerp": "Handmatige cijfers: {creator}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "{creator} heeft handmatig cijfers ingediend voor {zaak}, met screenshot."
+    ],
+    "knop": "Controleren",
+    "deeplink": "AdminControle"
+   },
+   "push": "Handmatige cijfers van {creator}.",
+   "inapp": "Handmatige cijfers ingediend door {creator}.",
+   "bron": "FO §8.4",
+   "status": "FO",
+   "urgentie": "Normaal",
+   "voorbeeld": {
+    "voornaam": "Eva",
+    "zaak": "Lunchroom Bloesem",
+    "samenwerking": "Kerstlunch Franeker",
+    "creator": "Sophie de Vries"
+   }
+  },
+  {
+   "id": "t-token",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Token verloopt binnen 7 dagen of verlopen",
+   "ontvanger": "integrations.view",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "samenvatting",
+    "push": "uit"
+   },
+   "uitzetten": "E-mail per medewerker",
+   "onderwerp": "Tokens: {aantal} verlopen binnenkort",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "{aantal} koppelingen verlopen binnen 7 dagen. De eigenaren hebben een melding gekregen."
+    ],
+    "knop": "API-status",
+    "deeplink": "AdminApi"
+   },
+   "push": "{aantal} tokens verlopen binnenkort.",
+   "inapp": "{aantal} koppelingen verlopen binnen 7 dagen.",
+   "bron": "FO §8.4",
+   "status": "FO",
+   "urgentie": "Normaal",
+   "voorbeeld": {
+    "voornaam": "Eva",
+    "zaak": "Lunchroom Bloesem",
+    "samenwerking": "Kerstlunch Franeker",
+    "creator": "Sophie de Vries",
+    "aantal": "3"
+   }
+  },
+  {
+   "id": "t-sync",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Sync 3 keer mislukt voor één koppeling",
+   "ontvanger": "integrations.view",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "uit",
+    "push": "uit"
+   },
+   "uitzetten": "E-mail per medewerker",
+   "onderwerp": "Synchronisatie mislukt: {platform}, {aantal} accounts",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "De synchronisatie met {platform} is 3 keer op rij mislukt voor {aantal} accounts."
+    ],
+    "knop": "API-status",
+    "deeplink": "AdminApi/sverbroken"
+   },
+   "push": "Sync {platform} mislukt voor {aantal} accounts.",
+   "inapp": "Sync mislukt: {platform}.",
+   "bron": "FO §8.4",
+   "status": "FO",
+   "urgentie": "Hoog",
+   "voorbeeld": {
+    "voornaam": "Eva",
+    "zaak": "Lunchroom Bloesem",
+    "samenwerking": "Kerstlunch Franeker",
+    "creator": "Sophie de Vries",
+    "platform": "TikTok",
+    "aantal": "1"
+   }
+  },
+  {
+   "id": "t-storing",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Platformbrede storing of limiet boven [percentage]",
+   "ontvanger": "integrations.manage, Super Admin",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "verplicht"
+   },
+   "uitzetten": "E-mail per medewerker",
+   "onderwerp": "Storing: {platform}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "{platform} levert geen data of de limiet is boven {percentage}. Overweeg de terugvalmodus."
+    ],
+    "knop": "API-status",
+    "deeplink": "AdminApi"
+   },
+   "push": "Storing bij {platform}. Overweeg terugvalmodus.",
+   "inapp": "Kritiek: storing {platform}.",
+   "bron": "FO §8.4",
+   "status": "FO",
+   "urgentie": "Kritiek",
+   "voorbeeld": {
+    "voornaam": "Eva",
+    "zaak": "Lunchroom Bloesem",
+    "samenwerking": "Kerstlunch Franeker",
+    "creator": "Sophie de Vries",
+    "platform": "Instagram",
+    "percentage": "80%"
+   }
+  },
+  {
+   "id": "t-klassement",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Afwijking leaderboard",
+   "ontvanger": "leaderboard.review",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "uit",
+    "push": "uit"
+   },
+   "uitzetten": "E-mail per medewerker",
+   "onderwerp": "Afwijking klassement: {naam}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "De score van {naam} is ongebruikelijk snel gestegen. Controleer de cijfers."
+    ],
+    "knop": "Klassement",
+    "deeplink": "AdminKlassement"
+   },
+   "push": "Afwijking in klassement: {naam}.",
+   "inapp": "Afwijking klassement: {naam}.",
+   "bron": "FO §8.4",
+   "status": "FO",
+   "urgentie": "Normaal",
+   "voorbeeld": {
+    "voornaam": "Ruben",
+    "naam": "Daan Postma"
+   }
+  },
+  {
+   "id": "t-academy",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Cursusdag vol, wachtlijstplek niet betaald, cursusdag onder minimum",
+   "ontvanger": "academy.manage",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "uit",
+    "push": "uit"
+   },
+   "uitzetten": "E-mail per medewerker",
+   "onderwerp": "Academy: {cursusdag}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "{cursusdag} op {datum} heeft {aantal} inschrijvingen, minder dan het minimum van 6."
+    ],
+    "knop": "Cursusdagen",
+    "deeplink": "AdminCursusdagen"
+   },
+   "push": "{cursusdag}: {aantal} inschrijvingen.",
+   "inapp": "Cursusdag {datum} onder minimum.",
+   "bron": "FO §8.4",
+   "status": "FO",
+   "urgentie": "Normaal",
+   "voorbeeld": {
+    "voornaam": "Mirthe",
+    "cursusdag": "Cursusdag Content maken",
+    "datum": "za 12 dec",
+    "aantal": "4"
+   }
+  },
+  {
+   "id": "t-factuur",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Factuur over vervaldatum, betaling mislukt",
+   "ontvanger": "finance.view, finance.manage",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "samenvatting",
+    "push": "uit"
+   },
+   "uitzetten": "E-mail per medewerker",
+   "onderwerp": "Openstaand: {nummer}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Factuur {nummer} van {zaak} ({bedrag}) is over de vervaldatum."
+    ],
+    "knop": "Financieel",
+    "deeplink": "AdminFinancieel"
+   },
+   "push": "Factuur {nummer} over de vervaldatum.",
+   "inapp": "Factuur {nummer} van {zaak} over vervaldatum.",
+   "bron": "FO §8.4",
+   "status": "FO",
+   "urgentie": "Hoog",
+   "voorbeeld": {
+    "voornaam": "Tom",
+    "nummer": "MB-2026-1104",
+    "zaak": "Kapsalon Knip",
+    "bedrag": "€ 422,29"
+   }
+  },
+  {
+   "id": "t-vrijgave",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Vergoedingen klaar voor vrijgave",
+   "ontvanger": "finance.manage",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "samenvatting",
+    "push": "uit"
+   },
+   "uitzetten": "E-mail per medewerker",
+   "onderwerp": "Betaalrun vrijdag: {aantal} vergoedingen",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "{aantal} vergoedingen, samen {bedrag}, staan klaar voor de betaalrun van vrijdag {datum}."
+    ],
+    "knop": "Betaalrun",
+    "deeplink": "AdminFinancieel"
+   },
+   "push": "Betaalrun vrijdag: {aantal} vergoedingen.",
+   "inapp": "{aantal} vergoedingen klaar voor vrijgave.",
+   "bron": "FO §8.4, besluit W7",
+   "status": "FO",
+   "urgentie": "Normaal",
+   "voorbeeld": {
+    "voornaam": "Tom",
+    "aantal": "14",
+    "bedrag": "€ 2.140",
+    "datum": "20 nov"
+   }
+  },
+  {
+   "id": "t-juridisch",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Juridische tekst na [aantal] dagen niet geaccepteerd",
+   "ontvanger": "businesses.manage",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "samenvatting",
+    "push": "uit"
+   },
+   "uitzetten": "E-mail per medewerker",
+   "onderwerp": "Voorwaarden niet geaccepteerd: {aantal}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "{aantal} gebruikers hebben de nieuwe voorwaarden na 14 dagen nog niet geaccepteerd."
+    ],
+    "knop": "Bekijk",
+    "deeplink": "AdminInstellingen"
+   },
+   "push": "{aantal} nog niet geaccepteerd.",
+   "inapp": "Voorwaarden niet geaccepteerd door {aantal}.",
+   "bron": "FO §8.4",
+   "status": "FO",
+   "urgentie": "Laag",
+   "voorbeeld": {
+    "voornaam": "Mirthe",
+    "aantal": "3"
+   }
+  },
+  {
+   "id": "t-rechten",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Rechten van een medewerker gewijzigd",
+   "ontvanger": "Betrokkene, Super Admin",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "nee",
+    "email": "verplicht",
+    "push": "nee"
+   },
+   "uitzetten": "E-mail per medewerker",
+   "onderwerp": "Je rechten zijn gewijzigd",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "{wie} heeft je rollen gewijzigd: {rollen}."
+    ],
+    "knop": "Bekijk je rechten",
+    "deeplink": "AdminTeam"
+   },
+   "push": "",
+   "inapp": "",
+   "bron": "FO §8.4",
+   "status": "FO",
+   "urgentie": "Normaal",
+   "voorbeeld": {
+    "voornaam": "Ruben",
+    "wie": "Mirthe Brouwer",
+    "rollen": "Contentcontrole, Accountmanager"
+   }
+  },
+  {
+   "id": "t-inloggen-als",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Inloggen als gestart",
+   "ontvanger": "Super Admin",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "samenvatting",
+    "push": "uit"
+   },
+   "uitzetten": "E-mail per medewerker",
+   "onderwerp": "Inloggen als: {naam}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "{wie} logde in als {naam} op {datum} om {tijd}. Reden: {reden}."
+    ],
+    "knop": "Auditlog",
+    "deeplink": "AdminLogboek"
+   },
+   "push": "Inloggen als {naam} door {wie}.",
+   "inapp": "{wie} logde in als {naam}.",
+   "bron": "FO §8.4",
+   "status": "FO",
+   "urgentie": "Laag",
+   "voorbeeld": {
+    "voornaam": "Mirthe",
+    "wie": "Eva Jansen",
+    "naam": "Sanne Hiemstra",
+    "datum": "ma 16 nov",
+    "tijd": "11:20",
+    "reden": "Hulp bij aanvraag"
+   }
+  }
+ ]
+}

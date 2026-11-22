@@ -96,7 +96,8 @@ return [
         'users' => [
             'provider' => 'users',
             'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
-            'expire' => 60,
+            // VOORSTEL: 7 dagen, omdat uitnodigingen voor nieuwe accounts (ondernemer, creator, team) via dezelfde link lopen.
+            'expire' => (int) env('AUTH_PASSWORD_EXPIRE', 10080),
             'throttle' => 60,
         ],
     ],

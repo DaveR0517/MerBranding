@@ -40,7 +40,13 @@ class HandleInertiaRequests extends Middleware
             'name' => config('app.name'),
             'auth' => [
                 'user' => $request->user(),
+                'portal' => $request->user()?->homePortal(),
+                'roles' => $request->user()?->getRoleNames() ?? [],
+                'is_super_admin' => $request->user()?->hasRole('Super Admin') ?? false,
+                'impersonating' => $request->session()->has('inloggen_als_van'),
             ],
+            'unread' => fn () => $request->user()?->unreadNotifications()->count() ?? 0,
+            'flash' => fn () => ['melding' => $request->session()->get('melding')],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
     }

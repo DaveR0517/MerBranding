@@ -16,12 +16,11 @@ class DashboardTest extends TestCase
         $response->assertRedirect(route('login'));
     }
 
-    public function test_authenticated_users_can_visit_the_dashboard()
+    public function test_dashboard_sends_users_to_their_own_environment()
     {
-        $user = User::factory()->create();
-        $this->actingAs($user);
+        $this->actingAs(User::factory()->create());
 
-        $response = $this->get(route('dashboard'));
-        $response->assertOk();
+        $this->get(route('dashboard'))->assertRedirect(route('start'));
+        $this->get(route('start'))->assertOk()->assertInertia(fn ($page) => $page->component('geen-omgeving'));
     }
 }

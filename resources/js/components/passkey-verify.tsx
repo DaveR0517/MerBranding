@@ -1,4 +1,5 @@
 import type { UrlMethodPair } from '@inertiajs/core';
+import { start } from '@/routes';
 import { router } from '@inertiajs/react';
 import { usePasskeyVerify } from '@laravel/passkeys/react';
 import { KeyRound } from 'lucide-react';
@@ -31,7 +32,7 @@ export default function PasskeyVerify({
             },
         }),
         onSuccess: (response) => {
-            router.visit(response.redirect ?? '/dashboard');
+            router.visit(response.redirect ?? start.url());
         },
     });
 

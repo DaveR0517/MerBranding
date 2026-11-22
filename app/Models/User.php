@@ -7,6 +7,8 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -47,5 +49,32 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
         ];
+    }
+
+    public function companies(): BelongsToMany
+    {
+        return $this->belongsToMany(Company::class)->withPivot('role')->withTimestamps();
+    }
+
+    public function creator(): HasOne
+    {
+        return $this->hasOne(Creator::class);
+    }
+
+    /** Teamleden: Super Admin of een van de rechtensjablonen. */
+    public function isTeam(): bool
+    {
+        return $this->roles->contains(fn ($r) => ! in_array($r->name, ['Ondernemer Eigenaar', 'Ondernemer Lid', 'Creator', 'Student'], true));
+    }
+
+    /** Het portaal waar deze gebruiker na inloggen terechtkomt. */
+    public function homePortal(): string
+    {
+        return match (true) {
+            $this->isTeam() => 'team',
+            $this->creator()->exists() => 'creator',
+            $this->companies()->exists() => 'ondernemer',
+            default => 'geen',
+        };
     }
 }

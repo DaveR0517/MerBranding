@@ -9,7 +9,7 @@ npm ci --no-audit --no-fund
 npm run build
 
 $FORGE_PHP artisan migrate --force
-$FORGE_PHP artisan db:seed --class=RolesSeeder --force
+$FORGE_PHP artisan db:seed --force
 $FORGE_PHP artisan config:cache
 $FORGE_PHP artisan route:cache
 $FORGE_PHP artisan view:cache
