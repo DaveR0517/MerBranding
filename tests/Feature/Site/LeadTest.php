@@ -84,3 +84,10 @@ test('formulieren hebben een limiet per uur', function () {
     $this->post(SITE.'/voor-ondernemers', $data)->assertRedirect();
     $this->post(SITE.'/voor-ondernemers', $data)->assertStatus(429);
 });
+
+test('te vaak versturen geeft een nette Nederlandse melding', function () {
+    config(['mebranding.lead_rate_limit_per_hour' => 1]);
+
+    $this->post(SITE.'/voor-ondernemers', []);
+    $this->post(SITE.'/voor-ondernemers', [])->assertStatus(429)->assertSee('Even geduld');
+});

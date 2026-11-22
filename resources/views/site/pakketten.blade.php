@@ -10,7 +10,7 @@
         ['regio', 'Regio', 'Voor merken met meerdere vestigingen', '€ 1.695', ['12 samenwerkingen per maand', 'Meerdere vestigingen', 'Campagnes door heel Noord-Nederland', 'Advertenties met creator-content'], ''],
     ];
     $ja = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Ja"><path d="M4 12.5l5 5L20 6.5"/></svg>';
-    $nee = '<span aria-label="Nee">–</span>';
+    $nee = '<span class="nee" role="img" aria-label="Nee"></span>';
     $rijen = [
         ['Samenwerkingen per maand', '2', '5', '12', 'Als Regio'],
         ['Content op TikTok en Instagram', 1, 1, 1, 1],
@@ -122,7 +122,7 @@
                         <tr>
                             <th scope="row">{{ $onderdeel }}</th>
                             @foreach ([$l, $g, $r, $d] as $i => $cel)
-                                <td class="{{ $i === 3 ? 'd' : '' }} {{ $cel === 1 ? 'y' : ($cel === 0 ? 'n' : '') }}">{!! $cel === 1 ? $ja : ($cel === 0 ? $nee : e($cel)) !!}</td>
+                                <td class="{{ $i === 3 ? 'd' : '' }} {{ $cel === 1 ? 'y' : '' }}">{!! $cel === 1 ? $ja : ($cel === 0 ? $nee : e($cel)) !!}</td>
                             @endforeach
                         </tr>
                     @endforeach

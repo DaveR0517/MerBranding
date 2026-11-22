@@ -3,6 +3,7 @@
 use App\Models\User;
 use Database\Seeders\RolesSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Symfony\Component\Process\Process;
 
 uses(RefreshDatabase::class);
 
@@ -38,7 +39,7 @@ test('rechtensjablonen geven alleen hun eigen rechten', function () {
 });
 
 test('op één testadres staat het portaal onder APP_PREFIX', function () {
-    $proces = new Symfony\Component\Process\Process(
+    $proces = new Process(
         [PHP_BINARY, 'artisan', 'route:list', '--json'],
         base_path(),
         ['SITE_DOMAIN' => 'mebranding.on-forge.com', 'APP_DOMAIN' => 'mebranding.on-forge.com', 'APP_PREFIX' => 'app'],

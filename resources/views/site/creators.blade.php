@@ -104,7 +104,7 @@
                                 </div>
                             </fieldset>
                             <p class="tip">Je keuze bepaalt wat we in stap 4 vragen: voorbeeldvideo's voor UGC, goed lopende posts voor influencers, of allebei.</p>
-                            <div class="wnav"><button type="button" class="wbtn" disabled>‹ Vorige</button><span class="pos">Stap 1 van 6</span><button type="button" class="wbtn p" data-naar="1">Volgende: over jou ›</button></div>
+                            <div class="wnav"><button type="button" class="wbtn" disabled>‹ Vorige</button><span class="pos">Stap 1 van 6</span><button type="button" class="wbtn p" data-naar="1">Volgende<span class="nm">: over jou</span> ›</button></div>
                         </section>
 
                         {{-- Stap 2 --}}
@@ -125,7 +125,7 @@
                                     <div class="range"><input id="veld-straal" type="range" name="straal" min="5" max="75" step="5" value="{{ old('straal', 25) }}" data-uit="straal-uit"><output id="straal-uit" for="veld-straal">{{ old('straal', 25) }} km</output></div>
                                 </div>
                             </div>
-                            <div class="wnav"><button type="button" class="wbtn" data-naar="0">‹ Vorige</button><span class="pos">Stap 2 van 6</span><button type="button" class="wbtn p" data-naar="2">Volgende: je kanalen ›</button></div>
+                            <div class="wnav"><button type="button" class="wbtn" data-naar="0">‹ Vorige</button><span class="pos">Stap 2 van 6</span><button type="button" class="wbtn p" data-naar="2">Volgende<span class="nm">: je kanalen</span> ›</button></div>
                         </section>
 
                         {{-- Stap 3 --}}
@@ -145,7 +145,7 @@
                                 @include('site.partials.veld', ['naam' => 'portfolio', 'label' => 'Eigen website of portfolio', 'type' => 'url', 'attrs' => 'placeholder="https://"'])
                             </div>
                             <p class="tip">Voor Instagram heb je een professioneel account nodig (zakelijk of creator), zodat we na het koppelen de cijfers van je samenwerkingen kunnen zien.</p>
-                            <div class="wnav"><button type="button" class="wbtn" data-naar="1">‹ Vorige</button><span class="pos">Stap 3 van 6</span><button type="button" class="wbtn p" data-naar="3">Volgende: je werk ›</button></div>
+                            <div class="wnav"><button type="button" class="wbtn" data-naar="1">‹ Vorige</button><span class="pos">Stap 3 van 6</span><button type="button" class="wbtn p" data-naar="3">Volgende<span class="nm">: je werk</span> ›</button></div>
                         </section>
 
                         {{-- Stap 4 --}}
@@ -166,7 +166,7 @@
                                     @endforeach
                                 </fieldset>
                             </div>
-                            <div class="wnav"><button type="button" class="wbtn" data-naar="2">‹ Vorige</button><span class="pos">Stap 4 van 6</span><button type="button" class="wbtn p" data-naar="4">Volgende: niches ›</button></div>
+                            <div class="wnav"><button type="button" class="wbtn" data-naar="2">‹ Vorige</button><span class="pos">Stap 4 van 6</span><button type="button" class="wbtn p" data-naar="4">Volgende<span class="nm">: niches</span> ›</button></div>
                         </section>
 
                         {{-- Stap 5 --}}
@@ -184,7 +184,7 @@
                                 @include('site.partials.veld', ['naam' => 'certificaat', 'label' => 'Academy-certificaat (optioneel)', 'hint' => 'Heb je een cursusdag gevolgd? Vul dan je certificaatnummer in.'])
                                 <p class="tip"><b>Proefvideo.</b> UGC-makers krijgen na aanmelding een korte proefopdracht. We beoordelen beeld, geluid, montage en of je de briefing volgt.</p>
                             </div>
-                            <div class="wnav"><button type="button" class="wbtn" data-naar="3">‹ Vorige</button><span class="pos">Stap 5 van 6</span><button type="button" class="wbtn p" data-naar="5">Volgende: controleren ›</button></div>
+                            <div class="wnav"><button type="button" class="wbtn" data-naar="3">‹ Vorige</button><span class="pos">Stap 5 van 6</span><button type="button" class="wbtn p" data-naar="5">Volgende<span class="nm">: controleren</span> ›</button></div>
                         </section>
 
                         {{-- Stap 6 --}}

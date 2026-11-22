@@ -2,7 +2,7 @@
     $titel = trim($__env->yieldContent('title'));
     $volledigeTitel = $titel !== '' ? $titel.' | MEBRANDING' : 'MEBRANDING. Echte creators. Echte verhalen. Meer klanten.';
     $omschrijving = trim($__env->yieldContent('description')) ?: 'MEBRANDING koppelt ondernemers in Noord-Nederland aan creators. Zij komen langs, maken een video en plaatsen die op TikTok en Instagram. Wij regelen de rest.';
-    $inloggen = 'https://'.config('mebranding.domains.app').'/login';
+    $inloggen = route('login');
     $huidige = request()->route()?->getName();
 @endphp
 <!DOCTYPE html>

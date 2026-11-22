@@ -71,7 +71,7 @@
                 </div>
                 <div class="f2">
                     @include('site.partials.veld', ['naam' => 'naam', 'label' => 'Naam', 'verplicht' => true, 'attrs' => 'autocomplete="name"'])
-                    @include('site.partials.veld', ['naam' => 'vestigingen', 'label' => 'Aantal vestigingen', 'type' => 'number', 'waarde' => '1', 'attrs' => 'min="1" max="999" inputmode="numeric"'])
+                    @include('site.partials.veld', ['naam' => 'vestigingen', 'label' => 'Aantal vestigingen', 'type' => 'number', 'standaard' => '1', 'attrs' => 'min="1" max="999" inputmode="numeric"'])
                 </div>
                 <div class="f2">
                     @include('site.partials.veld', ['naam' => 'email', 'label' => 'E-mail', 'type' => 'email', 'verplicht' => true, 'attrs' => 'autocomplete="email" placeholder="naam@bedrijf.nl"'])
