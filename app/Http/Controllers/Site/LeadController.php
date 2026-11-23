@@ -11,14 +11,29 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\Rule;
 
 class LeadController extends Controller
 {
     /** Versie van de privacytekst waar de aanvrager mee akkoord ging. Placeholder tot de juridische teksten er zijn. */
     public const CONSENT_VERSION = '0.1-concept';
 
-    /** Velden die als kolom worden opgeslagen; al het andere gaat naar data. */
-    private const CORE = ['naam', 'email', 'telefoon', 'bedrijfsnaam', 'plaats', 'woonplaats', 'bericht', 'akkoord', 'website', '_token'];
+    /** Velden die als kolom worden opgeslagen (of omgezet); al het andere gaat naar data. */
+    private const CORE = ['naam', 'voornaam', 'achternaam', 'email', 'telefoon', 'bedrijfsnaam', 'woonplaats', 'bericht', 'niche', 'akkoord', 'website', '_token'];
+
+    /** Keuzes in het formulier Kennismaken. */
+    public const BRANCHES = ['Restaurant of lunchroom', 'Hotel of B&B', 'Museum of uitje', 'Winkel', 'Anders'];
+
+    public const VESTIGINGEN = ['1', '2 tot 3', '4 of meer'];
+
+    /** Keuze "Wat voor creator ben je?": waarde => [tekst, niches uit CreatorProfiel::NICHES]. */
+    public const CREATORSOORTEN = [
+        'food-lifestyle' => ['Food en lifestyle', ['eten', 'lifestyle']],
+        'reizen' => ['Reizen en hotels', ['reizen']],
+        'uitjes' => ['Uitjes en cultuur', ['uitjes']],
+        'mode' => ['Mode en winkels', ['mode']],
+        'anders' => ['Anders', ['anders']],
+    ];
 
     public function ondernemer(Request $request): RedirectResponse
     {
@@ -27,28 +42,39 @@ class LeadController extends Controller
             'email' => ['required', 'email', 'max:190'],
             'telefoon' => ['nullable', 'string', 'max:40'],
             'bedrijfsnaam' => ['required', 'string', 'max:190'],
-            'plaats' => ['nullable', 'string', 'max:120'],
+            'branche' => ['nullable', Rule::in(self::BRANCHES)],
+            'vestigingen' => ['nullable', Rule::in(self::VESTIGINGEN)],
+            'pakket' => ['nullable', Rule::in(['lokaal', 'groei', 'regio'])],
             'bericht' => ['nullable', 'string', 'max:5000'],
             'akkoord' => ['accepted'],
         ], $this->messages());
 
-        return $this->store($request, Lead::TYPE_ONDERNEMER, 'site.ondernemers');
+        return $this->store($request, Lead::TYPE_ONDERNEMER, 'site.kennismaken');
     }
 
     public function creator(Request $request): RedirectResponse
     {
         $request->validate([
-            'naam' => ['required', 'string', 'max:120'],
+            'voornaam' => ['required', 'string', 'max:60'],
+            'achternaam' => ['required', 'string', 'max:60'],
             'email' => ['required', 'email', 'max:190'],
-            'telefoon' => ['required', 'string', 'max:40'],
-            'woonplaats' => ['required', 'string', 'max:120'],
             'geboortedatum' => ['required', 'date', 'before_or_equal:'.now()->subYears(18)->toDateString()],
+            'instagram-naam' => ['nullable', 'string', 'max:60'],
+            'tiktok-naam' => ['nullable', 'string', 'max:60'],
+            'niche' => ['nullable', Rule::in(array_keys(self::CREATORSOORTEN))],
+            'woonplaats' => ['required', 'string', 'max:120'],
+            'bericht' => ['nullable', 'string', 'max:5000'],
             'akkoord' => ['accepted'],
         ], $this->messages() + [
             'geboortedatum.before_or_equal' => 'Je moet minimaal 18 jaar zijn om je aan te melden als creator.',
         ]);
 
-        return $this->store($request, Lead::TYPE_CREATOR, 'site.creators');
+        $request->merge([
+            'naam' => trim($request->string('voornaam')->trim().' '.$request->string('achternaam')->trim()),
+            'niches' => self::CREATORSOORTEN[$request->input('niche')][1] ?? null,
+        ]);
+
+        return $this->store($request, Lead::TYPE_CREATOR, 'site.aanmelden-creator');
     }
 
     private function store(Request $request, string $type, string $backRoute): RedirectResponse
@@ -76,7 +102,7 @@ class LeadController extends Controller
             'email' => $request->string('email')->trim()->lower()->toString(),
             'phone' => $request->input('telefoon'),
             'company' => $request->input('bedrijfsnaam'),
-            'city' => $request->input('plaats') ?? $request->input('woonplaats'),
+            'city' => $request->input('woonplaats'),
             'message' => $request->input('bericht'),
             'data' => $extra ?: null,
             'consent_at' => now(),

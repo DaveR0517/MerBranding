@@ -16,7 +16,7 @@ Route::get('uitnodiging/{code}', function (string $code) {
     }
 
     // Een creator nodigt een creator uit, een ondernemer een ondernemer (vriend-uitnodigen.html).
-    $doel = $link->user->creator ? 'site.creators' : 'site.ondernemers';
+    $doel = $link->user->creator ? 'site.aanmelden-creator' : 'site.kennismaken';
     $dagen = (int) config('mebranding.uitnodiging.cookie_dagen', 30); // VOORSTEL: 30 dagen geldig
 
     return redirect()->route($doel)->withCookie(cookie(Uitnodigingslink::COOKIE, $link->code, $dagen * 24 * 60));

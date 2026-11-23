@@ -24,8 +24,8 @@ beforeEach(function () {
 });
 
 test('een nieuwe aanmelding als creator geeft een screeningtaak in de werkvoorraad', function () {
-    $this->post('http://mebranding.test/voor-creators', [
-        'naam' => 'Lotte Kramer', 'email' => 'lotte@voorbeeld.nl', 'telefoon' => '0612345678', 'woonplaats' => 'Harlingen',
+    $this->post('http://mebranding.test/aanmelden-creator', [
+        'voornaam' => 'Lotte', 'achternaam' => 'Kramer', 'email' => 'lotte@voorbeeld.nl', 'woonplaats' => 'Harlingen',
         'geboortedatum' => now()->subYears(25)->toDateString(), 'akkoord' => '1',
     ])->assertSessionHasNoErrors();
 
@@ -101,7 +101,7 @@ test('aanvulling vragen mailt de aanmelder zonder account en zet de status', fun
         ->and(ActivityLog::where('event', 'screening_aanvulling')->sole()->reason)->toContain('privé');
     Mail::assertQueued(ScreeningBericht::class, fn ($m) => $m->hasTo('lotte@voorbeeld.nl') && $m->sleutel === 'c-aanvulling');
 
-    $html = (new ScreeningBericht('c-aanvulling', $lead, ['toelichting' => 'Instagram op professioneel'], 'https://mebranding.test/voor-creators'))->render();
+    $html = (new ScreeningBericht('c-aanvulling', $lead, ['toelichting' => 'Instagram op professioneel'], 'https://mebranding.test/creators'))->render();
     expect($html)->toContain('We missen nog iets')->toContain('Hoi Lotte')->toContain('Instagram op professioneel');
 });
 

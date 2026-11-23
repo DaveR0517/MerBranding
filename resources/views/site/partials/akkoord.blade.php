@@ -1,0 +1,5 @@
+{{-- Slot van een websiteformulier: akkoord met de privacyverklaring en de verstuurknop, zoals in het ontwerp. $knop: tekst op de knop. --}}
+<div style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 12px; margin-top: 6px">
+<label style="display: flex; gap: 10px; align-items: flex-start; font-family: 'Noto Sans',Arial,sans-serif; font-size: 14px; color: #5E5A78"><input type="checkbox" name="akkoord" value="1" required @checked(old('akkoord')) @error('akkoord') class="fout-veld" aria-invalid="true" aria-describedby="fout-akkoord" @enderror style="width: 20px; height: 20px; margin: 0; flex-shrink: 0"><span>Ik ga akkoord met de <a href="{{ route('site.privacy') }}">privacyverklaring</a>.</span></label>
+@error('akkoord')<span class="fout-tekst" id="fout-akkoord">{{ $message }}</span>@enderror
+<button type="submit" style="align-self: flex-start; min-height: 54px; padding: 0 32px; border-radius: 999px; border: 0; background: #2E2B48; color: #FCFBFE; font-family: Montserrat,Arial,sans-serif; font-weight: 700; font-size: 15px; cursor: pointer">{{ $knop }}</button></div>

@@ -1,50 +1,27 @@
 {{--
-    Foutpagina in huisstijl, voor de website en het portaal (ontwerpen Fout404, Fout500, Onderhoud).
+    Foutpagina in de stijl van de website, voor de website en het portaal.
     Gebruik: @include('errors.partials.fout', ['code' => 404, 'label' => 'Foutcode 404', 'regel1' => '...', 'regel2' => '...', 'tekst' => '...', 'knoppen' => [[tekst, url, hoofd?]], 'links' => [[titel, sub, url]], 'onder' => html])
 --}}
-<section class="fout" aria-labelledby="fout-titel">
-    <span class="fout-code" aria-hidden="true">{{ $code }}</span>
-    <div class="wrap fout-wrap">
-        <p class="eb">{{ $label }}</p>
-        <h1 id="fout-titel">{{ $regel1 }}<span>{{ $regel2 }}</span></h1>
-        <p class="fout-tekst">{{ $tekst }}</p>
-        @if (! empty($knoppen))
-            <p class="fout-knoppen">
-                @foreach ($knoppen as [$knop, $url, $hoofd])
-                    <a class="btn{{ $hoofd ? '' : ' fout-rand' }}" href="{{ $url }}">{{ $knop }}</a>
-                @endforeach
-            </p>
-        @endif
-        @if (! empty($links))
-            <ul class="fout-links">
-                @foreach ($links as [$titel, $sub, $url])
-                    <li><a href="{{ $url }}"><b>{{ $titel }}</b><small>{{ $sub }}</small></a></li>
-                @endforeach
-            </ul>
-        @endif
-        @isset($onder)
-            <div class="fout-onder">{!! $onder !!}</div>
-        @endisset
-    </div>
+<section aria-labelledby="fout-titel" style="max-width: 1280px; margin: 0 auto; padding-left: 24px; padding-right: 24px; box-sizing: border-box; padding-top: clamp(56px, 7vw, 110px); padding-bottom: clamp(64px, 8vw, 110px); display: flex; flex-direction: column; gap: 20px">
+<p aria-hidden="true" style="margin: 0; font-family: Montserrat,Arial,sans-serif; font-weight: 900; font-size: clamp(56px, 9vw, 132px); line-height: 0.9; letter-spacing: -4px; color: #2E2B48">{{ $code }}<span style="background: linear-gradient(90deg,#D9303E,#614ED9); -webkit-background-clip: text; background-clip: text; color: transparent">.</span></p>
+<p style="margin: 0; font-family: Montserrat,Arial,sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; color: #614ED9">{{ $label }}</p>
+<h1 id="fout-titel" style="margin: 0; font-family: Montserrat,Arial,sans-serif; font-weight: 700; font-size: clamp(22px, 2.4vw, 32px); line-height: 1.25; color: #2E2B48; max-width: 820px">{{ $regel1 }} {{ $regel2 }}.</h1>
+<p style="margin: 0; font-family: 'Noto Sans',Arial,sans-serif; font-size: 17px; line-height: 1.7; color: #5E5A78; max-width: 720px">{{ $tekst }}</p>
+@if (! empty($knoppen))
+<div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 4px">
+@foreach ($knoppen as [$knop, $url, $hoofd])
+<a href="{{ $url }}" style="font-family: Montserrat,Arial,sans-serif; font-weight: 700; font-size: 15px; text-decoration: none; border-radius: 999px; min-height: 54px; display: inline-flex; align-items: center; padding: 0 28px; {{ $hoofd ? 'color: #FCFBFE; background: #2E2B48; border: 2px solid #2E2B48' : 'color: #2E2B48; border: 2px solid #2E2B48' }}">{{ $knop }}</a>
+@endforeach
+</div>
+@endif
+@if (! empty($links))
+<div style="border-top: 1px solid #E3E0EC; margin-top: 20px">
+@foreach ($links as [$titel, $sub, $url])
+<a href="{{ $url }}" style="display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 20px; padding: 20px 0; border-bottom: 1px solid #E3E0EC; text-decoration: none"><span style="font-family: Montserrat,Arial,sans-serif; font-weight: 800; font-size: clamp(20px, 2vw, 26px); color: #2E2B48">{{ $titel }}</span><span style="font-family: 'Noto Sans',Arial,sans-serif; font-size: 15px; color: #5E5A78">{{ $sub }} <span aria-hidden="true" style="color: #614ED9">→</span></span></a>
+@endforeach
+</div>
+@endif
+@isset($onder)
+<div class="fout-onder">{!! $onder !!}</div>
+@endisset
 </section>
-<style>
-    .fout{position:relative;overflow:hidden;min-height:78vh;display:flex;align-items:center;padding:132px 0 72px;isolation:isolate}
-    .fout::before{content:"";position:absolute;inset:auto -20% -40% auto;width:70vw;height:70vw;max-width:900px;max-height:900px;border-radius:50%;background:radial-gradient(closest-side,rgba(97,78,217,.45),transparent);z-index:-1}
-    .fout-code{position:absolute;right:-2vw;bottom:-6vw;font-family:var(--fh);font-weight:900;font-size:clamp(160px,34vw,520px);line-height:.8;letter-spacing:-.06em;color:transparent;-webkit-text-stroke:2px rgba(255,255,255,.12);z-index:-1;user-select:none}
-    .fout-wrap{width:100%}
-    .fout h1{margin:14px 0 18px;font-weight:900;text-transform:uppercase;letter-spacing:-.03em;line-height:.92;font-size:clamp(36px,7.4vw,92px);max-width:14ch}
-    .fout h1 span{display:block;background:linear-gradient(135deg,var(--red),var(--lvio));-webkit-background-clip:text;background-clip:text;color:transparent}
-    .fout-tekst{max-width:56ch;margin:0 0 28px;font-size:clamp(16px,1.4vw,19px);line-height:1.6;color:#E4E1F2}
-    .fout-knoppen{display:flex;flex-wrap:wrap;gap:12px;margin:0 0 36px}
-    .fout-rand{background:transparent;border:2px solid rgba(255,255,255,.5)}
-    .fout-rand:hover{border-color:#fff;box-shadow:none}
-    .fout-links{list-style:none;padding:0;margin:0 0 28px;display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));max-width:980px}
-    .fout-links a{display:block;padding:16px 18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:#fff;text-decoration:none;transition:border-color .2s,translate .2s}
-    .fout-links a:hover{border-color:var(--lvio);translate:0 -2px}
-    .fout-links b{display:block;font-family:var(--fh);font-weight:800}
-    .fout-links small{display:block;margin-top:4px;color:#CFCBE0;font-size:14px}
-    .fout-onder{color:#CFCBE0;font-size:14px;line-height:1.6;max-width:62ch}
-    .fout-onder a{color:#fff}
-    .fout-onder code{font-family:ui-monospace,monospace;background:rgba(255,255,255,.08);padding:2px 6px;word-break:break-all}
-    @media (max-width:600px){.fout{padding:108px 0 56px}.wrap.fout-wrap{padding:0 16px}.fout-knoppen .btn{flex:1 1 100%;justify-content:center}}
-</style>

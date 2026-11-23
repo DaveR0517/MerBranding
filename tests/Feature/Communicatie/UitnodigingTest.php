@@ -21,9 +21,9 @@ test('persoonlijke link: vast per gebruiker, de publieke route zet de cookie en 
     expect(Uitnodigingslink::count())->toBe(1);
 
     auth()->logout();
-    $this->get("http://mebranding.test/uitnodiging/{$code}")->assertRedirect(route('site.creators'))->assertCookie(Uitnodigingslink::COOKIE, $code);
+    $this->get("http://mebranding.test/uitnodiging/{$code}")->assertRedirect(route('site.aanmelden-creator'))->assertCookie(Uitnodigingslink::COOKIE, $code);
 
     $ondernemer = Uitnodigingslink::voor($this->sanne)->code;
-    $this->get("http://mebranding.test/uitnodiging/{$ondernemer}")->assertRedirect(route('site.ondernemers'));
+    $this->get("http://mebranding.test/uitnodiging/{$ondernemer}")->assertRedirect(route('site.kennismaken'));
     $this->get('http://mebranding.test/uitnodiging/bestaat-niet')->assertRedirect(route('site.home'))->assertCookieMissing(Uitnodigingslink::COOKIE);
 });

@@ -1,0 +1,5 @@
+{{-- Paginakop zoals op Kennismaken: groot woord met punt in verloop, kop en inleiding. $woord, $kop, $tekst. --}}
+<section style="max-width: 1280px; margin: 0 auto; padding-left: 24px; padding-right: 24px; box-sizing: border-box; padding-top: clamp(56px, 7vw, 110px); padding-bottom: clamp(40px, 5vw, 72px); display: flex; flex-direction: column; gap: 20px">
+<p aria-hidden="true" style="margin: 0; font-family: Montserrat,Arial,sans-serif; font-weight: 900; font-size: clamp(56px, 9vw, 132px); line-height: 0.9; letter-spacing: -4px; color: #2E2B48; overflow-wrap: anywhere">{{ $woord }}<span style="background: linear-gradient(90deg,#D9303E,#614ED9); -webkit-background-clip: text; background-clip: text; color: transparent">.</span></p>
+<h1 style="margin: 0; font-family: Montserrat,Arial,sans-serif; font-weight: 700; font-size: clamp(22px, 2.4vw, 32px); line-height: 1.25; color: #2E2B48; max-width: 820px">{{ $kop }}</h1>
+<p style="margin: 0; font-family: 'Noto Sans',Arial,sans-serif; font-size: 17px; line-height: 1.7; color: #5E5A78; max-width: 720px">{{ $tekst }}</p></section>
