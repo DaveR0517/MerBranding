@@ -133,10 +133,13 @@ export function ProfielLink({
     platform,
     handle,
     className = '',
+    compact = false,
 }: {
     platform: SociaalPlatform;
     handle: string;
     className?: string;
+    /** Zonder minimale aanraakhoogte, voor gebruik binnen een tekstregel of lijst. */
+    compact?: boolean;
 }) {
     const url = profielUrl(platform, handle);
     const naam = schoneHandle(handle);
