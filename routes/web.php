@@ -53,3 +53,14 @@ Route::domain(config('mebranding.domains.app'))->prefix(config('mebranding.app_p
 
     require __DIR__.'/settings.php';
 });
+
+/*
+| Oude adressen (zoals het Forge-testadres) sturen door naar de echte website, met hetzelfde pad.
+| Staat als laatste: alleen verzoeken die bij geen enkel domein hierboven horen, komen hier.
+*/
+Route::any('{pad?}', function (Illuminate\Http\Request $request, ?string $pad = null) {
+    $site = config('mebranding.domains.site');
+    abort_if($request->getHost() === $site || $request->getHost() === config('mebranding.domains.app'), 404);
+
+    return redirect()->away('https://'.$site.'/'.ltrim($request->getRequestUri(), '/'), 301);
+})->where('pad', '.*')->name('doorsturen');
