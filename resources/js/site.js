@@ -31,3 +31,16 @@ document.querySelectorAll('[data-toggle-menu]').forEach((b) => {
 
 // Na versturen: breng de bedankmelding of de foutsamenvatting in beeld en geef die de focus.
 document.querySelector('[data-focus]')?.focus();
+
+// Vergelijkingstabel: toon de veeg-hint en vervaging alleen als er meer te zien is.
+document.querySelectorAll('.vergelijk').forEach((blok) => {
+    const vak = blok.querySelector('.vergelijk-scroll');
+    const werkBij = () => {
+        const meer = vak.scrollWidth > vak.clientWidth + 1;
+        blok.classList.toggle('kan-scrollen', meer);
+        blok.classList.toggle('aan-einde', !meer || vak.scrollLeft + vak.clientWidth >= vak.scrollWidth - 2);
+    };
+    vak.addEventListener('scroll', werkBij, { passive: true });
+    window.addEventListener('resize', werkBij);
+    werkBij();
+});
