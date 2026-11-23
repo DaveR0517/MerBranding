@@ -1,13 +1,22 @@
-import { Head, Link, useForm } from "@inertiajs/react";
-import { ArrowLeft, Check, MessageSquareWarning, X } from "lucide-react";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { datumTijd } from "@/lib/datum";
-import * as screening from "@/routes/team/screening";
-import { Pagina, PaginaKop } from "@/components/pagina";
-import { Fouten, Label, Paneel, Veld, gebeurtenis, invoer } from "../_onderdelen/basis";
-import type { Aanmelding } from "./_gedeeld";
-import { platformKort, soortNaam } from "./_gedeeld";
+import { Head, Link, useForm } from '@inertiajs/react';
+import { ProfielLink } from '@/components/social/profiel-link';
+import type { SociaalPlatform } from '@/components/social/profiel-link';
+import { ArrowLeft, Check, MessageSquareWarning, X } from 'lucide-react';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { datumTijd } from '@/lib/datum';
+import * as screening from '@/routes/team/screening';
+import { Pagina, PaginaKop } from '@/components/pagina';
+import {
+    Fouten,
+    Label,
+    Paneel,
+    Veld,
+    gebeurtenis,
+    invoer,
+} from '../_onderdelen/basis';
+import type { Aanmelding } from './_gedeeld';
+import { platformKort, soortNaam } from './_gedeeld';
 
 type Props = {
     lead: Aanmelding & {
@@ -34,48 +43,48 @@ type Props = {
     open: boolean;
 };
 
-type Keuze = "goedkeuren" | "aanvulling" | "afwijzen";
+type Keuze = 'goedkeuren' | 'aanvulling' | 'afwijzen';
 
 const statusLabel: Record<
     string,
-    [string, "violet" | "amber" | "groen" | "rood"]
+    [string, 'violet' | 'amber' | 'groen' | 'rood']
 > = {
-    nieuw: ["Nieuw", "violet"],
-    aanvulling: ["Aanvulling gevraagd", "amber"],
-    creator: ["Goedgekeurd", "groen"],
-    afgewezen: ["Afgewezen", "rood"],
+    nieuw: ['Nieuw', 'violet'],
+    aanvulling: ['Aanvulling gevraagd', 'amber'],
+    creator: ['Goedgekeurd', 'groen'],
+    afgewezen: ['Afgewezen', 'rood'],
 };
 
 const besluitNaam: Record<string, string> = {
-    screening_goedgekeurd: "Goedgekeurd",
-    screening_aanvulling: "Aanvulling gevraagd",
-    screening_afgewezen: "Afgewezen",
+    screening_goedgekeurd: 'Goedgekeurd',
+    screening_aanvulling: 'Aanvulling gevraagd',
+    screening_afgewezen: 'Afgewezen',
 };
 
 /** Leesbare naam van een formulierveld van de website. */
 function veldNaam(sleutel: string): string {
     const namen: Record<string, string> = {
-        soort: "Soort",
-        straal: "Werkgebied (km)",
-        niches: "Niches",
-        geboortedatum: "Geboortedatum",
-        certificaat: "Academy-certificaat",
+        soort: 'Soort',
+        straal: 'Werkgebied (km)',
+        niches: 'Niches',
+        geboortedatum: 'Geboortedatum',
+        certificaat: 'Academy-certificaat',
     };
     const kanaal = sleutel.match(/^(\w+)-(naam|volgers|zakelijk)$/);
     if (kanaal) {
         const merken: Record<string, string> = {
-            tiktok: "TikTok",
-            youtube: "YouTube",
-            instagram: "Instagram",
-            facebook: "Facebook",
-            snapchat: "Snapchat",
+            tiktok: 'TikTok',
+            youtube: 'YouTube',
+            instagram: 'Instagram',
+            facebook: 'Facebook',
+            snapchat: 'Snapchat',
         };
         const platform = merken[kanaal[1]] ?? kanaal[1];
 
-        return `${platform}: ${{ naam: "gebruikersnaam", volgers: "volgers", zakelijk: "zakelijk account" }[kanaal[2]]}`;
+        return `${platform}: ${{ naam: 'gebruikersnaam', volgers: 'volgers', zakelijk: 'zakelijk account' }[kanaal[2]]}`;
     }
 
-    return namen[sleutel] ?? sleutel.replaceAll("_", " ").replaceAll("-", " ");
+    return namen[sleutel] ?? sleutel.replaceAll('_', ' ').replaceAll('-', ' ');
 }
 
 /** Detail van één aanmelding met alle velden en de drie besluiten (ontwerp AdminCreators, screening). */
@@ -87,7 +96,7 @@ export default function Detail({
     open,
 }: Props) {
     const [keuze, setKeuze] = useState<Keuze | null>(null);
-    const [status, kleur] = statusLabel[lead.status] ?? [lead.status, "violet"];
+    const [status, kleur] = statusLabel[lead.status] ?? [lead.status, 'violet'];
     const zakelijk = lead.channels.some((k) => k.business);
 
     return (
@@ -117,7 +126,7 @@ export default function Detail({
                                     `aangemeld ${datumTijd(lead.created_at)}`,
                                 ]
                                     .filter(Boolean)
-                                    .join(", ")}
+                                    .join(', ')}
                             </span>
                         </span>
                     }
@@ -134,18 +143,18 @@ export default function Detail({
                                 <dt className="text-muted-foreground">
                                     Telefoon
                                 </dt>
-                                <dd>{lead.phone ?? "Niet opgegeven"}</dd>
+                                <dd>{lead.phone ?? 'Niet opgegeven'}</dd>
                                 <dt className="text-muted-foreground">
                                     Woonplaats
                                 </dt>
-                                <dd>{lead.city ?? "Niet opgegeven"}</dd>
+                                <dd>{lead.city ?? 'Niet opgegeven'}</dd>
                                 <dt className="text-muted-foreground">
                                     Toestemming
                                 </dt>
                                 <dd>
                                     {lead.consent_at
-                                        ? `${datumTijd(lead.consent_at)}, privacytekst versie ${lead.consent_version ?? "onbekend"}`
-                                        : "Niet vastgelegd"}
+                                        ? `${datumTijd(lead.consent_at)}, privacytekst versie ${lead.consent_version ?? 'onbekend'}`
+                                        : 'Niet vastgelegd'}
                                 </dd>
                             </dl>
                             {lead.message && (
@@ -157,7 +166,7 @@ export default function Detail({
 
                         <Paneel
                             titel="Kanalen"
-                            sub="Echt, actief en een professioneel account? Koppelen via de API volgt; nu bekijk je het profiel zelf."
+                            sub="Echt, actief en een professioneel account? Klik op een profiel om het te bekijken."
                         >
                             {lead.channels.length === 0 ? (
                                 <p className="text-sm text-muted-foreground">
@@ -170,30 +179,30 @@ export default function Detail({
                                             key={k.platform}
                                             className="flex flex-wrap items-center justify-between gap-2 py-2 first:pt-0 last:pb-0"
                                         >
-                                            <span>
-                                                <span className="font-semibold">
-                                                    {platformKort[k.platform] ??
-                                                        k.platform}
-                                                </span>{" "}
-                                                {k.handle}
+                                            <span className="flex min-w-0 items-center gap-2">
+                                                <ProfielLink
+                                                    platform={
+                                                        k.platform as SociaalPlatform
+                                                    }
+                                                    handle={k.handle}
+                                                />
                                                 {k.followers ? (
                                                     <span className="text-muted-foreground">
-                                                        , {k.followers} volgers
+                                                        {k.followers} volgers
                                                         (opgave)
                                                     </span>
                                                 ) : null}
                                             </span>
-                                            <Label
-                                                kleur={
-                                                    k.business
-                                                        ? "groen"
-                                                        : "amber"
-                                                }
-                                            >
-                                                {k.business
-                                                    ? "Zakelijk account"
-                                                    : "Niet zakelijk opgegeven"}
-                                            </Label>
+                                            {k.business ? (
+                                                <Label kleur="groen">
+                                                    Zakelijk account
+                                                </Label>
+                                            ) : (
+                                                <span className="text-xs text-muted-foreground">
+                                                    Zakelijk account: nog
+                                                    controleren
+                                                </span>
+                                            )}
                                         </li>
                                     ))}
                                 </ul>
@@ -224,7 +233,22 @@ export default function Detail({
                                                 {veldNaam(v.key)}
                                             </dt>
                                             <dd className="break-words">
-                                                {v.value || "leeg"}
+                                                {/^(instagram|tiktok|youtube|facebook|snapchat)-naam$/.test(
+                                                    v.key,
+                                                ) && v.value ? (
+                                                    <ProfielLink
+                                                        platform={
+                                                            v.key.replace(
+                                                                '-naam',
+                                                                '',
+                                                            ) as SociaalPlatform
+                                                        }
+                                                        handle={v.value}
+                                                        compact
+                                                    />
+                                                ) : (
+                                                    v.value || 'leeg'
+                                                )}
                                             </dd>
                                         </div>
                                     ))}
@@ -265,8 +289,8 @@ export default function Detail({
                                     </span>
                                     {decision.level
                                         ? ` op ${decision.level}`
-                                        : ""}
-                                    , door {decision.by ?? "onbekend"} op{" "}
+                                        : ''}
+                                    , door {decision.by ?? 'onbekend'} op{' '}
                                     {datumTijd(decision.at)}
                                 </p>
                                 {decision.reason && (
@@ -282,7 +306,7 @@ export default function Detail({
                                 titel="Besluit"
                                 sub="Altijd een menselijke beslissing, met reden. De reden komt in het logboek."
                             >
-                                <Fouten negeer={["level", "reason"]} />
+                                <Fouten negeer={['level', 'reason']} />
                                 <div
                                     className="grid gap-2"
                                     role="group"
@@ -290,26 +314,26 @@ export default function Detail({
                                 >
                                     <Button
                                         variant={
-                                            keuze === "goedkeuren"
-                                                ? "default"
-                                                : "outline"
+                                            keuze === 'goedkeuren'
+                                                ? 'default'
+                                                : 'outline'
                                         }
                                         className="justify-start"
-                                        onClick={() => setKeuze("goedkeuren")}
-                                        aria-pressed={keuze === "goedkeuren"}
+                                        onClick={() => setKeuze('goedkeuren')}
+                                        aria-pressed={keuze === 'goedkeuren'}
                                     >
                                         <Check className="size-4" aria-hidden />
                                         Goedkeuren
                                     </Button>
                                     <Button
                                         variant={
-                                            keuze === "aanvulling"
-                                                ? "default"
-                                                : "outline"
+                                            keuze === 'aanvulling'
+                                                ? 'default'
+                                                : 'outline'
                                         }
                                         className="justify-start"
-                                        onClick={() => setKeuze("aanvulling")}
-                                        aria-pressed={keuze === "aanvulling"}
+                                        onClick={() => setKeuze('aanvulling')}
+                                        aria-pressed={keuze === 'aanvulling'}
                                     >
                                         <MessageSquareWarning
                                             className="size-4"
@@ -319,13 +343,13 @@ export default function Detail({
                                     </Button>
                                     <Button
                                         variant={
-                                            keuze === "afwijzen"
-                                                ? "default"
-                                                : "outline"
+                                            keuze === 'afwijzen'
+                                                ? 'default'
+                                                : 'outline'
                                         }
                                         className="justify-start"
-                                        onClick={() => setKeuze("afwijzen")}
-                                        aria-pressed={keuze === "afwijzen"}
+                                        onClick={() => setKeuze('afwijzen')}
+                                        aria-pressed={keuze === 'afwijzen'}
                                     >
                                         <X className="size-4" aria-hidden />
                                         Afwijzen
@@ -356,7 +380,7 @@ export default function Detail({
                                                     gebeurtenis(h.event)}
                                             </p>
                                             <p className="text-muted-foreground">
-                                                {h.by ?? "Systeem"},{" "}
+                                                {h.by ?? 'Systeem'},{' '}
                                                 {datumTijd(h.at)}
                                             </p>
                                             {h.reason && (
@@ -383,25 +407,25 @@ function BesluitForm({
 }: {
     keuze: Keuze;
     leadId: number;
-    levels: Props["levels"];
+    levels: Props['levels'];
 }) {
-    const form = useForm({ level: levels[0]?.value ?? "bronze", reason: "" });
+    const form = useForm({ level: levels[0]?.value ?? 'bronze', reason: '' });
     const tekst: Record<Keuze, { label: string; hint: string; knop: string }> =
         {
             goedkeuren: {
-                label: "Reden van goedkeuring",
-                hint: "Maakt een account, zet de creator op actief en stuurt de welkomstmail met een link om een wachtwoord te kiezen.",
-                knop: "Goedkeuren en uitnodigen",
+                label: 'Reden van goedkeuring',
+                hint: 'Maakt een account, zet de creator op actief en stuurt de welkomstmail met een link om een wachtwoord te kiezen.',
+                knop: 'Goedkeuren en uitnodigen',
             },
             aanvulling: {
-                label: "Wat ontbreekt er?",
+                label: 'Wat ontbreekt er?',
                 hint: 'Deze tekst gaat letterlijk in de e-mail "We missen nog iets" naar de aanmelder.',
-                knop: "Aanvulling vragen",
+                knop: 'Aanvulling vragen',
             },
             afwijzen: {
-                label: "Reden van afwijzing",
-                hint: "De aanmelder krijgt deze reden per e-mail, met de mogelijkheid om over 90 dagen opnieuw aan te melden.",
-                knop: "Afwijzen",
+                label: 'Reden van afwijzing',
+                hint: 'De aanmelder krijgt deze reden per e-mail, met de mogelijkheid om over 90 dagen opnieuw aan te melden.',
+                knop: 'Afwijzen',
             },
         };
     const route = {
@@ -419,7 +443,7 @@ function BesluitForm({
             }}
             data-test={`besluit-${keuze}`}
         >
-            {keuze === "goedkeuren" && (
+            {keuze === 'goedkeuren' && (
                 <Veld
                     label="Startniveau"
                     htmlFor="level"
@@ -429,7 +453,7 @@ function BesluitForm({
                     <select
                         id="level"
                         value={form.data.level}
-                        onChange={(e) => form.setData("level", e.target.value)}
+                        onChange={(e) => form.setData('level', e.target.value)}
                         className={invoer}
                     >
                         {levels.map((l) => (
@@ -451,14 +475,14 @@ function BesluitForm({
                     required
                     rows={4}
                     value={form.data.reason}
-                    onChange={(e) => form.setData("reason", e.target.value)}
+                    onChange={(e) => form.setData('reason', e.target.value)}
                     className={`${invoer} h-auto py-2`}
                 />
             </Veld>
             <Button
                 type="submit"
                 disabled={form.processing}
-                variant={keuze === "afwijzen" ? "destructive" : "default"}
+                variant={keuze === 'afwijzen' ? 'destructive' : 'default'}
                 className="w-full"
             >
                 {tekst[keuze].knop}
@@ -468,5 +492,5 @@ function BesluitForm({
 }
 
 Detail.layout = {
-    breadcrumbs: [{ title: "Screening", href: screening.index.url() }],
+    breadcrumbs: [{ title: 'Screening', href: screening.index.url() }],
 };
