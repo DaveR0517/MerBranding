@@ -9,7 +9,7 @@
     $fout = $errors->first($naam);
     $aria = ($verplicht ?? false ? ' required' : '').($fout ? ' aria-invalid="true" aria-describedby="fout-'.$naam.'"' : '').' '.($attrs ?? '');
 @endphp
-<label for="{{ $id }}" style="display: flex; flex-direction: column; gap: 8px; {{ ($breed ?? false) ? 'grid-column: 1 / -1;' : '' }} font-family: Montserrat,Arial,sans-serif; font-weight: 600; font-size: 14px; color: #2E2B48">{{ $label }}
+<label for="{{ $id }}" style="display: flex; flex-direction: column; gap: 8px; {{ ($breed ?? false) ? 'grid-column: 1 / -1;' : '' }} font-family: Montserrat,Arial,sans-serif; font-weight: 600; font-size: 14px; color: #2E2B48"><span>{{ $label }}@unless (($verplicht ?? false) || $type === 'select') <span class="optioneel">(optioneel)</span>@endunless</span>
 @if ($type === 'select')
 <select id="{{ $id }}" name="{{ $naam }}" @class(['fout-veld' => $fout]) {!! $aria !!} style="font-family: 'Noto Sans',Arial,sans-serif; font-size: 16px; min-height: 52px; padding: 0 14px; border: 1px solid #CFCADC; border-radius: 12px; background: #FFFFFF; color: #2A2840">@foreach ($opties as $waarde => $tekst)<option value="{{ $waarde }}" @selected((string) old($naam) === (string) $waarde)>{{ $tekst }}</option>@endforeach</select>
 @elseif ($type === 'textarea')

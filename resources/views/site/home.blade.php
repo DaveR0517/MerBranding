@@ -17,7 +17,7 @@
 </div>
 </div>
 <div style="position: relative; display: flex; justify-content: center; align-items: center; min-height: 420px">
-<div style="width: min(100%, 460px); height: clamp(380px, 38vw, 500px); border-radius: 28px; background: linear-gradient(160deg, rgba(252,251,254,0.16), rgba(252,251,254,0.04)); border: 1px solid rgba(252,251,254,0.18); display: flex; align-items: flex-end; padding: 22px; box-sizing: border-box"><p style="margin: 0; font-family: Montserrat,Arial,sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #B9B4D6">Foto: creator filmt aan tafel</p></div>
+<div style="width: min(100%, 460px)">@include('site.partials.beeld', ['bestand' => 'creator-aan-tafel.jpg', 'alt' => 'Een creator filmt aan tafel in een restaurant', 'hoogte' => 'clamp(380px, 38vw, 500px)', 'radius' => '28px'])</div>
 <div style="position: absolute; left: 0; bottom: 6%; background: #FFFFFF; border-radius: 18px; padding: 16px 18px; display: flex; gap: 14px; align-items: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); max-width: 300px">
 <img src="/brand/mebranding-icoon.svg" width="40" height="40" alt="" style="width: 40px; height: 40px; border-radius: 10px; display: block; flex-shrink: 0">
 <div><p style="margin: 0; font-family: Montserrat,Arial,sans-serif; font-weight: 700; font-size: 14px; color: #2E2B48">Bezoek gepland</p><p style="margin: 2px 0 0; font-family: 'Noto Sans',Arial,sans-serif; font-size: 13px; color: #5E5A78">Je creator komt donderdag om 14:00</p></div></div>
@@ -89,7 +89,7 @@
 <p style="margin: 0; font-family: Montserrat,Arial,sans-serif; font-weight: 700; font-size: clamp(18px, 1.8vw, 24px); color: #2E2B48; white-space: nowrap">Op maat <span style="color: #614ED9">→</span></p></a>
 </section><section style="max-width: 1280px; margin: 0 auto; padding-left: 24px; padding-right: 24px; box-sizing: border-box; padding-top: clamp(56px, 7vw, 96px)">
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap: clamp(28px, 4vw, 64px); align-items: center">
-<figure style="margin: 0; display: flex; flex-direction: column; gap: 10px"><div style="height: clamp(300px, 30vw, 420px); border-radius: 12px; background: #DCD8E6"></div><figcaption style="font-family: 'Noto Sans',Arial,sans-serif; font-size: 13px; color: #5E5A78">Foto: een creator filmt in een hotelkamer</figcaption></figure>
+<div>@include('site.partials.beeld', ['bestand' => 'creator-hotelkamer.jpg', 'alt' => 'Een creator filmt in een hotelkamer', 'hoogte' => 'clamp(300px, 30vw, 420px)'])</div>
 <div style="display: flex; flex-direction: column; gap: 18px">
 <p style="margin: 0; font-family: Montserrat,Arial,sans-serif; font-weight: 600; font-size: 13px; letter-spacing: 0.5px; color: #5E5A78">Voor creators</p>
 <p style="margin: 0; font-family: Montserrat,Arial,sans-serif; font-weight: 900; font-size: clamp(48px, 6vw, 88px); line-height: 0.92; letter-spacing: -3px; color: #2E2B48">creator<span style="background: linear-gradient(90deg,#D9303E,#614ED9); -webkit-background-clip: text; background-clip: text; color: transparent">.</span></p>

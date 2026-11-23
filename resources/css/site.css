@@ -43,6 +43,21 @@ details[open] .plus{transform:rotate(45deg)}
 .bedankt:focus,.melding:focus{outline:none}
 .bedankt h3{margin:0;font-family:Montserrat,Arial,sans-serif;font-weight:800;font-size:clamp(22px,2.2vw,28px);color:#2E2B48}
 .bedankt p{margin:0;font-family:'Noto Sans',Arial,sans-serif;font-size:15px;line-height:1.7;color:#5E5A78}
+/* Formulierpagina: links een vaste kaart met de vervolgstappen, rechts de velden in groepen. */
+.formulier{border-top:1px solid #E3E0EC;padding-top:clamp(32px,4vw,48px);display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(28px,4vw,64px);align-items:start}
+@media (min-width:900px){.formulier{grid-template-columns:minmax(0,5fr) minmax(0,8fr)}.formulier-kaart{position:sticky;top:100px}}
+.formulier-kaart{display:flex;flex-direction:column;gap:18px;padding:clamp(22px,2.6vw,32px);border-radius:20px;background:#2E2B48;color:#FCFBFE}
+.formulier-kaart h2{margin:0;font-family:Montserrat,Arial,sans-serif;font-weight:800;font-size:clamp(22px,2.2vw,28px);line-height:1.2}
+.formulier-kaart>p{margin:0;font-family:'Noto Sans',Arial,sans-serif;font-size:15px;line-height:1.7;color:#D6D2EA}
+.formulier-kaart ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+.formulier-kaart li{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start;font-family:'Noto Sans',Arial,sans-serif;font-size:15px;line-height:1.55;color:#ECEAF6}
+.formulier-kaart li b{display:block;font-family:Montserrat,Arial,sans-serif;font-weight:700;color:#FCFBFE}
+.formulier-kaart .stap{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:999px;background:linear-gradient(135deg,#D9303E,#614ED9);font-family:Montserrat,Arial,sans-serif;font-weight:800;font-size:14px;color:#fff}
+.formulier-velden{display:flex;flex-direction:column;gap:28px}
+.formulier-velden fieldset{margin:0;padding:0;border:0;display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
+@media (min-width:560px){.formulier-velden fieldset{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.formulier-velden legend{grid-column:1 / -1;padding:0;margin-bottom:14px;font-family:Montserrat,Arial,sans-serif;font-weight:800;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:#614ED9}
+.optioneel{font-weight:500;color:#8A86A3}
 .onzichtbaar{position:absolute!important;left:-9999px!important;width:1px;height:1px;overflow:hidden}
 
 /* Privacy en cookies. */

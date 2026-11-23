@@ -1,0 +1,5 @@
+Echte foto's voor de website. Zet hier een JPG met precies deze naam, dan verschijnt hij vanzelf:
+- creator-aan-tafel.jpg     (home, bovenaan; staand, minstens 900x1000)
+- creator-hotelkamer.jpg    (home, blok voor creators; liggend, minstens 1200x900)
+- creator-restaurant.jpg    (pagina Voor creators; breed, minstens 2000x900)
+Zolang er geen foto staat, toont de site een merkvlak.
