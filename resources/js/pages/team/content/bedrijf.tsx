@@ -134,7 +134,7 @@ export default function Bedrijf({
                 )}
 
                 {tab === 'ideeen' && (
-                    <div className="grid gap-5 lg:grid-cols-[1fr_360px] lg:items-start">
+                    <div className="grid gap-5 @4xl:grid-cols-[1fr_360px] @4xl:items-start">
                         <div className="order-2 min-w-0 lg:order-1">
                             <IdeeenLijst
                                 ideas={ideas}

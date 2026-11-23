@@ -13,13 +13,12 @@ use App\Models\Lesson;
 use App\Models\Submission;
 use App\Models\User;
 use App\Services\Academy;
-use App\Services\Melder;
+use App\Services\Uitnodiging;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -30,7 +29,7 @@ use Symfony\Component\HttpFoundation\Response as HttpResponse;
 /** Academybeheer (AdminCursusdagen): cursusdagen, deelnemers en wachtlijst, check-in, beoordelen, certificaten, studenten en lesstof. */
 class AcademyController extends Controller implements HasMiddleware
 {
-    public function __construct(private Academy $academy, private Melder $melder) {}
+    public function __construct(private Academy $academy, private Uitnodiging $uitnodiging) {}
 
     public static function middleware(): array
     {
@@ -230,8 +229,7 @@ class AcademyController extends Controller implements HasMiddleware
             return $user;
         });
         // Zelfde uitnodiging als bij bedrijven en creators (BeheerController): link om zelf een wachtwoord te kiezen.
-        $token = Password::broker()->createToken($user);
-        $this->melder->stuur('g-uitnodiging', $user, ['naam' => $request->user()->name, 'zaak' => 'MEBRANDING Academy', 'rol' => 'deelnemer'], route('password.reset', ['token' => $token, 'email' => $user->email]));
+        $this->uitnodiging->stuur($user, 'g-uitnodiging', ['naam' => $request->user()->name, 'zaak' => 'MEBRANDING Academy', 'rol' => 'deelnemer']);
 
         if (! empty($data['course_day_id'])) {
             $this->academy->inschrijven(CourseDay::findOrFail($data['course_day_id']), $user);

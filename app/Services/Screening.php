@@ -12,7 +12,6 @@ use App\Models\Task;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -22,7 +21,7 @@ use Illuminate\Validation\ValidationException;
  */
 class Screening
 {
-    public function __construct(private Melder $melder) {}
+    public function __construct(private Melder $melder, private Uitnodiging $uitnodiging) {}
 
     /** Nieuwe aanmelding van de website: een taak in de werkvoorraad. */
     public function aangemeld(Lead $lead): ScreeningAanmelding
@@ -67,16 +66,10 @@ class Screening
             $lead->update(['status' => 'creator']);
             $this->besluit($lead, $door, ScreeningAanmelding::GOEDGEKEURD, $reden, $niveau, $creator);
 
-            $this->melder->stuur('c-welkom', $user, ['niveau' => $creator->levelName()], $this->uitnodigingslink($user));
+            $this->uitnodiging->stuur($user, 'c-welkom', ['niveau' => $creator->levelName()]);
 
             return $creator;
         });
-    }
-
-    /** Persoonlijke link waarmee de creator een wachtwoord kiest; een nieuwe link maakt de vorige ongeldig. */
-    public function uitnodigingslink(User $user): string
-    {
-        return route('password.reset', ['token' => Password::broker()->createToken($user), 'email' => $user->email]);
     }
 
     public function aanvullingVragen(Lead $lead, User $door, string $toelichting): void

@@ -135,7 +135,7 @@ export default function Creators({
                     omschrijving={`${creators.length} ${creators.length === 1 ? 'creator' : 'creators'}`}
                 />
 
-                <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,400px)]">
+                <div className="grid gap-5 @4xl:grid-cols-[minmax(0,1fr)_minmax(0,400px)]">
                     <div>
                         {creators.length === 0 ? (
                             <Leeg titel="Nog geen creators." />

@@ -12,7 +12,6 @@ use App\Models\Task;
 use App\Models\User;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -24,7 +23,7 @@ class Bedrijfsbeheer
 {
     public const ROLLEN = ['eigenaar' => 'Ondernemer Eigenaar', 'lid' => 'Ondernemer Lid'];
 
-    public function __construct(private Melder $melder) {}
+    public function __construct(private Uitnodiging $uitnodiging) {}
 
     /**
      * Vestiging aanmaken of bijwerken, met de bezoektijden per weekdag (de oude tijden worden vervangen).
@@ -191,8 +190,7 @@ class Bedrijfsbeheer
 
     private function stuurUitnodiging(Company $bedrijf, User $user, string $rol, User $door): void
     {
-        $token = Password::broker()->createToken($user);
-        $this->melder->stuur('g-uitnodiging', $user, ['naam' => $door->name, 'zaak' => $bedrijf->name, 'rol' => $rol], route('password.reset', ['token' => $token, 'email' => $user->email]));
+        $this->uitnodiging->stuur($user, 'g-uitnodiging', ['naam' => $door->name, 'zaak' => $bedrijf->name, 'rol' => $rol]);
     }
 
     private function nietLaatsteEigenaar(Company $bedrijf, string $melding): void

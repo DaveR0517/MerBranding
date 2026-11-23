@@ -72,7 +72,7 @@ export function Contentcontrole({ c, magControleren }: { c: SamenwerkingVol; mag
     const opties = { preserveScroll: true, onStart: () => setBezig(true), onFinish: () => setBezig(false) };
 
     return (
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,380px)_minmax(0,1fr)]">
+        <div className="grid gap-4 @4xl:grid-cols-[minmax(0,380px)_minmax(0,1fr)]">
             <div className="space-y-3">
                 <Paneel
                     titel={`Versie ${laatste.version}`}

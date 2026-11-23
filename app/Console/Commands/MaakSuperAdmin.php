@@ -3,11 +3,11 @@
 namespace App\Console\Commands;
 
 use App\Models\User;
+use App\Services\Uitnodiging;
 use Database\Seeders\RolesSeeder;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
 
@@ -28,11 +28,10 @@ class MaakSuperAdmin extends Command
         $user->forceFill(['email_verified_at' => $user->email_verified_at ?? now()])->save();
         $user->assignRole('Super Admin');
 
-        $token = Password::broker()->createToken($user);
-        $url = 'https://'.config('mebranding.domains.app').'/reset-password/'.$token.'?email='.urlencode($user->email);
+        $url = app(Uitnodiging::class)->link($user);
 
         $this->info("Super Admin klaar: {$user->email}");
-        $this->line('Stel je wachtwoord in via deze link (eenmalig, 60 minuten geldig):');
+        $this->line('Stel je wachtwoord in via deze link (eenmalig, 7 dagen geldig):');
         $this->line($url);
 
         return self::SUCCESS;

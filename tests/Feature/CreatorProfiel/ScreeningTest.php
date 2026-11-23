@@ -123,43 +123,44 @@ test('afwijzen vraagt een reden, mailt en sluit verdere besluiten af', function 
     expect(Creator::count())->toBe(2);
 });
 
-test('zonder maildienst ziet het team de uitnodigingslink, en daarmee kiest de creator een wachtwoord en logt in', function () {
+test('zonder maildienst ziet het team de uitnodigingslink, en daarmee komt de creator in de eigen omgeving', function () {
     config(['mail.default' => 'log']);
     $lead = ($this->aanmelding)();
     $ruben = ($this->wie)('ruben');
 
-    $antwoord = $this->actingAs($ruben)->post($this->app_."/team/screening/{$lead->id}/goedkeuren", ['level' => 'bronze', 'reason' => 'Prima']);
-    $antwoord->assertRedirect($this->app_."/team/screening/{$lead->id}")->assertSessionHas('uitnodigingslink');
-    $link = session('uitnodigingslink');
+    $this->actingAs($ruben)->post($this->app_."/team/screening/{$lead->id}/goedkeuren", ['level' => 'bronze', 'reason' => 'Prima'])
+        ->assertRedirect($this->app_."/team/screening/{$lead->id}")->assertSessionHas('uitnodiging');
+    $link = session('uitnodiging')['link'];
     expect($link)->toContain('reset-password');
 
-    $this->actingAs($ruben)->get($this->app_."/team/screening/{$lead->id}")
-        ->assertInertia(fn ($p) => $p->where('uitnodiging.link', $link));
+    $this->actingAs($ruben)->get($this->app_."/team/screening/{$lead->id}")->assertInertia(fn ($p) => $p->where('nieuweLink', true));
 
     // Een nieuwe link maken kan alleen met het recht, en maakt de vorige ongeldig.
     $this->actingAs(($this->wie)('eva'))->post($this->app_."/team/screening/{$lead->id}/uitnodigingslink")->assertForbidden();
-    $this->actingAs($ruben)->post($this->app_."/team/screening/{$lead->id}/uitnodigingslink")->assertSessionHas('uitnodigingslink');
-    $nieuw = session('uitnodigingslink');
+    $this->actingAs($ruben)->post($this->app_."/team/screening/{$lead->id}/uitnodigingslink")->assertSessionHas('uitnodiging');
+    $nieuw = session('uitnodiging')['link'];
     expect($nieuw)->not->toBe($link);
 
-    // De creator gebruikt de link: wachtwoord kiezen en inloggen.
+    // De creator gebruikt de link: wachtwoord kiezen, inloggen en direct de eigen omgeving (geen bevestigingsmail nodig).
     auth()->logout();
     parse_str(parse_url($nieuw, PHP_URL_QUERY), $query);
-    $token = basename(parse_url($nieuw, PHP_URL_PATH));
     $this->post($this->app_.'/reset-password', [
-        'token' => $token, 'email' => $query['email'], 'password' => 'EenSterkWachtwoord!2026', 'password_confirmation' => 'EenSterkWachtwoord!2026',
+        'token' => basename(parse_url($nieuw, PHP_URL_PATH)), 'email' => $query['email'], 'password' => 'EenSterkWachtwoord!2026', 'password_confirmation' => 'EenSterkWachtwoord!2026',
     ])->assertSessionHasNoErrors();
     $this->post($this->app_.'/login', ['email' => 'lotte@voorbeeld.nl', 'password' => 'EenSterkWachtwoord!2026']);
-    $this->assertAuthenticatedAs(User::where('email', 'lotte@voorbeeld.nl')->sole());
+    $lotte = User::where('email', 'lotte@voorbeeld.nl')->sole();
+    $this->assertAuthenticatedAs($lotte);
+    expect($lotte->fresh()->hasVerifiedEmail())->toBeTrue();
+    $this->get($this->app_.'/creator')->assertOk();
 });
 
-test('met een maildienst toont het scherm geen uitnodigingslink', function () {
+test('met een maildienst komt er geen uitnodigingslink in beeld', function () {
     config(['mail.default' => 'smtp']);
     Mail::fake();
     $lead = ($this->aanmelding)();
     $ruben = ($this->wie)('ruben');
 
     $this->actingAs($ruben)->post($this->app_."/team/screening/{$lead->id}/goedkeuren", ['level' => 'bronze', 'reason' => 'Prima'])
-        ->assertRedirect($this->app_.'/team/screening')->assertSessionMissing('uitnodigingslink');
-    $this->actingAs($ruben)->get($this->app_."/team/screening/{$lead->id}")->assertInertia(fn ($p) => $p->where('uitnodiging', null));
+        ->assertSessionMissing('uitnodiging');
+    $this->actingAs($ruben)->get($this->app_."/team/screening/{$lead->id}")->assertInertia(fn ($p) => $p->where('nieuweLink', false));
 });

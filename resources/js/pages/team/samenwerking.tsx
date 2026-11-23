@@ -134,7 +134,7 @@ function Logboek({ c }: { c: SamenwerkingVol }) {
     const boekingen = c.ledger ?? [];
 
     return (
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,380px)]">
+        <div className="grid gap-4 @4xl:grid-cols-[minmax(0,1fr)_minmax(0,380px)]">
             <Paneel titel="Logboek" sub="Wie deed wat, nieuwste eerst.">
                 {log.length === 0 ? (
                     <p className="text-sm text-muted-foreground">Nog niets vastgelegd.</p>
@@ -345,7 +345,7 @@ export default function Samenwerking({
 
                 <div role="tabpanel">
                     {tab === 'koppelen' && (
-                        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,360px)]">
+                        <div className="grid gap-4 @4xl:grid-cols-[minmax(0,1fr)_minmax(0,360px)]">
                             <Matchlijst c={c} matches={matches} />
                             <div className="space-y-4">
                                 <Uitnodigingen uitnodigingen={c.invitations ?? []} />

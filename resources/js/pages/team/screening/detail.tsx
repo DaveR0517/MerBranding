@@ -4,7 +4,6 @@ import type { SociaalPlatform } from "@/components/social/profiel-link";
 import {
     ArrowLeft,
     Check,
-    Copy,
     KeyRound,
     MessageSquareWarning,
     X,
@@ -26,8 +25,8 @@ import type { Aanmelding } from "./_gedeeld";
 import { platformKort, soortNaam } from "./_gedeeld";
 
 type Props = {
-    /** Alleen zolang er geen maildienst is: de link die het team zelf doorstuurt. */
-    uitnodiging: { link: string | null } | null;
+    /** Zolang er geen maildienst is: knop om een nieuwe uitnodigingslink te maken. */
+    nieuweLink: boolean;
     lead: Aanmelding & {
         phone: string | null;
         message: string | null;
@@ -103,7 +102,7 @@ export default function Detail({
     history,
     levels,
     open,
-    uitnodiging,
+    nieuweLink,
 }: Props) {
     const [keuze, setKeuze] = useState<Keuze | null>(null);
     const [status, kleur] = statusLabel[lead.status] ?? [lead.status, "violet"];
@@ -142,7 +141,7 @@ export default function Detail({
                     }
                 />
 
-                <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,380px)]">
+                <div className="grid gap-5 @4xl:grid-cols-[minmax(0,1fr)_minmax(0,380px)]">
                     <div className="space-y-5">
                         <Paneel titel="Contact">
                             <dl className="grid gap-x-4 gap-y-1 text-sm sm:grid-cols-[10rem_1fr]">
@@ -311,12 +310,8 @@ export default function Detail({
                             </Paneel>
                         )}
 
-                        {uitnodiging && (
-                            <Uitnodiging
-                                leadId={lead.id}
-                                naam={lead.name}
-                                link={uitnodiging.link}
-                            />
+                        {nieuweLink && (
+                            <NieuweLink leadId={lead.id} naam={lead.name} />
                         )}
 
                         {open && (
@@ -513,67 +508,24 @@ Detail.layout = {
     breadcrumbs: [{ title: "Screening", href: screening.index.url() }],
 };
 
-/** Noodroute zonder maildienst: het team stuurt de persoonlijke link zelf door (WhatsApp of eigen mail). */
-function Uitnodiging({
-    leadId,
-    naam,
-    link,
-}: {
-    leadId: number;
-    naam: string;
-    link: string | null;
-}) {
-    const [gekopieerd, setGekopieerd] = useState(false);
+/** Zonder maildienst: een nieuwe uitnodigingslink maken; die verschijnt in de balk bovenaan (UitnodigingsBalk). */
+function NieuweLink({ leadId, naam }: { leadId: number; naam: string }) {
     const [bezig, setBezig] = useState(false);
-
-    const kopieer = async () => {
-        if (!link) {
-            return;
-        }
-        try {
-            await navigator.clipboard.writeText(link);
-            setGekopieerd(true);
-            setTimeout(() => setGekopieerd(false), 2500);
-        } catch {
-            setGekopieerd(false);
-        }
-    };
 
     return (
         <Paneel
-            titel="Uitnodigingslink"
-            sub={`Er is nog geen maildienst. Stuur ${naam} deze link zelf, bijvoorbeeld via WhatsApp. Daarmee kiest de creator een wachtwoord en logt in. De link werkt 7 dagen.`}
+            titel="Uitnodiging"
+            sub={`Er is nog geen maildienst. Kwijt of verlopen? Maak een nieuwe link voor ${naam} en stuur die zelf door. De vorige link werkt dan niet meer.`}
         >
-            {link ? (
-                <div className="space-y-2" data-test="uitnodigingslink">
-                    <input
-                        readOnly
-                        value={link}
-                        aria-label="Uitnodigingslink"
-                        onFocus={(e) => e.currentTarget.select()}
-                        className={`${invoer} font-mono text-xs`}
-                    />
-                    <Button onClick={kopieer} className="w-full">
-                        <Copy className="size-4" aria-hidden />
-                        {gekopieerd ? "Gekopieerd" : "Kopieer link"}
-                    </Button>
-                </div>
-            ) : (
-                <p className="text-sm text-muted-foreground">
-                    De link wordt om veiligheidsredenen niet bewaard. Maak een
-                    nieuwe als je hem kwijt bent.
-                </p>
-            )}
             <Button
                 variant="outline"
-                className="mt-2 w-full"
+                className="w-full"
                 disabled={bezig}
                 onClick={() =>
                     router.post(
                         screening.uitnodigingslink.url(leadId),
                         {},
                         {
-                            preserveScroll: true,
                             onStart: () => setBezig(true),
                             onFinish: () => setBezig(false),
                         },
@@ -581,7 +533,7 @@ function Uitnodiging({
                 }
             >
                 <KeyRound className="size-4" aria-hidden />
-                {link ? "Nieuwe link maken" : "Maak uitnodigingslink"}
+                Nieuwe uitnodigingslink
             </Button>
         </Paneel>
     );

@@ -154,7 +154,7 @@ export default function Berichtsjablonen({
                     />
                 </KaartRaster>
 
-                <div className="grid gap-5 lg:grid-cols-[minmax(0,380px)_minmax(0,1fr)]">
+                <div className="grid gap-5 @4xl:grid-cols-[minmax(0,380px)_minmax(0,1fr)]">
                     <div
                         className={cn(
                             "min-w-0 space-y-3",

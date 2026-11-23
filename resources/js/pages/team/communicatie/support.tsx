@@ -55,7 +55,7 @@ export default function Support({ filter, zoek, counts, tickets, ticket, statuse
                     />
                 </div>
 
-                <div className="grid gap-4 lg:grid-cols-[380px_minmax(0,1fr)]">
+                <div className="grid gap-4 @4xl:grid-cols-[380px_minmax(0,1fr)]">
                     <section aria-label="Vragen" className={cn('min-w-0 space-y-3', ticket && 'hidden lg:block')}>
                         <form
                             role="search"

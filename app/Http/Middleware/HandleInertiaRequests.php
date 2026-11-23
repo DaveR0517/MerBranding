@@ -48,7 +48,7 @@ class HandleInertiaRequests extends Middleware
                 'impersonating' => $request->session()->has('inloggen_als_van'),
             ],
             'unread' => fn () => $request->user()?->unreadNotifications()->count() ?? 0,
-            'flash' => fn () => ['melding' => $request->session()->get('melding')],
+            'flash' => fn () => ['melding' => $request->session()->get('melding'), 'uitnodiging' => $request->session()->get('uitnodiging')],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
     }

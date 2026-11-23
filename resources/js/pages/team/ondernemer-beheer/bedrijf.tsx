@@ -157,7 +157,7 @@ export default function Bedrijf({
                 />
 
                 {tab === "gegevens" && (
-                    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)] lg:items-start">
+                    <div className="grid gap-5 @4xl:grid-cols-[minmax(0,1fr)_minmax(0,420px)] @4xl:items-start">
                         <Gegevens
                             company={company}
                             managers={managers}

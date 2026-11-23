@@ -24,7 +24,7 @@ export default function Studenten({ students, days }: Props) {
             <Pagina>
                 <PaginaKop titel="Studenten" omschrijving={`${students.length} ${students.length === 1 ? 'student' : 'studenten'}`} />
                 <Tabs />
-                <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,380px)]">
+                <div className="grid gap-5 @4xl:grid-cols-[minmax(0,1fr)_minmax(0,380px)]">
                     <div>
                         {students.length === 0 ? (
                             <Leeg titel="Nog geen studenten." />

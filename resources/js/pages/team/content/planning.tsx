@@ -203,7 +203,7 @@ export default function Planning({
                     </label>
                 </div>
 
-                <div className="grid gap-5 lg:grid-cols-[1fr_340px] lg:items-start">
+                <div className="grid gap-5 @4xl:grid-cols-[1fr_340px] @4xl:items-start">
                     <div className="min-w-0 space-y-3">
                         <h2 className="font-heading text-base font-bold">
                             Bezoeken{' '}
@@ -277,7 +277,7 @@ export default function Planning({
                         </div>
                     </div>
 
-                    <div className="space-y-5 lg:sticky lg:top-4">
+                    <div className="space-y-5 @4xl:sticky @4xl:top-4">
                         <Paneel titel="Geselecteerd bezoek" id="gekozen-bezoek">
                             {gekozen ? (
                                 <BezoekDetail bezoek={gekozen} />

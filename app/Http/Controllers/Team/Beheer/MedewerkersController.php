@@ -6,12 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\User;
 use App\Services\Melder;
+use App\Services\Uitnodiging;
 use Database\Seeders\RolesSeeder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -28,7 +28,7 @@ class MedewerkersController extends Controller
 {
     public const SUPER_ADMIN = 'Super Admin';
 
-    public function __construct(private Melder $melder) {}
+    public function __construct(private Melder $melder, private Uitnodiging $uitnodiging) {}
 
     public function index(Request $request): Response
     {
@@ -98,9 +98,7 @@ class MedewerkersController extends Controller
                 $this->meld($user, $request->user(), $data['rollen']);
             } else {
                 // Uitnodiging per mail: de link laat de nieuwe medewerker zelf een wachtwoord kiezen.
-                $token = Password::broker()->createToken($user);
-                $this->melder->stuur('g-uitnodiging', $user, ['naam' => $request->user()->name, 'zaak' => 'MEBRANDING', 'rol' => implode(', ', $data['rollen'])],
-                    route('password.reset', ['token' => $token, 'email' => $user->email]));
+                $this->uitnodiging->stuur($user, 'g-uitnodiging', ['naam' => $request->user()->name, 'zaak' => 'MEBRANDING', 'rol' => implode(', ', $data['rollen'])]);
             }
         });
 

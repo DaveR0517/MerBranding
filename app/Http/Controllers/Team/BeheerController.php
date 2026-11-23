@@ -9,12 +9,11 @@ use App\Models\CreditLedger;
 use App\Models\Lead;
 use App\Models\Plan;
 use App\Models\User;
-use App\Services\Melder;
+use App\Services\Uitnodiging;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -25,7 +24,7 @@ use Inertia\Response;
  */
 class BeheerController extends Controller
 {
-    public function __construct(private Melder $melder) {}
+    public function __construct(private Uitnodiging $uitnodiging) {}
 
     public function bedrijven(): Response
     {
@@ -140,7 +139,6 @@ class BeheerController extends Controller
     /** Uitnodiging per mail: de link laat de nieuwe gebruiker zelf een wachtwoord kiezen (7 dagen geldig). */
     private function nodigUit(User $user, User $door, string $zaak, string $rol): void
     {
-        $token = Password::broker()->createToken($user);
-        $this->melder->stuur('g-uitnodiging', $user, ['naam' => $door->name, 'zaak' => $zaak, 'rol' => $rol], route('password.reset', ['token' => $token, 'email' => $user->email]));
+        $this->uitnodiging->stuur($user, 'g-uitnodiging', ['naam' => $door->name, 'zaak' => $zaak, 'rol' => $rol]);
     }
 }
