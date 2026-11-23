@@ -67,11 +67,16 @@ class Screening
             $lead->update(['status' => 'creator']);
             $this->besluit($lead, $door, ScreeningAanmelding::GOEDGEKEURD, $reden, $niveau, $creator);
 
-            $token = Password::broker()->createToken($user);
-            $this->melder->stuur('c-welkom', $user, ['niveau' => $creator->levelName()], route('password.reset', ['token' => $token, 'email' => $user->email]));
+            $this->melder->stuur('c-welkom', $user, ['niveau' => $creator->levelName()], $this->uitnodigingslink($user));
 
             return $creator;
         });
+    }
+
+    /** Persoonlijke link waarmee de creator een wachtwoord kiest; een nieuwe link maakt de vorige ongeldig. */
+    public function uitnodigingslink(User $user): string
+    {
+        return route('password.reset', ['token' => Password::broker()->createToken($user), 'email' => $user->email]);
     }
 
     public function aanvullingVragen(Lead $lead, User $door, string $toelichting): void

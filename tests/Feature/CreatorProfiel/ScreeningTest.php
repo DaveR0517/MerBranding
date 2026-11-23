@@ -122,3 +122,44 @@ test('afwijzen vraagt een reden, mailt en sluit verdere besluiten af', function 
     $this->actingAs($ruben)->post($this->app_."/team/screening/{$lead->id}/goedkeuren", ['level' => 'bronze', 'reason' => 'Toch wel'])->assertSessionHasErrors('lead');
     expect(Creator::count())->toBe(2);
 });
+
+test('zonder maildienst ziet het team de uitnodigingslink, en daarmee kiest de creator een wachtwoord en logt in', function () {
+    config(['mail.default' => 'log']);
+    $lead = ($this->aanmelding)();
+    $ruben = ($this->wie)('ruben');
+
+    $antwoord = $this->actingAs($ruben)->post($this->app_."/team/screening/{$lead->id}/goedkeuren", ['level' => 'bronze', 'reason' => 'Prima']);
+    $antwoord->assertRedirect($this->app_."/team/screening/{$lead->id}")->assertSessionHas('uitnodigingslink');
+    $link = session('uitnodigingslink');
+    expect($link)->toContain('reset-password');
+
+    $this->actingAs($ruben)->get($this->app_."/team/screening/{$lead->id}")
+        ->assertInertia(fn ($p) => $p->where('uitnodiging.link', $link));
+
+    // Een nieuwe link maken kan alleen met het recht, en maakt de vorige ongeldig.
+    $this->actingAs(($this->wie)('eva'))->post($this->app_."/team/screening/{$lead->id}/uitnodigingslink")->assertForbidden();
+    $this->actingAs($ruben)->post($this->app_."/team/screening/{$lead->id}/uitnodigingslink")->assertSessionHas('uitnodigingslink');
+    $nieuw = session('uitnodigingslink');
+    expect($nieuw)->not->toBe($link);
+
+    // De creator gebruikt de link: wachtwoord kiezen en inloggen.
+    auth()->logout();
+    parse_str(parse_url($nieuw, PHP_URL_QUERY), $query);
+    $token = basename(parse_url($nieuw, PHP_URL_PATH));
+    $this->post($this->app_.'/reset-password', [
+        'token' => $token, 'email' => $query['email'], 'password' => 'EenSterkWachtwoord!2026', 'password_confirmation' => 'EenSterkWachtwoord!2026',
+    ])->assertSessionHasNoErrors();
+    $this->post($this->app_.'/login', ['email' => 'lotte@voorbeeld.nl', 'password' => 'EenSterkWachtwoord!2026']);
+    $this->assertAuthenticatedAs(User::where('email', 'lotte@voorbeeld.nl')->sole());
+});
+
+test('met een maildienst toont het scherm geen uitnodigingslink', function () {
+    config(['mail.default' => 'smtp']);
+    Mail::fake();
+    $lead = ($this->aanmelding)();
+    $ruben = ($this->wie)('ruben');
+
+    $this->actingAs($ruben)->post($this->app_."/team/screening/{$lead->id}/goedkeuren", ['level' => 'bronze', 'reason' => 'Prima'])
+        ->assertRedirect($this->app_.'/team/screening')->assertSessionMissing('uitnodigingslink');
+    $this->actingAs($ruben)->get($this->app_."/team/screening/{$lead->id}")->assertInertia(fn ($p) => $p->where('uitnodiging', null));
+});

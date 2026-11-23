@@ -7,10 +7,12 @@ use App\Models\ActivityLog;
 use App\Models\CreatorProfiel;
 use App\Models\Lead;
 use App\Models\ScreeningAanmelding;
+use App\Models\User;
 use App\Services\Screening;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -58,6 +60,7 @@ class ScreeningController extends Controller
                 ->map(fn (ActivityLog $a) => ['event' => $a->event, 'reason' => $a->reason, 'by' => $a->user?->name, 'at' => $a->created_at?->toIso8601String()])->values(),
             'levels' => collect(config('mebranding.levels'))->map(fn ($l, $k) => ['value' => $k, 'name' => $l['name']])->values(),
             'open' => in_array($lead->status, ['nieuw', 'aanvulling'], true),
+            'uitnodiging' => ! self::mailWerkt() && $this->creatorAccount($lead) ? ['link' => session('uitnodigingslink')] : null,
         ]);
     }
 
@@ -70,7 +73,39 @@ class ScreeningController extends Controller
         ], ['reason.required' => 'Schrijf kort op waarom je goedkeurt.']);
         $creator = $this->screening->goedkeuren($lead, $request->user(), $data['level'], $data['reason']);
 
+        if (! self::mailWerkt()) {
+            return to_route('team.screening.toon', $lead)
+                ->with('melding', "{$lead->name} is goedgekeurd op {$creator->levelName()}. Stuur de uitnodigingslink zelf door.")
+                ->with('uitnodigingslink', $this->screening->uitnodigingslink($creator->user));
+        }
+
         return to_route('team.screening.index')->with('melding', "{$lead->name} is goedgekeurd op {$creator->levelName()} en krijgt een uitnodiging.");
+    }
+
+    /** Noodroute zolang er geen maildienst is: een verse uitnodigingslink die het team zelf doorstuurt. */
+    public function uitnodigingslink(Lead $lead): RedirectResponse
+    {
+        Gate::authorize('creators.screenen');
+        $user = $this->creatorAccount($lead);
+        abort_unless($user, 404);
+
+        return back()->with('uitnodigingslink', $this->screening->uitnodigingslink($user))
+            ->with('melding', 'Nieuwe uitnodigingslink gemaakt. Eerdere links werken niet meer.');
+    }
+
+    private function creatorAccount(Lead $lead): ?User
+    {
+        if ($lead->type !== Lead::TYPE_CREATOR || $lead->status !== 'creator') {
+            return null;
+        }
+
+        return User::where('email', Str::lower($lead->email))->whereHas('creator')->first();
+    }
+
+    /** Mail gaat echt de deur uit (niet alleen naar het logbestand). */
+    private static function mailWerkt(): bool
+    {
+        return ! in_array(config('mail.default'), ['log', 'array'], true);
     }
 
     public function aanvulling(Request $request, Lead $lead): RedirectResponse

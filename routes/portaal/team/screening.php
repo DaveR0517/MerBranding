@@ -9,4 +9,5 @@ Route::get('screening', [ScreeningController::class, 'index'])->name('screening.
 Route::get('screening/{lead}', [ScreeningController::class, 'toon'])->name('screening.toon');
 Route::post('screening/{lead}/goedkeuren', [ScreeningController::class, 'goedkeuren'])->name('screening.goedkeuren');
 Route::post('screening/{lead}/aanvulling', [ScreeningController::class, 'aanvulling'])->name('screening.aanvulling');
+Route::post('screening/{lead}/uitnodigingslink', [ScreeningController::class, 'uitnodigingslink'])->name('screening.uitnodigingslink');
 Route::post('screening/{lead}/afwijzen', [ScreeningController::class, 'afwijzen'])->name('screening.afwijzen');

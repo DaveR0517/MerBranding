@@ -1,12 +1,19 @@
-import { Head, Link, useForm } from '@inertiajs/react';
-import { ProfielLink } from '@/components/social/profiel-link';
-import type { SociaalPlatform } from '@/components/social/profiel-link';
-import { ArrowLeft, Check, MessageSquareWarning, X } from 'lucide-react';
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { datumTijd } from '@/lib/datum';
-import * as screening from '@/routes/team/screening';
-import { Pagina, PaginaKop } from '@/components/pagina';
+import { Head, Link, router, useForm } from "@inertiajs/react";
+import { ProfielLink } from "@/components/social/profiel-link";
+import type { SociaalPlatform } from "@/components/social/profiel-link";
+import {
+    ArrowLeft,
+    Check,
+    Copy,
+    KeyRound,
+    MessageSquareWarning,
+    X,
+} from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { datumTijd } from "@/lib/datum";
+import * as screening from "@/routes/team/screening";
+import { Pagina, PaginaKop } from "@/components/pagina";
 import {
     Fouten,
     Label,
@@ -14,11 +21,13 @@ import {
     Veld,
     gebeurtenis,
     invoer,
-} from '../_onderdelen/basis';
-import type { Aanmelding } from './_gedeeld';
-import { platformKort, soortNaam } from './_gedeeld';
+} from "../_onderdelen/basis";
+import type { Aanmelding } from "./_gedeeld";
+import { platformKort, soortNaam } from "./_gedeeld";
 
 type Props = {
+    /** Alleen zolang er geen maildienst is: de link die het team zelf doorstuurt. */
+    uitnodiging: { link: string | null } | null;
     lead: Aanmelding & {
         phone: string | null;
         message: string | null;
@@ -43,48 +52,48 @@ type Props = {
     open: boolean;
 };
 
-type Keuze = 'goedkeuren' | 'aanvulling' | 'afwijzen';
+type Keuze = "goedkeuren" | "aanvulling" | "afwijzen";
 
 const statusLabel: Record<
     string,
-    [string, 'violet' | 'amber' | 'groen' | 'rood']
+    [string, "violet" | "amber" | "groen" | "rood"]
 > = {
-    nieuw: ['Nieuw', 'violet'],
-    aanvulling: ['Aanvulling gevraagd', 'amber'],
-    creator: ['Goedgekeurd', 'groen'],
-    afgewezen: ['Afgewezen', 'rood'],
+    nieuw: ["Nieuw", "violet"],
+    aanvulling: ["Aanvulling gevraagd", "amber"],
+    creator: ["Goedgekeurd", "groen"],
+    afgewezen: ["Afgewezen", "rood"],
 };
 
 const besluitNaam: Record<string, string> = {
-    screening_goedgekeurd: 'Goedgekeurd',
-    screening_aanvulling: 'Aanvulling gevraagd',
-    screening_afgewezen: 'Afgewezen',
+    screening_goedgekeurd: "Goedgekeurd",
+    screening_aanvulling: "Aanvulling gevraagd",
+    screening_afgewezen: "Afgewezen",
 };
 
 /** Leesbare naam van een formulierveld van de website. */
 function veldNaam(sleutel: string): string {
     const namen: Record<string, string> = {
-        soort: 'Soort',
-        straal: 'Werkgebied (km)',
-        niches: 'Niches',
-        geboortedatum: 'Geboortedatum',
-        certificaat: 'Academy-certificaat',
+        soort: "Soort",
+        straal: "Werkgebied (km)",
+        niches: "Niches",
+        geboortedatum: "Geboortedatum",
+        certificaat: "Academy-certificaat",
     };
     const kanaal = sleutel.match(/^(\w+)-(naam|volgers|zakelijk)$/);
     if (kanaal) {
         const merken: Record<string, string> = {
-            tiktok: 'TikTok',
-            youtube: 'YouTube',
-            instagram: 'Instagram',
-            facebook: 'Facebook',
-            snapchat: 'Snapchat',
+            tiktok: "TikTok",
+            youtube: "YouTube",
+            instagram: "Instagram",
+            facebook: "Facebook",
+            snapchat: "Snapchat",
         };
         const platform = merken[kanaal[1]] ?? kanaal[1];
 
-        return `${platform}: ${{ naam: 'gebruikersnaam', volgers: 'volgers', zakelijk: 'zakelijk account' }[kanaal[2]]}`;
+        return `${platform}: ${{ naam: "gebruikersnaam", volgers: "volgers", zakelijk: "zakelijk account" }[kanaal[2]]}`;
     }
 
-    return namen[sleutel] ?? sleutel.replaceAll('_', ' ').replaceAll('-', ' ');
+    return namen[sleutel] ?? sleutel.replaceAll("_", " ").replaceAll("-", " ");
 }
 
 /** Detail van één aanmelding met alle velden en de drie besluiten (ontwerp AdminCreators, screening). */
@@ -94,9 +103,10 @@ export default function Detail({
     history,
     levels,
     open,
+    uitnodiging,
 }: Props) {
     const [keuze, setKeuze] = useState<Keuze | null>(null);
-    const [status, kleur] = statusLabel[lead.status] ?? [lead.status, 'violet'];
+    const [status, kleur] = statusLabel[lead.status] ?? [lead.status, "violet"];
     const zakelijk = lead.channels.some((k) => k.business);
 
     return (
@@ -126,7 +136,7 @@ export default function Detail({
                                     `aangemeld ${datumTijd(lead.created_at)}`,
                                 ]
                                     .filter(Boolean)
-                                    .join(', ')}
+                                    .join(", ")}
                             </span>
                         </span>
                     }
@@ -143,18 +153,18 @@ export default function Detail({
                                 <dt className="text-muted-foreground">
                                     Telefoon
                                 </dt>
-                                <dd>{lead.phone ?? 'Niet opgegeven'}</dd>
+                                <dd>{lead.phone ?? "Niet opgegeven"}</dd>
                                 <dt className="text-muted-foreground">
                                     Woonplaats
                                 </dt>
-                                <dd>{lead.city ?? 'Niet opgegeven'}</dd>
+                                <dd>{lead.city ?? "Niet opgegeven"}</dd>
                                 <dt className="text-muted-foreground">
                                     Toestemming
                                 </dt>
                                 <dd>
                                     {lead.consent_at
-                                        ? `${datumTijd(lead.consent_at)}, privacytekst versie ${lead.consent_version ?? 'onbekend'}`
-                                        : 'Niet vastgelegd'}
+                                        ? `${datumTijd(lead.consent_at)}, privacytekst versie ${lead.consent_version ?? "onbekend"}`
+                                        : "Niet vastgelegd"}
                                 </dd>
                             </dl>
                             {lead.message && (
@@ -239,15 +249,15 @@ export default function Detail({
                                                     <ProfielLink
                                                         platform={
                                                             v.key.replace(
-                                                                '-naam',
-                                                                '',
+                                                                "-naam",
+                                                                "",
                                                             ) as SociaalPlatform
                                                         }
                                                         handle={v.value}
                                                         compact
                                                     />
                                                 ) : (
-                                                    v.value || 'leeg'
+                                                    v.value || "leeg"
                                                 )}
                                             </dd>
                                         </div>
@@ -289,8 +299,8 @@ export default function Detail({
                                     </span>
                                     {decision.level
                                         ? ` op ${decision.level}`
-                                        : ''}
-                                    , door {decision.by ?? 'onbekend'} op{' '}
+                                        : ""}
+                                    , door {decision.by ?? "onbekend"} op{" "}
                                     {datumTijd(decision.at)}
                                 </p>
                                 {decision.reason && (
@@ -301,12 +311,20 @@ export default function Detail({
                             </Paneel>
                         )}
 
+                        {uitnodiging && (
+                            <Uitnodiging
+                                leadId={lead.id}
+                                naam={lead.name}
+                                link={uitnodiging.link}
+                            />
+                        )}
+
                         {open && (
                             <Paneel
                                 titel="Besluit"
                                 sub="Altijd een menselijke beslissing, met reden. De reden komt in het logboek."
                             >
-                                <Fouten negeer={['level', 'reason']} />
+                                <Fouten negeer={["level", "reason"]} />
                                 <div
                                     className="grid gap-2"
                                     role="group"
@@ -314,26 +332,26 @@ export default function Detail({
                                 >
                                     <Button
                                         variant={
-                                            keuze === 'goedkeuren'
-                                                ? 'default'
-                                                : 'outline'
+                                            keuze === "goedkeuren"
+                                                ? "default"
+                                                : "outline"
                                         }
                                         className="justify-start"
-                                        onClick={() => setKeuze('goedkeuren')}
-                                        aria-pressed={keuze === 'goedkeuren'}
+                                        onClick={() => setKeuze("goedkeuren")}
+                                        aria-pressed={keuze === "goedkeuren"}
                                     >
                                         <Check className="size-4" aria-hidden />
                                         Goedkeuren
                                     </Button>
                                     <Button
                                         variant={
-                                            keuze === 'aanvulling'
-                                                ? 'default'
-                                                : 'outline'
+                                            keuze === "aanvulling"
+                                                ? "default"
+                                                : "outline"
                                         }
                                         className="justify-start"
-                                        onClick={() => setKeuze('aanvulling')}
-                                        aria-pressed={keuze === 'aanvulling'}
+                                        onClick={() => setKeuze("aanvulling")}
+                                        aria-pressed={keuze === "aanvulling"}
                                     >
                                         <MessageSquareWarning
                                             className="size-4"
@@ -343,13 +361,13 @@ export default function Detail({
                                     </Button>
                                     <Button
                                         variant={
-                                            keuze === 'afwijzen'
-                                                ? 'default'
-                                                : 'outline'
+                                            keuze === "afwijzen"
+                                                ? "default"
+                                                : "outline"
                                         }
                                         className="justify-start"
-                                        onClick={() => setKeuze('afwijzen')}
-                                        aria-pressed={keuze === 'afwijzen'}
+                                        onClick={() => setKeuze("afwijzen")}
+                                        aria-pressed={keuze === "afwijzen"}
                                     >
                                         <X className="size-4" aria-hidden />
                                         Afwijzen
@@ -380,7 +398,7 @@ export default function Detail({
                                                     gebeurtenis(h.event)}
                                             </p>
                                             <p className="text-muted-foreground">
-                                                {h.by ?? 'Systeem'},{' '}
+                                                {h.by ?? "Systeem"},{" "}
                                                 {datumTijd(h.at)}
                                             </p>
                                             {h.reason && (
@@ -407,25 +425,25 @@ function BesluitForm({
 }: {
     keuze: Keuze;
     leadId: number;
-    levels: Props['levels'];
+    levels: Props["levels"];
 }) {
-    const form = useForm({ level: levels[0]?.value ?? 'bronze', reason: '' });
+    const form = useForm({ level: levels[0]?.value ?? "bronze", reason: "" });
     const tekst: Record<Keuze, { label: string; hint: string; knop: string }> =
         {
             goedkeuren: {
-                label: 'Reden van goedkeuring',
-                hint: 'Maakt een account, zet de creator op actief en stuurt de welkomstmail met een link om een wachtwoord te kiezen.',
-                knop: 'Goedkeuren en uitnodigen',
+                label: "Reden van goedkeuring",
+                hint: "Maakt een account, zet de creator op actief en stuurt de welkomstmail met een link om een wachtwoord te kiezen.",
+                knop: "Goedkeuren en uitnodigen",
             },
             aanvulling: {
-                label: 'Wat ontbreekt er?',
+                label: "Wat ontbreekt er?",
                 hint: 'Deze tekst gaat letterlijk in de e-mail "We missen nog iets" naar de aanmelder.',
-                knop: 'Aanvulling vragen',
+                knop: "Aanvulling vragen",
             },
             afwijzen: {
-                label: 'Reden van afwijzing',
-                hint: 'De aanmelder krijgt deze reden per e-mail, met de mogelijkheid om over 90 dagen opnieuw aan te melden.',
-                knop: 'Afwijzen',
+                label: "Reden van afwijzing",
+                hint: "De aanmelder krijgt deze reden per e-mail, met de mogelijkheid om over 90 dagen opnieuw aan te melden.",
+                knop: "Afwijzen",
             },
         };
     const route = {
@@ -443,7 +461,7 @@ function BesluitForm({
             }}
             data-test={`besluit-${keuze}`}
         >
-            {keuze === 'goedkeuren' && (
+            {keuze === "goedkeuren" && (
                 <Veld
                     label="Startniveau"
                     htmlFor="level"
@@ -453,7 +471,7 @@ function BesluitForm({
                     <select
                         id="level"
                         value={form.data.level}
-                        onChange={(e) => form.setData('level', e.target.value)}
+                        onChange={(e) => form.setData("level", e.target.value)}
                         className={invoer}
                     >
                         {levels.map((l) => (
@@ -475,14 +493,14 @@ function BesluitForm({
                     required
                     rows={4}
                     value={form.data.reason}
-                    onChange={(e) => form.setData('reason', e.target.value)}
+                    onChange={(e) => form.setData("reason", e.target.value)}
                     className={`${invoer} h-auto py-2`}
                 />
             </Veld>
             <Button
                 type="submit"
                 disabled={form.processing}
-                variant={keuze === 'afwijzen' ? 'destructive' : 'default'}
+                variant={keuze === "afwijzen" ? "destructive" : "default"}
                 className="w-full"
             >
                 {tekst[keuze].knop}
@@ -492,5 +510,79 @@ function BesluitForm({
 }
 
 Detail.layout = {
-    breadcrumbs: [{ title: 'Screening', href: screening.index.url() }],
+    breadcrumbs: [{ title: "Screening", href: screening.index.url() }],
 };
+
+/** Noodroute zonder maildienst: het team stuurt de persoonlijke link zelf door (WhatsApp of eigen mail). */
+function Uitnodiging({
+    leadId,
+    naam,
+    link,
+}: {
+    leadId: number;
+    naam: string;
+    link: string | null;
+}) {
+    const [gekopieerd, setGekopieerd] = useState(false);
+    const [bezig, setBezig] = useState(false);
+
+    const kopieer = async () => {
+        if (!link) {
+            return;
+        }
+        try {
+            await navigator.clipboard.writeText(link);
+            setGekopieerd(true);
+            setTimeout(() => setGekopieerd(false), 2500);
+        } catch {
+            setGekopieerd(false);
+        }
+    };
+
+    return (
+        <Paneel
+            titel="Uitnodigingslink"
+            sub={`Er is nog geen maildienst. Stuur ${naam} deze link zelf, bijvoorbeeld via WhatsApp. Daarmee kiest de creator een wachtwoord en logt in. De link werkt 7 dagen.`}
+        >
+            {link ? (
+                <div className="space-y-2" data-test="uitnodigingslink">
+                    <input
+                        readOnly
+                        value={link}
+                        aria-label="Uitnodigingslink"
+                        onFocus={(e) => e.currentTarget.select()}
+                        className={`${invoer} font-mono text-xs`}
+                    />
+                    <Button onClick={kopieer} className="w-full">
+                        <Copy className="size-4" aria-hidden />
+                        {gekopieerd ? "Gekopieerd" : "Kopieer link"}
+                    </Button>
+                </div>
+            ) : (
+                <p className="text-sm text-muted-foreground">
+                    De link wordt om veiligheidsredenen niet bewaard. Maak een
+                    nieuwe als je hem kwijt bent.
+                </p>
+            )}
+            <Button
+                variant="outline"
+                className="mt-2 w-full"
+                disabled={bezig}
+                onClick={() =>
+                    router.post(
+                        screening.uitnodigingslink.url(leadId),
+                        {},
+                        {
+                            preserveScroll: true,
+                            onStart: () => setBezig(true),
+                            onFinish: () => setBezig(false),
+                        },
+                    )
+                }
+            >
+                <KeyRound className="size-4" aria-hidden />
+                {link ? "Nieuwe link maken" : "Maak uitnodigingslink"}
+            </Button>
+        </Paneel>
+    );
+}
