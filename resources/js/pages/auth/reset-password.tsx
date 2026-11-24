@@ -16,7 +16,7 @@ type Props = {
 export default function ResetPassword({ token, email, passwordRules }: Props) {
     return (
         <>
-            <Head title="Nieuw wachtwoord" />
+            <Head title="Kies je wachtwoord" />
 
             <Form
                 {...update.form()}
@@ -26,7 +26,7 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
                 {({ processing, errors }) => (
                     <div className="grid gap-6">
                         <div className="grid gap-2">
-                            <Label htmlFor="email">Email</Label>
+                            <Label htmlFor="email">E-mailadres</Label>
                             <Input
                                 id="email"
                                 type="email"
@@ -58,14 +58,14 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
 
                         <div className="grid gap-2">
                             <Label htmlFor="password_confirmation">
-                                Confirm password
+                                Herhaal wachtwoord
                             </Label>
                             <PasswordInput
                                 id="password_confirmation"
                                 name="password_confirmation"
                                 autoComplete="new-password"
                                 className="mt-1 block w-full"
-                                placeholder="Bevestig wachtwoord"
+                                placeholder="Herhaal wachtwoord"
                                 passwordrules={passwordRules}
                             />
                             <InputError
@@ -81,7 +81,7 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
                             data-test="reset-password-button"
                         >
                             {processing && <Spinner />}
-                            Wachtwoord opslaan
+                            Opslaan en inloggen
                         </Button>
                     </div>
                 )}
@@ -91,6 +91,7 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
 }
 
 ResetPassword.layout = {
-    title: 'Nieuw wachtwoord',
-    description: 'Kies hieronder je nieuwe wachtwoord',
+    title: 'Kies je wachtwoord',
+    description:
+        'Kies een wachtwoord voor je MEBRANDING-account. Na opslaan ben je direct ingelogd.',
 };
