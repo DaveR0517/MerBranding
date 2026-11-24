@@ -1,10 +1,14 @@
-import { Radio } from 'lucide-react';
+import { Mail, Radio } from 'lucide-react';
 import type { NavModule } from '@/lib/portaal';
 import kanalen from '@/routes/team/kanalen';
 
-/** Navigatie van de module eigen kanalen: het Instagram- en TikTok-account van MEBRANDING, in de afdeling MeStudio. */
+/** Navigatie van de module eigen kanalen: Instagram, TikTok en Gmail van MEBRANDING, in de afdeling MeStudio. */
 const nav: NavModule = {
-    team: [{ title: 'Eigen kanalen', href: () => kanalen.index.url(), icon: Radio, order: 5, permission: 'kanalen.beheren' }],
+    team: [
+        { title: 'Eigen kanalen', href: () => kanalen.index.url(), icon: Radio, order: 4.5, permission: 'kanalen.beheren' },
+        // Gmail van MEBRANDING: wie een postvak ziet of zelf heeft (recht mail.postvak komt van de server).
+        { title: 'Mail', href: () => kanalen.mail.url(), icon: Mail, order: 4.6, permission: 'mail.postvak' },
+    ],
 };
 
 export default nav;

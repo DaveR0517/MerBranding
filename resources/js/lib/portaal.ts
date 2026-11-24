@@ -23,7 +23,7 @@ const SECTIES: Partial<Record<Exclude<Portal, 'geen'>, Record<string, string[]>>
         'Hulp en account': ['Aan de slag', 'Uitnodigen', 'Help', 'Account'],
     },
     team: {
-        MeStudio: ['Ontwerpen', 'Sjablonen', 'Feedplanner', 'Mediatheek', 'Eigen kanalen', 'Merkkit'],
+        MeStudio: ['Ontwerpen', 'Sjablonen', 'Feedplanner', 'Mediatheek', 'Eigen kanalen', 'Mail', 'Merkkit'],
         Dagelijks: ['Dashboard', 'Werkvoorraad', 'Samenwerkingen', 'Berichten', 'Planning'],
         Relaties: ['Bedrijven', 'Kaart', 'Content per bedrijf', 'Creators', 'Screening', 'Klassement', 'Cursusdagen', 'Sales'],
         'Cijfers en geld': ['Cijfers', 'Financieel'],

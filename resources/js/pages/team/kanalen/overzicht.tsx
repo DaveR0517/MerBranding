@@ -1,4 +1,4 @@
-import { Head, router } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { AlertTriangle, Check, Copy, MessageCircle, RefreshCw, Unplug, X } from 'lucide-react';
 import { useState } from 'react';
 import { Etiket } from '@/components/content/labels';
@@ -39,7 +39,7 @@ type Checklist = {
     env: { naam: string; ingevuld: boolean }[];
 };
 
-type Props = { kanalen: Kanaal[]; checklist: Record<PlatformSleutel, Checklist>; ongelezen: number };
+type Props = { kanalen: Kanaal[]; checklist: Record<PlatformSleutel, Checklist>; ongelezen: number; gmail: { ingesteld: boolean; postvakken: string[] } };
 
 /** Wat Dave per platform invult bij de ontwikkelaarsapp (stappenplan: docs/koppelen-meta-en-tiktok.md). */
 const STAPPEN: Record<PlatformSleutel, string[]> = {
@@ -230,7 +230,7 @@ function KanaalKaart({ k, checklist }: { k: Kanaal; checklist: Checklist }) {
 }
 
 /** Eigen kanalen: het Instagram- en TikTok-account van MEBRANDING zelf. */
-export default function Overzicht({ kanalen: lijst, checklist, ongelezen }: Props) {
+export default function Overzicht({ kanalen: lijst, checklist, ongelezen, gmail }: Props) {
     const ingesteld = lijst.filter((k) => k.ingesteld);
 
     return (
@@ -246,6 +246,8 @@ export default function Overzicht({ kanalen: lijst, checklist, ongelezen }: Prop
                     ))}
                 </KaartRaster>
 
+                <GmailKaart gmail={gmail} />
+
                 {ingesteld.length > 0 && (
                     <Sectie titel="Instellingen bij Meta en TikTok" omschrijving="De adressen die in de ontwikkelaarsapps horen. Handig bij opnieuw instellen of een nieuw domein.">
                         <KaartRaster kolommen={2}>
@@ -259,5 +261,30 @@ export default function Overzicht({ kanalen: lijst, checklist, ongelezen }: Prop
                 )}
             </Pagina>
         </>
+    );
+}
+
+/** Gmail van MEBRANDING (Google Workspace): status van de koppeling en de postvakken; lezen gebeurt onder Mail. */
+function GmailKaart({ gmail }: { gmail: Props['gmail'] }) {
+    return (
+        <Kaart className="flex flex-wrap items-center justify-between gap-3" data-test="gmail-kaart">
+            <div className="min-w-48 flex-1">
+                <p className="flex items-center gap-2 font-heading font-bold">
+                    Gmail (Google Workspace)
+                    <span className={gmail.ingesteld ? 'rounded-full bg-emerald-100 px-2 py-0.5 text-xs text-emerald-800' : 'rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground'}>
+                        {gmail.ingesteld ? 'Gekoppeld' : 'Nog niet gekoppeld'}
+                    </span>
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                    {gmail.postvakken.length > 0 ? gmail.postvakken.join(', ') : 'Nog geen postvakken ingesteld (GMAIL_POSTVAKKEN).'}
+                    {!gmail.ingesteld && ' De Workspace-beheerder geeft het portaal eenmalig toegang; zie de stappen in docs/koppelen-gmail.md.'}
+                </p>
+            </div>
+            {gmail.postvakken.length > 0 && (
+                <Link href={kanalen.mail.url()} className="min-h-10 rounded-full border px-4 py-2 text-sm font-semibold hover:border-violet">
+                    Naar Mail
+                </Link>
+            )}
+        </Kaart>
     );
 }

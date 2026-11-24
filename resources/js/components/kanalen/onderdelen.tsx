@@ -1,5 +1,5 @@
-/** Gedeelde onderdelen van de module eigen kanalen (overzicht, posts en filmpjes, berichten). */
-import { Link } from '@inertiajs/react';
+/** Gedeelde onderdelen van de module eigen kanalen (overzicht, posts en filmpjes, berichten, mail). */
+import { Link, usePage } from '@inertiajs/react';
 import { Instagram, Music2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Etiket } from '@/components/content/labels';
@@ -38,11 +38,19 @@ export function getal(n: number | null | undefined): string {
 }
 
 /** Tabbladen tussen de drie schermen (links, zodat elk scherm een eigen adres heeft). */
-export function KanalenTabs({ actief, ongelezen = 0 }: { actief: 'overzicht' | 'posts' | 'berichten'; ongelezen?: number }) {
+export function KanalenTabs({ actief, ongelezen = 0 }: { actief: 'overzicht' | 'posts' | 'berichten' | 'mail'; ongelezen?: number }) {
+    const { auth } = usePage().props as unknown as { auth: { permissions: string[] } };
+    const kanalenRecht = auth.permissions.includes('kanalen.beheren');
     const tabs = [
-        { key: 'overzicht', label: 'Overzicht', href: kanalen.index.url() },
-        { key: 'posts', label: 'Posts en filmpjes', href: kanalen.posts.url() },
-        { key: 'berichten', label: 'Berichten', href: kanalen.berichten.url(), aantal: ongelezen },
+        ...(kanalenRecht
+            ? [
+                  { key: 'overzicht', label: 'Overzicht', href: kanalen.index.url() },
+                  { key: 'posts', label: 'Posts en filmpjes', href: kanalen.posts.url() },
+                  { key: 'berichten', label: 'Berichten', href: kanalen.berichten.url(), aantal: ongelezen },
+              ]
+            : []),
+        // Gmail-postvakken: eigen toegangsregels per postvak (zie App\Services\Gmail\Postvakken).
+        ...(auth.permissions.includes('mail.postvak') ? [{ key: 'mail', label: 'Mail', href: kanalen.mail.url() }] : []),
     ];
 
     return (

@@ -7,6 +7,7 @@ use App\Models\KanaalGesprek;
 use App\Models\KanaalMedia;
 use App\Models\KanaalMeting;
 use App\Models\SocialAccount;
+use App\Services\Gmail\Workspace;
 use App\Services\Kanalen\EigenKanalen;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -28,6 +29,7 @@ class KanalenController extends Controller
             'kanalen' => collect($k->sleutels())->map(fn (string $p) => $this->kanaal($k, $p))->values(),
             'checklist' => collect($k->sleutels())->mapWithKeys(fn (string $p) => [$p => $this->checklist($request, $k, $p)]),
             'ongelezen' => (int) KanaalGesprek::whereIn('social_account_id', SocialAccount::eigen()->select('id'))->sum('ongelezen'),
+            'gmail' => ['ingesteld' => app(Workspace::class)->ingesteld(), 'postvakken' => array_keys(config('gmail.postvakken'))],
         ]);
     }
 

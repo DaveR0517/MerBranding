@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Team\Kanalen\BerichtenController;
 use App\Http\Controllers\Team\Kanalen\KanalenController;
+use App\Http\Controllers\Team\Kanalen\MailController;
 use App\Http\Controllers\Team\Kanalen\PlaatsenController;
 use App\Http\Controllers\Team\Kanalen\PostsController;
 use Illuminate\Support\Facades\Route;
@@ -27,4 +28,13 @@ Route::prefix('kanalen')->name('kanalen.')->middleware('can:kanalen.beheren')->g
         Route::post('ontkoppelen', 'ontkoppelen')->name('ontkoppelen');
         Route::post('verversen', 'verversen')->name('verversen');
     });
+});
+
+/* Mail: de Gmail-postvakken van MEBRANDING (Google Workspace). Eigen toegangsregels per postvak (App\Services\Gmail\Postvakken), niet kanalen.beheren. */
+Route::prefix('kanalen/mail')->name('kanalen.mail')->group(function () {
+    Route::get('/', [MailController::class, 'index']);
+    Route::post('{postvak}/akkoord', [MailController::class, 'akkoord'])->name('.akkoord');
+    Route::post('{postvak}/{gesprek}/antwoord', [MailController::class, 'beantwoorden'])->middleware('throttle:30,1')->name('.antwoord');
+    Route::post('{postvak}/{gesprek}/archiveren', [MailController::class, 'archiveren'])->name('.archiveren');
+    Route::get('{postvak}/bericht/{bericht}/bijlage/{bijlage}', [MailController::class, 'bijlage'])->name('.bijlage');
 });

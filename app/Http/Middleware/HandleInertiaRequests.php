@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Models\KanaalGesprek;
 use App\Models\Task;
 use App\Models\User;
+use App\Services\Gmail\Postvakken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Middleware;
@@ -48,7 +49,7 @@ class HandleInertiaRequests extends Middleware
                 'portal' => fn () => $this->omgeving($request),
                 'omgevingen' => fn () => $this->wissel($request),
                 'roles' => $request->user()?->getRoleNames() ?? [],
-                'permissions' => $request->user()?->hasRole('Super Admin') ? Permission::pluck('name') : ($request->user()?->getAllPermissions()->pluck('name') ?? []),
+                'permissions' => $this->rechten($request),
                 'is_super_admin' => $request->user()?->hasRole('Super Admin') ?? false,
                 'impersonating' => $request->session()->has('inloggen_als_van'),
             ],
@@ -110,5 +111,23 @@ class HandleInertiaRequests extends Middleware
 
         return collect($per)->filter(fn ($aantal, $route) => $aantal > 0 && Route::has($route))
             ->mapWithKeys(fn ($aantal, $route) => [parse_url(route($route), PHP_URL_PATH) => $aantal])->all();
+    }
+
+    /**
+     * Rechten voor het menu. Plus 'mail.postvak' als er een Gmail-postvak is dat deze gebruiker ziet of zelf heeft:
+     * dat hangt per postvak af (App\Services\Gmail\Postvakken), niet van een vast recht.
+     */
+    private function rechten(Request $request): array
+    {
+        $user = $request->user();
+        if (! $user) {
+            return [];
+        }
+        $rechten = ($user->hasRole('Super Admin') ? Permission::pluck('name') : $user->getAllPermissions()->pluck('name'))->all();
+        if (config('gmail.postvakken') && $user->isTeam() && app(Postvakken::class)->voor($user) !== []) {
+            $rechten[] = 'mail.postvak';
+        }
+
+        return $rechten;
     }
 }
