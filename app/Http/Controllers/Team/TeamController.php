@@ -9,6 +9,7 @@ use App\Models\Collaboration;
 use App\Models\Creator;
 use App\Models\Status;
 use App\Models\Task;
+use App\Services\Matchlijst;
 use App\Services\Samenwerking;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
@@ -21,7 +22,7 @@ use Inertia\Response;
 /** Teamomgeving: werkvoorraad, samenwerkingen, koppelen en contentcontrole. */
 class TeamController extends Controller
 {
-    public function __construct(private Samenwerking $dienst) {}
+    public function __construct(private Samenwerking $dienst, private Matchlijst $matchlijst) {}
 
     public function werkvoorraad(Request $request): Response
     {
@@ -82,7 +83,7 @@ class TeamController extends Controller
     {
         return Inertia::render('team/samenwerking', [
             'collaboration' => SamenwerkingPresenter::vol($samenwerking, 'team', $request->user()),
-            'matches' => in_array($samenwerking->status, [Status::Nieuw, Status::CreatorZoeken], true) ? $this->matchlijst($samenwerking) : [],
+            'matches' => in_array($samenwerking->status, [Status::Nieuw, Status::CreatorZoeken], true) ? $this->matchlijst->voorTeam($samenwerking) : [],
             'can' => [
                 'koppelen' => $request->user()->can('samenwerkingen.koppelen'),
                 'controleren' => $request->user()->can('content.controleren'),
@@ -152,41 +153,5 @@ class TeamController extends Controller
                 'reason' => $l->reason,
             ])->values(),
         ]);
-    }
-
-    /**
-     * Matchlijst: actieve creators met de reden waarom ze passen. Uitlegbaar (EU-richtlijn platformwerk).
-     * Afstand is geen harde eis (besluit 14). Gewichten volgen in fase 4.
-     */
-    private function matchlijst(Collaboration $c): array
-    {
-        $geweigerd = $c->invitations()->where('answer', 'geweigerd')->pluck('creator_id')->all();
-
-        return Creator::with('user')->where('status', 'actief')->get()
-            ->map(function (Creator $cr) use ($c, $geweigerd) {
-                $redenen = [];
-                $blokkade = null;
-                if ($cr->level === $c->creator_level) {
-                    $redenen[] = 'Gevraagd niveau';
-                }
-                if ($cr->city && $cr->city === $c->location->city) {
-                    $redenen[] = 'Woont in '.$cr->city;
-                }
-                if ($c->alcohol && ($cr->age() ?? 0) < 25) {
-                    $blokkade = 'Jonger dan 25 en er komt alcohol in beeld';
-                }
-                if (in_array($cr->id, $geweigerd, true)) {
-                    $blokkade = 'Heeft deze uitnodiging al afgeslagen';
-                }
-
-                return [
-                    'id' => $cr->id, 'name' => $cr->user->name, 'level' => $cr->levelName(), 'level_value' => $cr->level,
-                    'city' => $cr->city, 'instagram' => $cr->instagram, 'tiktok' => $cr->tiktok, 'niches' => $cr->niches ?? [],
-                    'points' => $cr->points(), 'reward' => $cr->feeCents() > 0 ? 'Gratis bezoek en € '.number_format($cr->feeCents() / 100, 0, ',', '.') : 'Gratis bezoek',
-                    'reasons' => $redenen, 'blocked' => $blokkade,
-                ];
-            })
-            ->sortBy(fn ($m) => [$m['blocked'] ? 1 : 0, -count($m['reasons'])])
-            ->values()->all();
     }
 }

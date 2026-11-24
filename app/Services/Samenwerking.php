@@ -47,7 +47,8 @@ class Samenwerking
     /* ----------------------------------------------------------------- 1. Nieuw */
 
     /** @param array{location_id: int, title: string, briefing: string, period_from?: ?string, period_to?: ?string, alcohol?: bool, creator_level: string} $data */
-    public function aanvragen(Company $company, User $door, array $data): Collaboration
+    /** Nieuwe aanvraag. Met $creator kiest de ondernemer zelf en gaat de uitnodiging direct naar die creator; anders koppelt het team. */
+    public function aanvragen(Company $company, User $door, array $data, ?Creator $creator = null): Collaboration
     {
         $location = Location::where('company_id', $company->id)->findOrFail($data['location_id']);
         $points = (int) config("mebranding.levels.{$data['creator_level']}.points");
@@ -59,7 +60,7 @@ class Samenwerking
             throw ValidationException::withMessages(['creator_level' => "Je tegoed is te laag: je hebt {$company->availablePoints()} punten, deze samenwerking kost {$points} punten."]);
         }
 
-        return DB::transaction(function () use ($company, $door, $data, $location, $points) {
+        return DB::transaction(function () use ($company, $door, $data, $location, $points, $creator) {
             $c = Collaboration::create([
                 'number' => 'S'.now()->format('ymd').'-'.str_pad((string) (Collaboration::count() + 1), 4, '0', STR_PAD_LEFT),
                 'company_id' => $company->id,
@@ -78,9 +79,13 @@ class Samenwerking
             $this->boek($c, CreditLedger::RESERVEREN, -$points, 'Aanvraag verstuurd: punten gereserveerd', $door);
             $this->logboek($c, $door, 'aangevraagd', null, Status::Nieuw);
 
-            $this->werk->open('koppelen', "Creator koppelen: {$company->name}, {$c->title}", $c, 'samenwerkingen.koppelen', now()->addWeekdays(2));
-            $this->melder->stuur('o-aangevraagd', $this->ondernemers($c), array_merge($this->vars($c), ['aantal' => 2]), $this->urlOndernemer($c));
-            $this->melder->stuur('t-nieuw', $this->melder->team('samenwerkingen.koppelen'), $this->vars($c), $this->urlTeam($c));
+            if ($creator) {
+                $this->uitnodigen($c, $creator, $door);
+            } else {
+                $this->melder->stuur('o-aangevraagd', $this->ondernemers($c), array_merge($this->vars($c), ['aantal' => 2]), $this->urlOndernemer($c));
+                $this->werk->open('koppelen', "Creator koppelen: {$company->name}, {$c->title}", $c, 'samenwerkingen.koppelen', now()->addWeekdays(2));
+                $this->melder->stuur('t-nieuw', $this->melder->team('samenwerkingen.koppelen'), $this->vars($c), $this->urlTeam($c));
+            }
 
             return $c;
         });
@@ -100,6 +105,9 @@ class Samenwerking
         }
         if ($creator->status !== 'actief') {
             throw ValidationException::withMessages(['creator' => 'Deze creator is niet actief.']);
+        }
+        if ($c->invitations()->where('creator_id', $creator->id)->where('answer', 'geweigerd')->exists()) {
+            throw ValidationException::withMessages(['creator' => "{$creator->user->name} heeft deze uitnodiging al afgeslagen. Kies iemand anders."]);
         }
 
         return DB::transaction(function () use ($c, $creator, $door) {

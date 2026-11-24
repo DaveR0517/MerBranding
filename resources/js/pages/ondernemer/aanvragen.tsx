@@ -1,23 +1,25 @@
-import { Head, useForm } from '@inertiajs/react';
-import { Check, Wine } from 'lucide-react';
-import type { FormEvent } from 'react';
-import InputError from '@/components/input-error';
-import { Kaart, Pagina, PaginaKop, TweeKolommen } from '@/components/pagina';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Head, useForm } from "@inertiajs/react";
+import { Check, Sparkles, UserRoundCheck, Wine } from "lucide-react";
+import type { FormEvent } from "react";
+import InputError from "@/components/input-error";
+import { Kaart, Pagina, PaginaKop, TweeKolommen } from "@/components/pagina";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from '@/components/ui/select';
-import { Spinner } from '@/components/ui/spinner';
-import { cn } from '@/lib/utils';
-import { aanvragen, opslaan, overzicht } from '@/routes/ondernemer';
-import { Tekstvak } from './_onderdelen/opmaak';
-import { Tegoed } from './_onderdelen/tegoed';
+} from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
+import { cn } from "@/lib/utils";
+import { aanvragen, opslaan, overzicht } from "@/routes/ondernemer";
+import { CreatorKiezen, blokkade } from "./_onderdelen/creator-kiezen";
+import type { KiesbareCreator } from "./_onderdelen/creator-kiezen";
+import { Tekstvak } from "./_onderdelen/opmaak";
+import { Tegoed } from "./_onderdelen/tegoed";
 
 type Niveau = { value: string; name: string; points: number; reward: string };
 
@@ -25,6 +27,7 @@ type Props = {
     available_points: number;
     locations: { id: number; name: string; city: string | null }[];
     levels: Niveau[];
+    creators: KiesbareCreator[];
 };
 
 type Velden = {
@@ -33,29 +36,60 @@ type Velden = {
     briefing: string;
     period_from: string;
     period_to: string;
-    alcohol: '' | '1' | '0';
+    alcohol: "" | "1" | "0";
     creator_level: string;
+    /** team: MEBRANDING kiest de creator; zelf: de ondernemer kiest en de uitnodiging gaat direct. */
+    keuze: "team" | "zelf";
+    creator_id: number | null;
 };
 
 export default function Aanvragen({
     available_points,
     locations,
     levels,
+    creators,
 }: Props) {
     const form = useForm<Velden>({
-        location_id: locations.length === 1 ? String(locations[0].id) : '',
-        title: '',
-        briefing: '',
-        period_from: '',
-        period_to: '',
-        alcohol: '',
-        creator_level: '',
+        location_id: locations.length === 1 ? String(locations[0].id) : "",
+        title: "",
+        briefing: "",
+        period_from: "",
+        period_to: "",
+        alcohol: "",
+        creator_level: "",
+        keuze: "team",
+        creator_id: null,
     });
     const { data, setData, errors, processing } = form;
-    const gekozen = levels.find((l) => l.value === data.creator_level);
+    const zelf = data.keuze === "zelf";
+    const creator = zelf
+        ? creators.find((c) => c.id === data.creator_id)
+        : undefined;
+    // Zelf gekozen: het niveau en de prijs zijn die van de creator.
+    const gekozen = zelf
+        ? creator && {
+              name: `${creator.name} (${creator.level})`,
+              points: creator.points,
+          }
+        : levels.find((l) => l.value === data.creator_level);
     const genoeg = !gekozen || gekozen.points <= available_points;
-    const vandaag = new Date().toLocaleDateString('sv-SE', {
-        timeZone: 'Europe/Amsterdam',
+    const stad =
+        locations.find((l) => String(l.id) === data.location_id)?.city ?? null;
+    const fouten = errors as Partial<Record<string, string>>;
+
+    // Verandert alcohol of tegoed waardoor de gekozen creator niet meer kan: keuze vervalt.
+    function zetAlcohol(waarde: "1" | "0") {
+        setData((d) => ({
+            ...d,
+            alcohol: waarde,
+            creator_id:
+                creator && blokkade(creator, waarde === "1", available_points)
+                    ? null
+                    : d.creator_id,
+        }));
+    }
+    const vandaag = new Date().toLocaleDateString("sv-SE", {
+        timeZone: "Europe/Amsterdam",
     });
 
     function versturen(e: FormEvent) {
@@ -69,10 +103,10 @@ export default function Aanvragen({
             <Pagina>
                 <PaginaKop
                     titel="Samenwerking aanvragen"
-                    omschrijving="Vertel wat je wilt laten zien. Wij zoeken de creator die bij je zaak past en houden je op de hoogte."
+                    omschrijving="Vertel wat je wilt laten zien. Wij zoeken de creator die bij je zaak past, of je kiest er zelf een."
                 />
-                <p className="rounded-lg bg-violet/10 px-3 py-2 text-sm text-violet lg:hidden">
-                    Je hebt <strong>{available_points} punten</strong>{' '}
+                <p className="rounded-lg bg-violet/10 px-3 py-2 text-sm text-violet @4xl:hidden">
+                    Je hebt <strong>{available_points} punten</strong>{" "}
                     beschikbaar.
                 </p>
 
@@ -92,7 +126,7 @@ export default function Aanvragen({
                                         <Select
                                             value={data.location_id}
                                             onValueChange={(v) =>
-                                                setData('location_id', v)
+                                                setData("location_id", v)
                                             }
                                         >
                                             <SelectTrigger
@@ -113,7 +147,7 @@ export default function Aanvragen({
                                                         {l.name}
                                                         {l.city
                                                             ? `, ${l.city}`
-                                                            : ''}
+                                                            : ""}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>
@@ -130,7 +164,7 @@ export default function Aanvragen({
                                             value={data.title}
                                             maxLength={120}
                                             onChange={(e) =>
-                                                setData('title', e.target.value)
+                                                setData("title", e.target.value)
                                             }
                                             placeholder="Bijvoorbeeld: Wintersoep en appeltaart"
                                             aria-invalid={!!errors.title}
@@ -149,7 +183,7 @@ export default function Aanvragen({
                                             rows={6}
                                             onChange={(e) =>
                                                 setData(
-                                                    'briefing',
+                                                    "briefing",
                                                     e.target.value,
                                                 )
                                             }
@@ -186,7 +220,7 @@ export default function Aanvragen({
                                                     value={data.period_from}
                                                     onChange={(e) =>
                                                         setData(
-                                                            'period_from',
+                                                            "period_from",
                                                             e.target.value,
                                                         )
                                                     }
@@ -215,7 +249,7 @@ export default function Aanvragen({
                                                     value={data.period_to}
                                                     onChange={(e) =>
                                                         setData(
-                                                            'period_to',
+                                                            "period_to",
                                                             e.target.value,
                                                         )
                                                     }
@@ -256,8 +290,8 @@ export default function Aanvragen({
                                         <div className="mt-3 grid grid-cols-2 gap-3 sm:max-w-sm">
                                             {(
                                                 [
-                                                    ['1', 'Ja'],
-                                                    ['0', 'Nee'],
+                                                    ["1", "Ja"],
+                                                    ["0", "Nee"],
                                                 ] as const
                                             ).map(([waarde, tekst]) => (
                                                 <Keuze
@@ -267,10 +301,7 @@ export default function Aanvragen({
                                                         data.alcohol === waarde
                                                     }
                                                     onKies={() =>
-                                                        setData(
-                                                            'alcohol',
-                                                            waarde,
-                                                        )
+                                                        zetAlcohol(waarde)
                                                     }
                                                 >
                                                     {tekst}
@@ -287,66 +318,154 @@ export default function Aanvragen({
                                 <Kaart>
                                     <fieldset>
                                         <legend className="font-heading text-lg font-bold">
-                                            Niveau van de creator
+                                            Wie kiest de creator?
                                         </legend>
-                                        <p className="mt-1 text-sm text-muted-foreground">
-                                            Hoe hoger het niveau, hoe groter het
-                                            bereik van de creator. Het niveau
-                                            bepaalt hoeveel punten de
-                                            samenwerking kost.
-                                        </p>
                                         <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                                            {levels.map((l) => {
-                                                const teDuur =
-                                                    l.points > available_points;
-
-                                                return (
-                                                    <Keuze
-                                                        key={l.value}
-                                                        naam="creator_level"
-                                                        gekozen={
-                                                            data.creator_level ===
-                                                            l.value
-                                                        }
-                                                        onKies={() =>
-                                                            setData(
-                                                                'creator_level',
-                                                                l.value,
-                                                            )
-                                                        }
-                                                        className="items-start"
-                                                    >
-                                                        <span className="flex w-full items-baseline justify-between gap-2">
-                                                            <span className="font-heading text-base font-bold">
-                                                                {l.name}
-                                                            </span>
-                                                            <span className="font-semibold whitespace-nowrap text-violet">
-                                                                {l.points}{' '}
-                                                                punten
-                                                            </span>
-                                                        </span>
-                                                        <span className="mt-1 block text-sm font-normal text-muted-foreground">
-                                                            {l.reward}
-                                                        </span>
-                                                        {teDuur && (
-                                                            <span className="mt-1 block text-xs font-semibold text-rood">
-                                                                Te weinig tegoed
-                                                            </span>
-                                                        )}
-                                                    </Keuze>
-                                                );
-                                            })}
+                                            <Keuze
+                                                naam="keuze"
+                                                gekozen={!zelf}
+                                                onKies={() =>
+                                                    setData((d) => ({
+                                                        ...d,
+                                                        keuze: "team",
+                                                        creator_id: null,
+                                                    }))
+                                                }
+                                                className="items-start"
+                                            >
+                                                <span className="flex items-center gap-2 font-heading text-base font-bold">
+                                                    <Sparkles
+                                                        className="size-4 text-violet"
+                                                        aria-hidden
+                                                    />
+                                                    MEBRANDING kiest
+                                                </span>
+                                                <span className="mt-1 block text-sm font-normal text-muted-foreground">
+                                                    Wij zoeken binnen 2
+                                                    werkdagen de creator die
+                                                    past bij je briefing.
+                                                    Aanbevolen.
+                                                </span>
+                                            </Keuze>
+                                            <Keuze
+                                                naam="keuze"
+                                                gekozen={zelf}
+                                                onKies={() =>
+                                                    setData((d) => ({
+                                                        ...d,
+                                                        keuze: "zelf",
+                                                        creator_level: "",
+                                                    }))
+                                                }
+                                                className="items-start"
+                                            >
+                                                <span className="flex items-center gap-2 font-heading text-base font-bold">
+                                                    <UserRoundCheck
+                                                        className="size-4 text-violet"
+                                                        aria-hidden
+                                                    />
+                                                    Ik kies zelf
+                                                </span>
+                                                <span className="mt-1 block text-sm font-normal text-muted-foreground">
+                                                    Je kiest een creator en die
+                                                    krijgt direct de
+                                                    uitnodiging. Zegt die nee,
+                                                    dan zoeken wij iemand
+                                                    anders.
+                                                </span>
+                                            </Keuze>
                                         </div>
-                                        <InputError
-                                            message={errors.creator_level}
-                                            className="mt-2"
-                                        />
                                     </fieldset>
+                                    {zelf && (
+                                        <div className="mt-4">
+                                            <CreatorKiezen
+                                                creators={creators}
+                                                gekozen={data.creator_id}
+                                                onKies={(id) =>
+                                                    setData("creator_id", id)
+                                                }
+                                                alcohol={data.alcohol === "1"}
+                                                stad={stad}
+                                                beschikbaar={available_points}
+                                            />
+                                            <InputError
+                                                message={
+                                                    fouten.creator_id ??
+                                                    fouten.creator
+                                                }
+                                                className="mt-2"
+                                            />
+                                        </div>
+                                    )}
                                 </Kaart>
+
+                                {!zelf && (
+                                    <Kaart>
+                                        <fieldset>
+                                            <legend className="font-heading text-lg font-bold">
+                                                Niveau van de creator
+                                            </legend>
+                                            <p className="mt-1 text-sm text-muted-foreground">
+                                                Hoe hoger het niveau, hoe groter
+                                                het bereik van de creator. Het
+                                                niveau bepaalt hoeveel punten de
+                                                samenwerking kost.
+                                            </p>
+                                            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                                                {levels.map((l) => {
+                                                    const teDuur =
+                                                        l.points >
+                                                        available_points;
+
+                                                    return (
+                                                        <Keuze
+                                                            key={l.value}
+                                                            naam="creator_level"
+                                                            gekozen={
+                                                                data.creator_level ===
+                                                                l.value
+                                                            }
+                                                            onKies={() =>
+                                                                setData(
+                                                                    "creator_level",
+                                                                    l.value,
+                                                                )
+                                                            }
+                                                            className="items-start"
+                                                        >
+                                                            <span className="flex w-full items-baseline justify-between gap-2">
+                                                                <span className="font-heading text-base font-bold">
+                                                                    {l.name}
+                                                                </span>
+                                                                <span className="font-semibold whitespace-nowrap text-violet">
+                                                                    {l.points}{" "}
+                                                                    punten
+                                                                </span>
+                                                            </span>
+                                                            <span className="mt-1 block text-sm font-normal text-muted-foreground">
+                                                                {l.reward}
+                                                            </span>
+                                                            {teDuur && (
+                                                                <span className="mt-1 block text-xs font-semibold text-rood">
+                                                                    Te weinig
+                                                                    tegoed
+                                                                </span>
+                                                            )}
+                                                        </Keuze>
+                                                    );
+                                                })}
+                                            </div>
+                                            <InputError
+                                                message={errors.creator_level}
+                                                className="mt-2"
+                                            />
+                                        </fieldset>
+                                    </Kaart>
+                                )}
                             </>
                         }
                         zij={
-                            <div className="space-y-4 lg:sticky lg:top-4">
+                            <div className="space-y-4 @4xl:sticky @4xl:top-4">
                                 <Tegoed beschikbaar={available_points}>
                                     <div
                                         className="mt-4 rounded-lg bg-white/10 p-3 text-sm"
@@ -354,8 +473,9 @@ export default function Aanvragen({
                                     >
                                         {!gekozen && (
                                             <p>
-                                                Kies een niveau om te zien wat
-                                                deze samenwerking kost.
+                                                {zelf
+                                                    ? "Kies een creator om te zien wat deze samenwerking kost."
+                                                    : "Kies een niveau om te zien wat deze samenwerking kost."}
                                             </p>
                                         )}
                                         {gekozen && genoeg && (
@@ -364,17 +484,17 @@ export default function Aanvragen({
                                                     className="mr-1 inline size-4"
                                                     aria-hidden
                                                 />
-                                                {gekozen.name} kost{' '}
+                                                {gekozen.name} kost{" "}
                                                 {gekozen.points} punten. Na
-                                                versturen heb je nog{' '}
+                                                versturen heb je nog{" "}
                                                 {available_points -
-                                                    gekozen.points}{' '}
+                                                    gekozen.points}{" "}
                                                 beschikbaar.
                                             </p>
                                         )}
                                         {gekozen && !genoeg && (
                                             <p className="font-semibold">
-                                                {gekozen.name} kost{' '}
+                                                {gekozen.name} kost{" "}
                                                 {gekozen.points} punten, je hebt
                                                 er {available_points}. Kies een
                                                 lager niveau of neem contact op
@@ -391,7 +511,9 @@ export default function Aanvragen({
                                     data-test="versturen"
                                 >
                                     {processing && <Spinner />}
-                                    Aanvraag versturen
+                                    {zelf && creator
+                                        ? `Versturen en ${creator.name.split(" ")[0]} uitnodigen`
+                                        : "Aanvraag versturen"}
                                 </Button>
                                 <p className="text-center text-xs text-muted-foreground">
                                     Bij versturen zetten we de punten voor je
@@ -426,10 +548,10 @@ function Keuze({
     return (
         <label
             className={cn(
-                'relative flex cursor-pointer flex-col rounded-xl border-2 p-3 font-semibold transition has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-ring/50',
+                "relative flex cursor-pointer flex-col rounded-xl border-2 p-3 font-semibold transition has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-ring/50",
                 gekozen
-                    ? 'border-violet bg-violet/5'
-                    : 'border-border hover:border-violet/50',
+                    ? "border-violet bg-violet/5"
+                    : "border-border hover:border-violet/50",
                 className,
             )}
         >
@@ -447,7 +569,7 @@ function Keuze({
 
 Aanvragen.layout = {
     breadcrumbs: [
-        { title: 'Overzicht', href: overzicht() },
-        { title: 'Samenwerking aanvragen', href: aanvragen() },
+        { title: "Overzicht", href: overzicht() },
+        { title: "Samenwerking aanvragen", href: aanvragen() },
     ],
 };

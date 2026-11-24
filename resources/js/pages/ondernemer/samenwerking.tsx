@@ -1,25 +1,32 @@
-import { Head, useForm } from '@inertiajs/react';
-import { CalendarClock, Clock, ExternalLink, Star, X } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
-import type { FormEvent } from 'react';
-import InputError from '@/components/input-error';
+import { Head, router, useForm } from "@inertiajs/react";
+import {
+    CalendarClock,
+    Clock,
+    ExternalLink,
+    Star,
+    UserRoundCheck,
+    X,
+} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import type { FormEvent } from "react";
+import InputError from "@/components/input-error";
 import {
     Kaart,
     Pagina,
     PaginaKop,
     Sectie,
     TweeKolommen,
-} from '@/components/pagina';
-import { StatusBadge } from '@/components/samenwerking/status-badge';
-import { Tijdlijn } from '@/components/samenwerking/tijdlijn';
-import { Snelkoppelingen } from '@/components/samenwerking/snelkoppelingen';
+} from "@/components/pagina";
+import { StatusBadge } from "@/components/samenwerking/status-badge";
+import { Tijdlijn } from "@/components/samenwerking/tijdlijn";
+import { Snelkoppelingen } from "@/components/samenwerking/snelkoppelingen";
 import {
     FeedbackLijst,
     VideoSpeler,
     tijdcode,
-} from '@/components/samenwerking/video-speler';
-import type { VideoSpelerHandle } from '@/components/samenwerking/video-speler';
-import { Button } from '@/components/ui/button';
+} from "@/components/samenwerking/video-speler";
+import type { VideoSpelerHandle } from "@/components/samenwerking/video-speler";
+import { Button } from "@/components/ui/button";
 import {
     Dialog,
     DialogClose,
@@ -29,158 +36,184 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
-import { datum, datumTijd } from '@/lib/datum';
-import { cn } from '@/lib/utils';
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
+import { datum, datumTijd } from "@/lib/datum";
+import { cn } from "@/lib/utils";
 import {
     annuleren,
     beoordelen,
     opmerking,
     overzicht,
-} from '@/routes/ondernemer';
-import type { SamenwerkingVol, Versie } from '@/types/samenwerking';
-import { Gegeven, Tekstvak } from './_onderdelen/opmaak';
+    uitnodigen,
+} from "@/routes/ondernemer";
+import type { SamenwerkingVol, Versie } from "@/types/samenwerking";
+import { CreatorKiezen } from "./_onderdelen/creator-kiezen";
+import type { KiesbareCreator } from "./_onderdelen/creator-kiezen";
+import { Gegeven, Tekstvak } from "./_onderdelen/opmaak";
 
-type Props = { collaboration: SamenwerkingVol; can_cancel: boolean };
+type Props = {
+    collaboration: SamenwerkingVol;
+    can_cancel: boolean;
+    available_points: number;
+    /** Zelf een creator kiezen: alleen zolang er niemand is en geen uitnodiging openstaat. */
+    creators: KiesbareCreator[] | null;
+    /** Een open uitnodiging die dit bedrijf zelf verstuurde. */
+    own_invitation: { creator: string; expires_at: string } | null;
+};
 
 const annuleerbaar = [
-    'nieuw',
-    'creator_zoeken',
-    'creator_gevonden',
-    'bezoek_gepland',
+    "nieuw",
+    "creator_zoeken",
+    "creator_gevonden",
+    "bezoek_gepland",
 ];
 const platformNaam: Record<string, string> = {
-    instagram: 'Instagram',
-    tiktok: 'TikTok',
-    youtube: 'YouTube',
-    facebook: 'Facebook',
+    instagram: "Instagram",
+    tiktok: "TikTok",
+    youtube: "YouTube",
+    facebook: "Facebook",
 };
 
 function uur(iso: string | null): string {
     return iso
-        ? new Date(iso).toLocaleTimeString('nl-NL', {
-              timeZone: 'Europe/Amsterdam',
-              hour: '2-digit',
-              minute: '2-digit',
+        ? new Date(iso).toLocaleTimeString("nl-NL", {
+              timeZone: "Europe/Amsterdam",
+              hour: "2-digit",
+              minute: "2-digit",
           })
-        : '';
+        : "";
 }
 
 /** Wie er aan zet is en wat er nu gebeurt, per status. */
 function nu(
     c: SamenwerkingVol,
     versie: Versie | undefined,
+    eigen: Props["own_invitation"],
 ): { aanZet: string; titel: string; tekst: string } {
-    const creator = c.creator ?? 'De creator';
+    const creator = c.creator ?? "De creator";
 
     switch (c.status.value) {
-        case 'nieuw':
+        case "nieuw":
             return {
-                aanZet: 'MEBRANDING',
-                titel: 'Je aanvraag staat bij MEBRANDING',
-                tekst: 'Je accountmanager pakt hem binnen 1 werkdag op en zoekt een creator die past bij je briefing. Je hoeft nu niets te doen.',
+                aanZet: "MEBRANDING",
+                titel: "Je aanvraag staat bij MEBRANDING",
+                tekst: "Je accountmanager pakt hem binnen 1 werkdag op en zoekt een creator die past bij je briefing. Je hoeft nu niets te doen. Liever zelf kiezen? Dat kan hieronder.",
             };
-        case 'creator_zoeken':
+        case "creator_zoeken":
+            if (eigen) {
+                return {
+                    aanZet: eigen.creator,
+                    titel: `${eigen.creator} is uitgenodigd`,
+                    tekst: `${eigen.creator} kan reageren tot ${datumTijd(eigen.expires_at)}. Zegt ${eigen.creator.split(" ")[0]} ja door het contract te tekenen, dan kiest die een moment om langs te komen. Komt er een nee of geen reactie, dan zoekt MEBRANDING iemand anders. Je hoeft nu niets te doen.`,
+                };
+            }
+
             return {
-                aanZet: 'MEBRANDING',
-                titel: 'We zoeken een creator',
-                tekst: 'Er is een passende creator uitgenodigd. Zodra die ja zegt door het contract te tekenen, zie je hier wie het is.',
+                aanZet: "MEBRANDING",
+                titel: "We zoeken een creator",
+                tekst: "Er is een passende creator uitgenodigd. Zodra die ja zegt door het contract te tekenen, zie je hier wie het is.",
             };
-        case 'creator_gevonden':
+        case "creator_gevonden":
             return {
                 aanZet: creator,
                 titel: `${creator} gaat het doen`,
                 tekst: `${creator} heeft het contract getekend en kiest nu een tijdvak uit de tijden die je bij de vestiging opgaf. Dat staat direct vast en je krijgt meteen bericht.`,
             };
-        case 'bezoek_gepland':
+        case "bezoek_gepland":
             return {
                 aanZet: creator,
                 titel: `Bezoek staat vast: ${datumTijd(c.visit_at)}`,
                 tekst: `${creator} koos dit tijdvak zelf. Op de dag tikt de creator op Ik ben er, dan zie je hier dat het bezoek begonnen is.`,
             };
-        case 'bezoek_geweest':
+        case "bezoek_geweest":
             return {
                 aanZet: creator,
                 titel: `${creator} is binnen`,
                 tekst: `Ingecheckt op ${datumTijd(c.visited_at)}. Na het filmen gaat ${creator} de video maken.`,
             };
-        case 'content_maken':
+        case "content_maken":
             return {
                 aanZet: creator,
                 titel: `${creator} maakt de video`,
-                tekst: `${c.content_deadline_at ? `Uiterlijk ${datumTijd(c.content_deadline_at)} komt versie 1. ` : ''}MEBRANDING controleert hem. Jij kijkt mee en krijgt een melding zodra hij klaarstaat.`,
+                tekst: `${c.content_deadline_at ? `Uiterlijk ${datumTijd(c.content_deadline_at)} komt versie 1. ` : ""}MEBRANDING controleert hem. Jij kijkt mee en krijgt een melding zodra hij klaarstaat.`,
             };
-        case 'ter_controle':
+        case "ter_controle":
             return {
-                aanZet: 'MEBRANDING',
+                aanZet: "MEBRANDING",
                 titel: versie
                     ? `Versie ${versie.version} ter controle bij MEBRANDING`
-                    : 'Ter controle bij MEBRANDING',
-                tekst: 'Het team controleert de video. Jij kijkt mee: zie je iets, zet dan een opmerking op de tijdlijn. Het team neemt die mee in de feedback aan de creator.',
+                    : "Ter controle bij MEBRANDING",
+                tekst: "Het team controleert de video. Jij kijkt mee: zie je iets, zet dan een opmerking op de tijdlijn. Het team neemt die mee in de feedback aan de creator.",
             };
-        case 'feedback':
+        case "feedback":
             return {
                 aanZet: creator,
                 titel: `Feedback is naar ${creator}`,
                 tekst: `${creator} verwerkt de feedback en levert daarna een nieuwe versie aan. Je kunt dan weer meekijken.`,
             };
-        case 'goedgekeurd':
+        case "goedgekeurd":
             return {
                 aanZet: creator,
                 titel: `Goedgekeurd, live op ${datum(c.publish_on)}`,
                 tekst: `MEBRANDING keurde de video goed. ${creator} plaatst hem op ${datum(c.publish_on)} op het eigen account, met de reclamevermelding. De versie zonder watermerk staat hieronder klaar om te downloaden.`,
             };
-        case 'live':
+        case "live":
             return {
-                aanZet: 'Niemand',
-                titel: 'De video staat live',
+                aanZet: "Niemand",
+                titel: "De video staat live",
                 tekst: `Sinds ${datumTijd(c.live_at)}. De cijfers worden 14 dagen gemeten, tot en met ${datum(c.measure_until)}.`,
             };
-        case 'afgerond':
+        case "afgerond":
             return c.review
                 ? {
-                      aanZet: 'Niemand',
-                      titel: 'Afgerond',
+                      aanZet: "Niemand",
+                      titel: "Afgerond",
                       tekst: `De samenwerking is klaar. Je gaf ${creator} ${c.review.rating} van 5. Dank je wel.`,
                   }
                 : {
-                      aanZet: 'Jij',
-                      titel: 'Afgerond, geef een beoordeling',
+                      aanZet: "Jij",
+                      titel: "Afgerond, geef een beoordeling",
                       tekst: `De meetperiode is voorbij. Hoe was de samenwerking met ${creator}? Je beoordeling telt mee in het oordeel over de creator.`,
                   };
-        case 'geannuleerd':
+        case "geannuleerd":
             return {
-                aanZet: 'Niemand',
-                titel: 'Samenwerking geannuleerd',
+                aanZet: "Niemand",
+                titel: "Samenwerking geannuleerd",
                 tekst: c.cancel_reason
                     ? `Reden: ${c.cancel_reason}`
-                    : 'Deze samenwerking is gestopt.',
+                    : "Deze samenwerking is gestopt.",
             };
-        case 'niet_verschenen':
+        case "niet_verschenen":
             return {
-                aanZet: 'MEBRANDING',
-                titel: 'Het bezoek is niet doorgegaan',
-                tekst: 'Je accountmanager neemt contact met je op en kiest samen met jou een vervolg: een nieuw bezoek, een andere creator of stoppen.',
+                aanZet: "MEBRANDING",
+                titel: "Het bezoek is niet doorgegaan",
+                tekst: "Je accountmanager neemt contact met je op en kiest samen met jou een vervolg: een nieuw bezoek, een andere creator of stoppen.",
             };
         default:
-            return { aanZet: 'MEBRANDING', titel: c.status.label, tekst: '' };
+            return { aanZet: "MEBRANDING", titel: c.status.label, tekst: "" };
     }
 }
 
-export default function Samenwerking({ collaboration: c, can_cancel }: Props) {
+export default function Samenwerking({
+    collaboration: c,
+    can_cancel,
+    available_points,
+    creators,
+    own_invitation,
+}: Props) {
     const speler = useRef<VideoSpelerHandle>(null);
     const versie = c.versions.at(-1);
     const status = c.status.value;
-    const stand = nu(c, versie);
-    const goedgekeurd = ['goedgekeurd', 'live', 'afgerond'].includes(status);
+    const stand = nu(c, versie, own_invitation);
+    const goedgekeurd = ["goedgekeurd", "live", "afgerond"].includes(status);
     const tijdlijn = useRef<HTMLDivElement>(null);
 
     // Op de telefoon scrolt de tijdlijn horizontaal: zet de huidige stap in beeld.
     useEffect(() => {
-        const lijst = tijdlijn.current?.querySelector('ol');
-        const huidig = lijst?.querySelector<HTMLElement>('[aria-current=step]');
+        const lijst = tijdlijn.current?.querySelector("ol");
+        const huidig = lijst?.querySelector<HTMLElement>("[aria-current=step]");
         if (lijst && huidig) {
             lijst.scrollLeft =
                 huidig.offsetLeft -
@@ -208,7 +241,7 @@ export default function Samenwerking({ collaboration: c, can_cancel }: Props) {
                 />
 
                 {c.steps.length > 0 &&
-                    !['geannuleerd', 'niet_verschenen'].includes(status) && (
+                    !["geannuleerd", "niet_verschenen"].includes(status) && (
                         <Kaart compact>
                             <h2 className="sr-only">Voortgang</h2>
                             <div ref={tijdlijn}>
@@ -230,11 +263,11 @@ export default function Samenwerking({ collaboration: c, can_cancel }: Props) {
                                             Nu
                                             {c.status.number
                                                 ? ` · ${c.status.number}`
-                                                : ''}{' '}
+                                                : ""}{" "}
                                             {c.status.label}
                                         </span>
                                         <span className="rounded-full border px-2.5 py-0.5 text-xs">
-                                            Aan zet:{' '}
+                                            Aan zet:{" "}
                                             <strong>{stand.aanZet}</strong>
                                         </span>
                                     </div>
@@ -250,7 +283,7 @@ export default function Samenwerking({ collaboration: c, can_cancel }: Props) {
                                         </p>
                                     )}
 
-                                    {status === 'live' &&
+                                    {status === "live" &&
                                         c.publications.length > 0 && (
                                             <ul className="mt-4 flex flex-wrap gap-2">
                                                 {c.publications.map((p) => (
@@ -264,11 +297,11 @@ export default function Samenwerking({ collaboration: c, can_cancel }: Props) {
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
                                                             >
-                                                                Bekijk op{' '}
+                                                                Bekijk op{" "}
                                                                 {platformNaam[
                                                                     p.platform
                                                                 ] ??
-                                                                    p.platform}{' '}
+                                                                    p.platform}{" "}
                                                                 <ExternalLink />
                                                             </a>
                                                         </Button>
@@ -277,7 +310,7 @@ export default function Samenwerking({ collaboration: c, can_cancel }: Props) {
                                             </ul>
                                         )}
 
-                                    {status === 'afgerond' && !c.review && (
+                                    {status === "afgerond" && !c.review && (
                                         <Beoordelen
                                             id={c.id}
                                             creator={c.creator}
@@ -291,12 +324,19 @@ export default function Samenwerking({ collaboration: c, can_cancel }: Props) {
                                     )}
                                 </section>
                             </Kaart>
+                            {creators && (
+                                <ZelfKiezen
+                                    c={c}
+                                    creators={creators}
+                                    beschikbaar={available_points + (c.points ?? 0)}
+                                />
+                            )}
 
                             {versie && (
                                 <Sectie
                                     titel={
                                         goedgekeurd
-                                            ? 'Je video'
+                                            ? "Je video"
                                             : `Versie ${versie.version}, meekijken`
                                     }
                                     actie={
@@ -310,9 +350,9 @@ export default function Samenwerking({ collaboration: c, can_cancel }: Props) {
                                     <Kaart>
                                         <div
                                             className={cn(
-                                                'grid gap-6',
-                                                status === 'ter_controle' &&
-                                                    'md:grid-cols-[minmax(0,320px)_1fr]',
+                                                "grid gap-6",
+                                                status === "ter_controle" &&
+                                                    "md:grid-cols-[minmax(0,320px)_1fr]",
                                             )}
                                         >
                                             <div className="mx-auto w-full max-w-[320px]">
@@ -333,7 +373,7 @@ export default function Samenwerking({ collaboration: c, can_cancel }: Props) {
                                                         </p>
                                                     </div>
                                                 )}
-                                                {status === 'ter_controle' && (
+                                                {status === "ter_controle" && (
                                                     <Opmerking
                                                         id={c.id}
                                                         speler={speler}
@@ -365,17 +405,17 @@ export default function Samenwerking({ collaboration: c, can_cancel }: Props) {
 
                             {!versie &&
                                 [
-                                    'bezoek_gepland',
-                                    'bezoek_geweest',
-                                    'content_maken',
-                                    'feedback',
+                                    "bezoek_gepland",
+                                    "bezoek_geweest",
+                                    "content_maken",
+                                    "feedback",
                                 ].includes(status) && (
                                     <Sectie titel="Video">
                                         <Kaart>
                                             <p className="text-sm text-muted-foreground">
-                                                {status === 'feedback'
-                                                    ? 'De creator werkt aan een nieuwe versie. Je krijgt een melding zodra die ter controle staat.'
-                                                    : 'Nog geen video. Je krijgt een melding zodra versie 1 ter controle staat, dan kijk je mee.'}
+                                                {status === "feedback"
+                                                    ? "De creator werkt aan een nieuwe versie. Je krijgt een melding zodra die ter controle staat."
+                                                    : "Nog geen video. Je krijgt een melding zodra versie 1 ter controle staat, dan kijk je mee."}
                                             </p>
                                         </Kaart>
                                     </Sectie>
@@ -430,7 +470,7 @@ export default function Samenwerking({ collaboration: c, can_cancel }: Props) {
                                             )}
                                             {c.visited_at && (
                                                 <span className="block text-muted-foreground">
-                                                    Ingecheckt om{' '}
+                                                    Ingecheckt om{" "}
                                                     {uur(c.visited_at)}
                                                 </span>
                                             )}
@@ -439,11 +479,11 @@ export default function Samenwerking({ collaboration: c, can_cancel }: Props) {
                                             <Gegeven label="Periode">
                                                 {c.period_from
                                                     ? datum(c.period_from)
-                                                    : 'nu'}{' '}
-                                                tot en met{' '}
+                                                    : "nu"}{" "}
+                                                tot en met{" "}
                                                 {c.period_to
                                                     ? datum(c.period_to)
-                                                    : 'open'}
+                                                    : "open"}
                                             </Gegeven>
                                         )}
                                         {c.experience && (
@@ -453,8 +493,8 @@ export default function Samenwerking({ collaboration: c, can_cancel }: Props) {
                                         )}
                                         <Gegeven label="Alcohol in beeld">
                                             {c.alcohol
-                                                ? 'Ja: creator 25+, geen TikTok, NIX18 in beeld'
-                                                : 'Nee'}
+                                                ? "Ja: creator 25+, geen TikTok, NIX18 in beeld"
+                                                : "Nee"}
                                         </Gegeven>
                                     </dl>
                                 </Kaart>
@@ -480,7 +520,7 @@ function Opmerking({
 }) {
     const form = useForm<{ timecode: number | null; body: string }>({
         timecode: null,
-        body: '',
+        body: "",
     });
 
     function versturen(e: FormEvent) {
@@ -508,7 +548,7 @@ function Opmerking({
                     variant="outline"
                     size="sm"
                     onClick={() =>
-                        form.setData('timecode', speler.current?.tijd() ?? 0)
+                        form.setData("timecode", speler.current?.tijd() ?? 0)
                     }
                 >
                     <Clock /> Gebruik huidige tijd
@@ -518,7 +558,7 @@ function Opmerking({
                         Op {tijdcode(form.data.timecode)}
                         <button
                             type="button"
-                            onClick={() => form.setData('timecode', null)}
+                            onClick={() => form.setData("timecode", null)}
                             aria-label="Tijd weghalen"
                             className="rounded hover:bg-violet/20"
                         >
@@ -541,7 +581,7 @@ function Opmerking({
                     rows={3}
                     maxLength={2000}
                     value={form.data.body}
-                    onChange={(e) => form.setData('body', e.target.value)}
+                    onChange={(e) => form.setData("body", e.target.value)}
                     placeholder="Bijvoorbeeld: het logo mag eerder in beeld"
                     aria-invalid={!!form.errors.body}
                     className="bg-background"
@@ -559,7 +599,7 @@ function Opmerking({
 function Beoordelen({ id, creator }: { id: number; creator: string | null }) {
     const form = useForm<{ rating: number; body: string }>({
         rating: 0,
-        body: '',
+        body: "",
     });
 
     function versturen(e: FormEvent) {
@@ -575,7 +615,7 @@ function Beoordelen({ id, creator }: { id: number; creator: string | null }) {
         >
             <fieldset>
                 <legend className="text-sm font-semibold">
-                    Hoe was de samenwerking met {creator ?? 'de creator'}?
+                    Hoe was de samenwerking met {creator ?? "de creator"}?
                 </legend>
                 <div className="mt-2 flex gap-1">
                     {[1, 2, 3, 4, 5].map((n) => (
@@ -588,17 +628,17 @@ function Beoordelen({ id, creator }: { id: number; creator: string | null }) {
                                 name="rating"
                                 value={n}
                                 checked={form.data.rating === n}
-                                onChange={() => form.setData('rating', n)}
+                                onChange={() => form.setData("rating", n)}
                                 className="sr-only"
                             />
                             <span className="sr-only">{n} van 5</span>
                             <Star
                                 aria-hidden
                                 className={cn(
-                                    'size-8',
+                                    "size-8",
                                     n <= form.data.rating
-                                        ? 'fill-amber-400 text-amber-400'
-                                        : 'text-muted-foreground/50',
+                                        ? "fill-amber-400 text-amber-400"
+                                        : "text-muted-foreground/50",
                                 )}
                             />
                         </label>
@@ -613,7 +653,7 @@ function Beoordelen({ id, creator }: { id: number; creator: string | null }) {
                     rows={3}
                     maxLength={2000}
                     value={form.data.body}
-                    onChange={(e) => form.setData('body', e.target.value)}
+                    onChange={(e) => form.setData("body", e.target.value)}
                     placeholder="Wat ging goed, wat kan beter?"
                 />
                 <InputError message={form.errors.body} />
@@ -644,10 +684,10 @@ function Beoordeling({
                         key={n}
                         aria-hidden
                         className={cn(
-                            'size-5',
+                            "size-5",
                             n <= rating
-                                ? 'fill-amber-400 text-amber-400'
-                                : 'text-muted-foreground/40',
+                                ? "fill-amber-400 text-amber-400"
+                                : "text-muted-foreground/40",
                         )}
                     />
                 ))}
@@ -659,7 +699,7 @@ function Beoordeling({
 
 function Annuleren({ id, visitAt }: { id: number; visitAt: string | null }) {
     const [open, setOpen] = useState(false);
-    const form = useForm<{ reason: string }>({ reason: '' });
+    const form = useForm<{ reason: string }>({ reason: "" });
     // Binnen 48 uur voor het bezoek: de punten zijn dan verbruikt.
     const [laat] = useState(
         () =>
@@ -701,8 +741,8 @@ function Annuleren({ id, visitAt }: { id: number; visitAt: string | null }) {
                                 </DialogTitle>
                                 <DialogDescription>
                                     {laat
-                                        ? 'Het bezoek is binnen 48 uur. Annuleer je nu, dan zijn de punten verbruikt en krijg je ze niet terug.'
-                                        : 'Je krijgt de gereserveerde punten terug. Binnen 48 uur voor het bezoek zouden ze verbruikt zijn.'}
+                                        ? "Het bezoek is binnen 48 uur. Annuleer je nu, dan zijn de punten verbruikt en krijg je ze niet terug."
+                                        : "Je krijgt de gereserveerde punten terug. Binnen 48 uur voor het bezoek zouden ze verbruikt zijn."}
                                 </DialogDescription>
                             </DialogHeader>
                             <div className="grid gap-2">
@@ -714,7 +754,7 @@ function Annuleren({ id, visitAt }: { id: number; visitAt: string | null }) {
                                     required
                                     value={form.data.reason}
                                     onChange={(e) =>
-                                        form.setData('reason', e.target.value)
+                                        form.setData("reason", e.target.value)
                                     }
                                     placeholder="Waarom stop je deze samenwerking?"
                                     aria-invalid={!!errors.reason}
@@ -734,7 +774,7 @@ function Annuleren({ id, visitAt }: { id: number; visitAt: string | null }) {
                                     variant="destructive"
                                     disabled={
                                         form.processing ||
-                                        form.data.reason.trim() === ''
+                                        form.data.reason.trim() === ""
                                     }
                                 >
                                     {form.processing && <Spinner />}
@@ -750,5 +790,76 @@ function Annuleren({ id, visitAt }: { id: number; visitAt: string | null }) {
 }
 
 Samenwerking.layout = {
-    breadcrumbs: [{ title: 'Overzicht', href: overzicht() }],
+    breadcrumbs: [{ title: "Overzicht", href: overzicht() }],
 };
+
+/** Zelf een creator kiezen voor een aanvraag waar nog niemand voor is (of die net nee zei). */
+function ZelfKiezen({
+    c,
+    creators,
+    beschikbaar,
+}: {
+    c: SamenwerkingVol;
+    creators: KiesbareCreator[];
+    beschikbaar: number;
+}) {
+    const [gekozen, setGekozen] = useState<number | null>(null);
+    const [bezig, setBezig] = useState(false);
+    const [fout, setFout] = useState<string | null>(null);
+    const naam = creators.find((m) => m.id === gekozen)?.name;
+
+    return (
+        <Kaart>
+            <section aria-labelledby="zelf-kiezen" data-test="zelf-kiezen">
+                <h2
+                    id="zelf-kiezen"
+                    className="flex items-center gap-2 font-heading text-lg font-bold"
+                >
+                    <UserRoundCheck
+                        className="size-5 text-violet"
+                        aria-hidden
+                    />
+                    Zelf een creator kiezen
+                </h2>
+                <p className="mt-1 mb-4 text-sm text-muted-foreground">
+                    Ken je iemand die past? Kies zelf, dan gaat de uitnodiging
+                    direct. Anders zoekt MEBRANDING voor je. Een ander niveau
+                    dan je aanvroeg past de punten automatisch aan.
+                </p>
+                <CreatorKiezen
+                    creators={creators}
+                    gekozen={gekozen}
+                    onKies={(id) => {
+                        setGekozen(id);
+                        setFout(null);
+                    }}
+                    alcohol={c.alcohol}
+                    stad={null}
+                    beschikbaar={beschikbaar}
+                />
+                <InputError message={fout ?? undefined} className="mt-2" />
+                <Button
+                    className="mt-4 w-full sm:w-auto"
+                    disabled={!gekozen || bezig}
+                    data-test="zelf-uitnodigen"
+                    onClick={() =>
+                        router.post(
+                            uitnodigen.url(c.id),
+                            { creator_id: gekozen },
+                            {
+                                preserveScroll: true,
+                                onStart: () => setBezig(true),
+                                onFinish: () => setBezig(false),
+                                onError: (e) =>
+                                    setFout(e.creator ?? e.creator_id ?? null),
+                            },
+                        )
+                    }
+                >
+                    {bezig && <Spinner />}
+                    {naam ? `${naam.split(" ")[0]} uitnodigen` : "Uitnodigen"}
+                </Button>
+            </section>
+        </Kaart>
+    );
+}

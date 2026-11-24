@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Presenters\SamenwerkingPresenter;
 use App\Models\Collaboration;
 use App\Models\Company;
+use App\Models\Creator;
+use App\Models\Status;
+use App\Services\Matchlijst;
 use App\Services\Samenwerking;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -15,7 +18,7 @@ use Inertia\Response;
 /** Omgeving van de ondernemer (eigenaar of lid). */
 class OndernemerController extends Controller
 {
-    public function __construct(private Samenwerking $dienst) {}
+    public function __construct(private Samenwerking $dienst, private Matchlijst $matchlijst) {}
 
     public function overzicht(Request $request): Response
     {
@@ -39,24 +42,35 @@ class OndernemerController extends Controller
                 'value' => $k, 'name' => $l['name'], 'points' => $l['points'],
                 'reward' => $l['fee_cents'] > 0 ? 'Gratis bezoek en een vergoeding (betaald door MEBRANDING)' : 'Gratis bezoek',
             ])->values(),
+            'creators' => $this->matchlijst->voorOndernemer(),
         ]);
     }
 
     public function opslaan(Request $request): RedirectResponse
     {
         $data = $request->validate([
+            'keuze' => ['nullable', 'in:team,zelf'],
+            'creator_id' => ['nullable', 'required_if:keuze,zelf', 'integer'],
             'location_id' => ['required', 'integer'],
             'title' => ['required', 'string', 'max:120'],
             'briefing' => ['required', 'string', 'max:5000'],
             'period_from' => ['nullable', 'date', 'after_or_equal:today'],
             'period_to' => ['nullable', 'date', 'after_or_equal:period_from'],
             'alcohol' => ['required', 'boolean'],
-            'creator_level' => ['required', 'in:'.implode(',', array_keys(config('mebranding.levels')))],
-        ]);
+            'creator_level' => ['nullable', 'required_unless:keuze,zelf', 'in:'.implode(',', array_keys(config('mebranding.levels')))],
+        ], ['creator_id.required_if' => 'Kies een creator, of laat MEBRANDING kiezen.', 'creator_level.required_unless' => 'Kies een niveau.']);
 
-        $c = $this->dienst->aanvragen($this->bedrijf($request), $request->user(), $data);
+        // Zelf gekozen: het niveau (en dus de prijs in punten) is dat van de creator.
+        $creator = ($data['keuze'] ?? 'team') === 'zelf' ? Creator::where('status', 'actief')->findOrFail($data['creator_id']) : null;
+        if ($creator) {
+            $data['creator_level'] = $creator->level;
+        }
 
-        return to_route('ondernemer.samenwerking', $c)->with('melding', 'Je aanvraag is verstuurd. De punten zijn gereserveerd.');
+        $c = $this->dienst->aanvragen($this->bedrijf($request), $request->user(), $data, $creator);
+
+        return to_route('ondernemer.samenwerking', $c)->with('melding', $creator
+            ? "Je aanvraag is verstuurd en {$creator->user->name} is uitgenodigd. De punten zijn gereserveerd."
+            : 'Je aanvraag is verstuurd. De punten zijn gereserveerd.');
     }
 
     public function samenwerking(Request $request, Collaboration $samenwerking): Response
@@ -66,7 +80,38 @@ class OndernemerController extends Controller
         return Inertia::render('ondernemer/samenwerking', [
             'collaboration' => SamenwerkingPresenter::vol($samenwerking, 'ondernemer', $request->user()),
             'can_cancel' => $request->user()->companies()->wherePivot('role', 'eigenaar')->whereKey($samenwerking->company_id)->exists(),
+            'available_points' => $samenwerking->company->availablePoints(),
+            // Zelf een creator kiezen kan zolang er nog niemand is en er geen uitnodiging openstaat.
+            'creators' => $this->kanKiezen($samenwerking) ? $this->matchlijst->voorOndernemer($samenwerking) : null,
+            'own_invitation' => $this->eigenUitnodiging($samenwerking),
         ]);
+    }
+
+    /** De ondernemer nodigt zelf een creator uit; zegt die nee of reageert die niet, dan koppelt het team (taak). */
+    public function uitnodigen(Request $request, Collaboration $samenwerking): RedirectResponse
+    {
+        $this->magZien($request, $samenwerking);
+        $data = $request->validate(['creator_id' => ['required', 'integer']], ['creator_id.required' => 'Kies een creator.']);
+        $creator = Creator::where('status', 'actief')->findOrFail($data['creator_id']);
+        $this->dienst->uitnodigen($samenwerking, $creator, $request->user());
+
+        return back()->with('melding', "{$creator->user->name} is uitgenodigd.");
+    }
+
+    private function kanKiezen(Collaboration $c): bool
+    {
+        return in_array($c->status, [Status::Nieuw, Status::CreatorZoeken], true) && ! $c->openInvitation();
+    }
+
+    /** Een open uitnodiging die iemand van dit bedrijf zelf verstuurde: die naam mag de ondernemer zien. */
+    private function eigenUitnodiging(Collaboration $c): ?array
+    {
+        $u = $c->openInvitation();
+        if (! $u || ! $c->company->users()->whereKey($u->invited_by)->exists()) {
+            return null;
+        }
+
+        return ['creator' => $u->creator->user->name, 'expires_at' => $u->expires_at->toIso8601String()];
     }
 
     public function opmerking(Request $request, Collaboration $samenwerking): RedirectResponse
