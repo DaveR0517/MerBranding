@@ -38,9 +38,18 @@ Voor zaken die snel content nodig hebben, bijvoorbeeld een winkel met een nieuw 
 4. Daarna de bestaande keten: inchecken bij de zaak, filmen, aanleveren, controle door het team, goedkeuren, live.
 5. Het team ziet snelle klussen op de teamkaart en kan ingrijpen (iemand anders kiezen, annuleren).
 
+## Besluit Dave (24 nov): wie het eerst aanneemt, krijgt de klus; aannemen is bindend
+
+- Eén snelle klus is één plek (vraagt de zaak er twee, dan zijn het twee plekken). Zodra een creator aanneemt, is de klus weg voor de rest: geen tien creators voor de deur.
+- Op de kaart zien creators alleen de buurt; adres en tijdvak krijgt pas wie aanneemt. Inchecken kan alleen de creator die de klus heeft.
+- Aannemen is bindend: aannemen en het kluscontract tekenen is één tik, met duidelijk erbij "Je moet dan ook echt komen".
+- Niet komen kost punten in het klassement: dezelfde regel als bij een gewone samenwerking (Score: niet gekomen, nu -50 op betrouwbaarheid, werkwaarde), één bron. Te laat komen: de bestaande regel te laat.
+- Spreiden: maximaal één open snelle klus per creator tegelijk, zodat niet één creator alles wegkaapt.
+- Voorstel, nog te bevestigen: per ongeluk aangenomen? Binnen 5 minuten kosteloos teruggeven. Niet ingecheckt 30 minuten na het einde van het tijdvak: het team krijgt een taak om "niet verschenen" vast te leggen.
+
 ## Keuzes voor Dave (voordat fase 3 gebouwd wordt)
 
-1. **Wie krijgt de klus:** wie het eerst aanneemt, of de ondernemer kiest uit de creators die zich melden (bijvoorbeeld binnen een uur)?
+1. ~~Wie krijgt de klus~~: besloten, wie het eerst aanneemt (zie hierboven).
 2. **Prijs:** zelfde punten als een gewone samenwerking, of een spoedtoeslag in punten?
 3. **Beloning creator:** gratis product of bezoek zoals nu, of altijd een vaste vergoeding bij een snelle klus?
 4. **Wie mag:** alle niveaus, of vanaf een bepaald niveau (betrouwbaarheid bij spoed)?
