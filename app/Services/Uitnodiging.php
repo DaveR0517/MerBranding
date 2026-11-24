@@ -17,7 +17,8 @@ class Uitnodiging
     public function stuur(User $user, string $sjabloon, array $vars): void
     {
         $link = $this->link($user);
-        $this->melder->stuur($sjabloon, $user, $vars, $link);
+        // Inloggegevens: inloggen met dit e-mailadres, wachtwoord kiezen via de link (nooit een wachtwoord in de mail).
+        $this->melder->stuur($sjabloon, $user, $vars + ['email' => $user->email], $link);
 
         if (! self::mailWerkt()) {
             session()->flash('uitnodiging', ['naam' => $user->name, 'email' => $user->email, 'link' => $link]);
