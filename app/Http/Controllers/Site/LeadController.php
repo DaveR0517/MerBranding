@@ -42,6 +42,8 @@ class LeadController extends Controller
             'email' => ['required', 'email', 'max:190'],
             'telefoon' => ['nullable', 'string', 'max:40'],
             'bedrijfsnaam' => ['required', 'string', 'max:190'],
+            'woonplaats' => ['required', 'string', 'max:120'], // plaats van de zaak: voor de kaart van het team
+            'adres' => ['nullable', 'string', 'max:190'],
             'branche' => ['nullable', Rule::in(self::BRANCHES)],
             'vestigingen' => ['nullable', Rule::in(self::VESTIGINGEN)],
             'pakket' => ['nullable', Rule::in(['lokaal', 'groei', 'regio'])],

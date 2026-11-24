@@ -18,6 +18,7 @@ test('kennismaking ondernemer wordt opgeslagen en gemaild', function () {
         'email' => 'Sanne@Voorbeeld.nl',
         'telefoon' => '0612345678',
         'bedrijfsnaam' => 'Lunchroom Bloesem',
+        'woonplaats' => 'Sneek',
         'branche' => 'Restaurant of lunchroom',
         'vestigingen' => '2 tot 3',
         'pakket' => 'groei',
@@ -124,7 +125,7 @@ test('een pakket uit de pakketpagina gaat mee in de aanvraag', function () {
 
 test('honeypot slaat niets op maar geeft wel een gewone bedankpagina', function () {
     $this->post(SITE.'/kennismaken', [
-        'naam' => 'Bot', 'email' => 'bot@spam.nl', 'bedrijfsnaam' => 'Spam', 'akkoord' => '1', 'website' => 'http://spam',
+        'naam' => 'Bot', 'email' => 'bot@spam.nl', 'bedrijfsnaam' => 'Spam', 'woonplaats' => 'Spamstad', 'akkoord' => '1', 'website' => 'http://spam',
     ])->assertRedirect(SITE.'/kennismaken')->assertSessionHas('aangemeld');
 
     expect(Lead::count())->toBe(0);

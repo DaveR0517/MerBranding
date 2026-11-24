@@ -25,6 +25,8 @@
 @include('site.partials.veld', ['naam' => 'telefoon', 'label' => 'Telefoonnummer', 'type' => 'tel', 'attrs' => 'autocomplete="tel"'])
 </fieldset>
 <fieldset><legend>Over je zaak</legend>
+@include('site.partials.veld', ['naam' => 'adres', 'label' => 'Adres van je zaak', 'placeholder' => 'Straat en huisnummer', 'attrs' => 'autocomplete="street-address"'])
+@include('site.partials.veld', ['naam' => 'woonplaats', 'label' => 'Plaats', 'verplicht' => true, 'attrs' => 'autocomplete="address-level2"'])
 @include('site.partials.veld', ['naam' => 'branche', 'label' => 'Soort zaak', 'type' => 'select', 'opties' => array_combine(\App\Http\Controllers\Site\LeadController::BRANCHES, \App\Http\Controllers\Site\LeadController::BRANCHES)])
 @include('site.partials.veld', ['naam' => 'vestigingen', 'label' => 'Aantal vestigingen', 'type' => 'select', 'opties' => array_combine(\App\Http\Controllers\Site\LeadController::VESTIGINGEN, \App\Http\Controllers\Site\LeadController::VESTIGINGEN)])
 @include('site.partials.veld', ['naam' => 'bericht', 'label' => 'Wat wil je laten zien?', 'type' => 'textarea', 'breed' => true, 'placeholder' => 'Bijvoorbeeld een nieuw gerecht, je terras of een overnachting'])

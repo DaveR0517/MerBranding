@@ -214,3 +214,9 @@
         background-color: rgb(255 255 255 / 0.45);
     }
 }
+
+/* Kaart (Leaflet): popups en links in de huisstijl. */
+.mb-kaart { font-family: var(--font-sans); }
+.mb-kaart .leaflet-popup-content-wrapper { border-radius: 14px; box-shadow: 0 12px 30px rgb(46 43 72 / 0.25); }
+.mb-kaart .leaflet-popup-content { margin: 12px 14px; }
+.mb-kaart a { color: var(--color-violet); }

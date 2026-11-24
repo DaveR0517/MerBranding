@@ -29,6 +29,9 @@ return [
     */
     'lead_rate_limit_per_hour' => (int) env('MEBRANDING_LEAD_RATE_LIMIT', 5),
 
+    // Kaart: adressen opzoeken bij PDOK (App\Services\Geocoder). Uit in de tests, die PDOK nabootsen.
+    'geocoderen' => (bool) env('MEBRANDING_GEOCODEREN', true),
+
     /*
     | Creatorniveaus: punten per samenwerking en vergoeding (CLAUDE.md 7.1 en 7.2).
     | Alleen Platinum en Elite krijgen geld (besloten 18-11-2026). Punten en bedragen: VOORSTEL.

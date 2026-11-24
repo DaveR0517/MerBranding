@@ -5,6 +5,7 @@ import {
     History,
     Inbox,
     LayoutGrid,
+    Map as MapIcon,
     PlusCircle,
     Users,
 } from 'lucide-react';
@@ -19,6 +20,7 @@ const nav: NavModule = {
         { title: 'Werkvoorraad', href: () => team.werkvoorraad.url(), icon: Inbox, mobile: true, order: 10 },
         { title: 'Samenwerkingen', href: () => team.samenwerkingen.url(), icon: ClipboardList, mobile: true, order: 20 },
         { title: 'Bedrijven', href: () => team.bedrijven.url(), icon: Building2, order: 40, permission: 'bedrijven.bekijken' },
+        { title: 'Kaart', href: () => team.kaart.url(), icon: MapIcon, order: 41, permission: 'bedrijven.bekijken' },
         { title: 'Creators', href: () => team.creators.url(), icon: Users, mobile: true, order: 50, permission: 'creators.bekijken' },
         { title: 'Logboek', href: () => team.logboek.url(), icon: History, order: 90 },
     ],

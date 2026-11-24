@@ -1,0 +1,47 @@
+# Plan: kaart en snelle klussen
+
+Status: in opbouw op branch `kaart`, nog niet live (besluit Dave, 24 nov). Idee van Dave: zaken en klussen op een kaart, en creators die in de buurt zijn een snelle klus kunnen aannemen.
+
+## Fase 1: kaart voor het team (gebouwd)
+
+- Team, Relaties, Kaart (`/team/kaart`, recht `bedrijven.bekijken`).
+- Op de kaart: vestigingen van aangesloten zaken (klant, eigen zaak, zonder abonnement), nieuwe aanmeldingen van ondernemers (gestippeld) en per vestiging het aantal open klussen (rode teller).
+- Filters per soort en "alleen met open klus"; lijst naast de kaart; klik vliegt naar de stip; popup met adres, open klussen en een link naar het bedrijf.
+- Plek op de kaart via de PDOK Locatieserver van het Kadaster (gratis, geen sleutel, alleen Nederland). Ondergrond: pastelkaart van PDOK.
+- Automatisch: nieuwe of verhuisde vestiging en een nieuwe aanmelding van een ondernemer worden op de achtergrond opgezocht. Eenmalig voor bestaande gegevens: `php artisan mebranding:geocoderen`.
+- Website, Kennismaken: nieuw verplicht veld Plaats en optioneel Adres van de zaak, zodat een aanmelding op de kaart kan.
+- Creators staan niet op de teamkaart: hun woonplaats blijft privé.
+
+## Fase 2: kaart voor creators, "Klussen in de buurt"
+
+- Creator opent de kaart in de webapp en ziet open klussen in de buurt: zaak, wat er te doen is, beloning, afstand.
+- Plek van de creator: alleen op het moment dat de kaart open is, na toestemming van de telefoon. Niet opgeslagen als spoor.
+- Eerlijk over "altijd de locatie zichtbaar": een webapp kan de locatie niet op de achtergrond volgen (iPhone en Android staan dat niet toe), en voor de AVG is permanent volgen zwaar te verantwoorden. Alternatief dat hetzelfde doel haalt:
+  - knop **"Ik ben beschikbaar"**: de creator deelt een paar uur lang de plek, zichtbaar voor het team en voor het matchen van snelle klussen; daarna vervalt het vanzelf;
+  - anders telt de woonplaats met de reisafstand uit het profiel (`radius_km` bestaat al).
+- Pushmelding "Snelle klus bij jou in de buurt" naar creators binnen de straal (webapp-meldingen bestaan al).
+
+## Fase 3: snelle klus (spoedopdracht)
+
+Voor zaken die snel content nodig hebben, bijvoorbeeld een winkel met een nieuw kledingstuk.
+
+1. Ondernemer plaatst een **snelle klus**: wat (kort), foto van het product, wanneer (vandaag, morgen of binnen een tijdvak), beloning.
+2. De klus verschijnt op de creatorkaart en creators binnen de straal krijgen een pushmelding.
+3. Een creator neemt hem aan met één tik en tekent het kluscontract in dezelfde stap.
+4. Daarna de bestaande keten: inchecken bij de zaak, filmen, aanleveren, controle door het team, goedkeuren, live.
+5. Het team ziet snelle klussen op de teamkaart en kan ingrijpen (iemand anders kiezen, annuleren).
+
+## Keuzes voor Dave (voordat fase 3 gebouwd wordt)
+
+1. **Wie krijgt de klus:** wie het eerst aanneemt, of de ondernemer kiest uit de creators die zich melden (bijvoorbeeld binnen een uur)?
+2. **Prijs:** zelfde punten als een gewone samenwerking, of een spoedtoeslag in punten?
+3. **Beloning creator:** gratis product of bezoek zoals nu, of altijd een vaste vergoeding bij een snelle klus?
+4. **Wie mag:** alle niveaus, of vanaf een bepaald niveau (betrouwbaarheid bij spoed)?
+5. **Straal:** standaard reisafstand uit het profiel, of een vaste straal voor snelle klussen (bijvoorbeeld 10 km)?
+6. **Welke zaken:** iedere klant, of per bedrijf aan te zetten door het team?
+
+## Grenzen (KWALITEIT, techniek en wet)
+
+- AVG: locatie alleen met toestemming, alleen zolang nodig, uitleg in de privacyverklaring en in de app.
+- EU-richtlijn platformwerk: uitleggen waarom een creator een klus te zien krijgt (afstand, niveau), zoals de matchlijst al doet.
+- Reclamevermelding en alcoholregel gelden ook voor snelle klussen.

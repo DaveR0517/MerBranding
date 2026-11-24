@@ -25,7 +25,7 @@ const SECTIES: Partial<Record<Exclude<Portal, 'geen'>, Record<string, string[]>>
     team: {
         MeStudio: ['Ontwerpen', 'Sjablonen', 'Feedplanner', 'Mediatheek', 'Eigen kanalen', 'Merkkit'],
         Dagelijks: ['Dashboard', 'Werkvoorraad', 'Samenwerkingen', 'Berichten', 'Planning'],
-        Relaties: ['Bedrijven', 'Content per bedrijf', 'Creators', 'Screening', 'Klassement', 'Cursusdagen', 'Sales'],
+        Relaties: ['Bedrijven', 'Kaart', 'Content per bedrijf', 'Creators', 'Screening', 'Klassement', 'Cursusdagen', 'Sales'],
         'Cijfers en geld': ['Cijfers', 'Financieel'],
         Beheer: ['Support', 'API-status', 'Radar', 'Logboek', 'Team en rechten', 'Instellingen', 'Pakketten en prijzen', 'Berichtsjablonen', 'Help'],
     },

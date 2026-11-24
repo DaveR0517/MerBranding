@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Jobs\Geocodeer;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -18,11 +19,24 @@ class Lead extends Model
         'message', 'data', 'consent_at', 'consent_version', 'ip', 'user_agent',
     ];
 
+    /** Een ondernemer die zich aanmeldt, komt op de kaart van het team (creators niet: hun woonplaats blijft privé). */
+    protected static function booted(): void
+    {
+        static::created(function (Lead $lead) {
+            if ($lead->isOndernemer() && ($lead->city || ($lead->data['adres'] ?? null))) {
+                Geocodeer::dispatch($lead);
+            }
+        });
+    }
+
     protected function casts(): array
     {
         return [
             'data' => 'array',
             'consent_at' => 'datetime',
+            'lat' => 'float',
+            'lng' => 'float',
+            'geocoded_at' => 'datetime',
         ];
     }
 
