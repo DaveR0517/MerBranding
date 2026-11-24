@@ -12,15 +12,12 @@ class AlleenOmgeving
     public function handle(Request $request, Closure $next, string $omgeving): Response
     {
         $user = $request->user();
-        $mag = match ($omgeving) {
-            'team' => $user->isTeam(),
-            'creator' => $user->creator()->exists(),
-            'ondernemer' => $user->companies()->exists(),
-            'academy' => $user->hasRole('Student') || $user->creator()->exists(),
-            default => false,
-        };
+        abort_unless($user->magOmgeving($omgeving), 403, 'Deze omgeving hoort niet bij je account.');
 
-        abort_unless($mag, 403, 'Deze omgeving hoort niet bij je account.');
+        // Onthoud de omgeving waarin je werkt: het menu volgt die, ook op gedeelde pagina's (meldingen, instellingen).
+        if (in_array($omgeving, $user->omgevingen(), true)) {
+            $request->session()->put('omgeving', $omgeving);
+        }
 
         return $next($request);
     }

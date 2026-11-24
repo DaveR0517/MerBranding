@@ -67,15 +67,43 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
         return $this->roles->contains(fn ($r) => ! in_array($r->name, ['Ondernemer Eigenaar', 'Ondernemer Lid', 'Creator', 'Student'], true));
     }
 
+    /** Omgevingen in volgorde van voorrang, met hun startpagina. Eén bron voor toegang, menu en wissel. */
+    public const OMGEVINGEN = [
+        'team' => 'team.werkvoorraad',
+        'creator' => 'creator.overzicht',
+        'ondernemer' => 'ondernemer.overzicht',
+        'academy' => 'academy.overzicht',
+    ];
+
+    /** Mag deze gebruiker in deze omgeving (routes met middleware AlleenOmgeving)? */
+    public function magOmgeving(string $omgeving): bool
+    {
+        return match ($omgeving) {
+            'team' => $this->isTeam(),
+            'creator' => $this->creator()->exists(),
+            'ondernemer' => $this->companies()->exists(),
+            // Creators volgen de academy vanuit hun eigen omgeving (menu Mijn academy).
+            'academy' => $this->hasRole('Student') || $this->creator()->exists(),
+            default => false,
+        };
+    }
+
+    /**
+     * Omgevingen waartussen deze gebruiker wisselt, bijvoorbeeld een teamlid met een eigen zaak (team en ondernemer).
+     * De academy telt voor een creator niet als aparte omgeving.
+     *
+     * @return list<string>
+     */
+    public function omgevingen(): array
+    {
+        $creator = $this->creator()->exists();
+
+        return array_values(array_filter(array_keys(self::OMGEVINGEN), fn ($o) => $this->magOmgeving($o) && ! ($o === 'academy' && $creator)));
+    }
+
     /** Het portaal waar deze gebruiker na inloggen terechtkomt. */
     public function homePortal(): string
     {
-        return match (true) {
-            $this->isTeam() => 'team',
-            $this->creator()->exists() => 'creator',
-            $this->companies()->exists() => 'ondernemer',
-            $this->hasRole('Student') => 'academy',
-            default => 'geen',
-        };
+        return $this->omgevingen()[0] ?? 'geen';
     }
 }

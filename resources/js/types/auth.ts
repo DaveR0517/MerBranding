@@ -19,6 +19,8 @@ export type Auth = {
     permissions: string[];
     is_super_admin: boolean;
     impersonating: boolean;
+    /** Alleen bij meer dan één omgeving, bijvoorbeeld een teamlid met een eigen zaak. */
+    omgevingen: { key: Portal; naam: string; url: string }[];
 };
 
 export type Passkey = {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Spatie\Permission\Models\Permission;
@@ -41,7 +42,8 @@ class HandleInertiaRequests extends Middleware
             'name' => config('app.name'),
             'auth' => [
                 'user' => $request->user(),
-                'portal' => $request->user()?->homePortal(),
+                'portal' => fn () => $this->omgeving($request),
+                'omgevingen' => fn () => $this->wissel($request),
                 'roles' => $request->user()?->getRoleNames() ?? [],
                 'permissions' => $request->user()?->hasRole('Super Admin') ? Permission::pluck('name') : ($request->user()?->getAllPermissions()->pluck('name') ?? []),
                 'is_super_admin' => $request->user()?->hasRole('Super Admin') ?? false,
@@ -51,5 +53,34 @@ class HandleInertiaRequests extends Middleware
             'flash' => fn () => ['melding' => $request->session()->get('melding'), 'uitnodiging' => $request->session()->get('uitnodiging')],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
+    }
+
+    /** De omgeving waarin je nu werkt: de laatst bezochte (AlleenOmgeving), anders je startomgeving. */
+    private function omgeving(Request $request): ?string
+    {
+        $user = $request->user();
+        if (! $user) {
+            return null;
+        }
+        $laatst = $request->session()->get('omgeving');
+
+        return $laatst && in_array($laatst, $user->omgevingen(), true) ? $laatst : $user->homePortal();
+    }
+
+    /**
+     * Wissel tussen omgevingen, alleen als je er meer dan één hebt. De ondernemerskant heet naar de zaak.
+     *
+     * @return list<array{key: string, naam: string, url: string}>
+     */
+    private function wissel(Request $request): array
+    {
+        $omgevingen = $request->user()?->omgevingen() ?? [];
+        if (count($omgevingen) < 2) {
+            return [];
+        }
+        $zaak = $request->user()->companies()->orderBy('name')->value('name');
+        $namen = ['team' => 'Team MEBRANDING', 'creator' => 'Creator', 'ondernemer' => $zaak ?? 'Ondernemer', 'academy' => 'Academy'];
+
+        return array_map(fn ($o) => ['key' => $o, 'naam' => $namen[$o], 'url' => route(User::OMGEVINGEN[$o])], $omgevingen);
     }
 }

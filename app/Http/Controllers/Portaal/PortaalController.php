@@ -21,13 +21,9 @@ class PortaalController extends Controller
     /** Na inloggen: naar de eigen omgeving. */
     public function start(Request $request): RedirectResponse|Response
     {
-        return match ($request->user()->homePortal()) {
-            'team' => to_route('team.werkvoorraad'),
-            'creator' => to_route('creator.overzicht'),
-            'ondernemer' => to_route('ondernemer.overzicht'),
-            'academy' => to_route('academy.overzicht'),
-            default => Inertia::render('geen-omgeving'),
-        };
+        $omgeving = $request->user()->homePortal();
+
+        return isset(User::OMGEVINGEN[$omgeving]) ? to_route(User::OMGEVINGEN[$omgeving]) : Inertia::render('geen-omgeving');
     }
 
     public function meldingen(Request $request): Response
