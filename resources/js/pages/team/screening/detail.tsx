@@ -25,8 +25,8 @@ import type { Aanmelding } from "./_gedeeld";
 import { platformKort, soortNaam } from "./_gedeeld";
 
 type Props = {
-    /** Zolang er geen maildienst is: knop om een nieuwe uitnodigingslink te maken. */
-    nieuweLink: boolean;
+    /** Goedgekeurd: uitnodiging opnieuw sturen (per mail als die werkt, anders de link in beeld). */
+    opnieuw: { mail: boolean } | null;
     lead: Aanmelding & {
         phone: string | null;
         message: string | null;
@@ -102,7 +102,7 @@ export default function Detail({
     history,
     levels,
     open,
-    nieuweLink,
+    opnieuw,
 }: Props) {
     const [keuze, setKeuze] = useState<Keuze | null>(null);
     const [status, kleur] = statusLabel[lead.status] ?? [lead.status, "violet"];
@@ -310,8 +310,8 @@ export default function Detail({
                             </Paneel>
                         )}
 
-                        {nieuweLink && (
-                            <NieuweLink leadId={lead.id} naam={lead.name} />
+                        {opnieuw && (
+                            <NieuweLink leadId={lead.id} naam={lead.name} mail={opnieuw.mail} />
                         )}
 
                         {open && (
@@ -508,14 +508,18 @@ Detail.layout = {
     breadcrumbs: [{ title: "Screening", href: screening.index.url() }],
 };
 
-/** Zonder maildienst: een nieuwe uitnodigingslink maken; die verschijnt in de balk bovenaan (UitnodigingsBalk). */
-function NieuweLink({ leadId, naam }: { leadId: number; naam: string }) {
+/** Uitnodiging opnieuw: per mail als die werkt, anders verschijnt de link in de balk bovenaan (UitnodigingsBalk). */
+function NieuweLink({ leadId, naam, mail }: { leadId: number; naam: string; mail: boolean }) {
     const [bezig, setBezig] = useState(false);
 
     return (
         <Paneel
             titel="Uitnodiging"
-            sub={`Er is nog geen maildienst. Kwijt of verlopen? Maak een nieuwe link voor ${naam} en stuur die zelf door. De vorige link werkt dan niet meer.`}
+            sub={
+                mail
+                    ? `Mail niet ontvangen of de link verlopen? Stuur ${naam} de welkomstmail met inloggegevens opnieuw. De vorige link werkt dan niet meer.`
+                    : `Er is nog geen maildienst. Kwijt of verlopen? Maak een nieuwe link voor ${naam} en stuur die zelf door. De vorige link werkt dan niet meer.`
+            }
         >
             <Button
                 variant="outline"
@@ -533,7 +537,7 @@ function NieuweLink({ leadId, naam }: { leadId: number; naam: string }) {
                 }
             >
                 <KeyRound className="size-4" aria-hidden />
-                Nieuwe uitnodigingslink
+                {mail ? "Uitnodiging opnieuw mailen" : "Nieuwe uitnodigingslink"}
             </Button>
         </Paneel>
     );

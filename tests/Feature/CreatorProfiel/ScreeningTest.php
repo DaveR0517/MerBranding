@@ -133,7 +133,7 @@ test('zonder maildienst ziet het team de uitnodigingslink, en daarmee komt de cr
     $link = session('uitnodiging')['link'];
     expect($link)->toContain('reset-password');
 
-    $this->actingAs($ruben)->get($this->app_."/team/screening/{$lead->id}")->assertInertia(fn ($p) => $p->where('nieuweLink', true));
+    $this->actingAs($ruben)->get($this->app_."/team/screening/{$lead->id}")->assertInertia(fn ($p) => $p->where('opnieuw.mail', false));
 
     // Een nieuwe link maken kan alleen met het recht, en maakt de vorige ongeldig.
     $this->actingAs(($this->wie)('eva'))->post($this->app_."/team/screening/{$lead->id}/uitnodigingslink")->assertForbidden();
@@ -162,5 +162,9 @@ test('met een maildienst komt er geen uitnodigingslink in beeld', function () {
 
     $this->actingAs($ruben)->post($this->app_."/team/screening/{$lead->id}/goedkeuren", ['level' => 'bronze', 'reason' => 'Prima'])
         ->assertSessionMissing('uitnodiging');
-    $this->actingAs($ruben)->get($this->app_."/team/screening/{$lead->id}")->assertInertia(fn ($p) => $p->where('nieuweLink', false));
+    $this->actingAs($ruben)->get($this->app_."/team/screening/{$lead->id}")->assertInertia(fn ($p) => $p->where('opnieuw.mail', true));
+
+    // Morgen werkt de mail: opnieuw uitnodigen stuurt de welkomstmail opnieuw, geen link in beeld.
+    $this->actingAs($ruben)->post($this->app_."/team/screening/{$lead->id}/uitnodigingslink")->assertSessionMissing('uitnodiging')->assertSessionHas('melding');
+    expect(User::where('email', 'lotte@voorbeeld.nl')->sole()->notifications()->where('data->key', 'c-welkom')->count())->toBe(2);
 });

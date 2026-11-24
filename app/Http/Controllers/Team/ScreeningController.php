@@ -61,7 +61,8 @@ class ScreeningController extends Controller
                 ->map(fn (ActivityLog $a) => ['event' => $a->event, 'reason' => $a->reason, 'by' => $a->user?->name, 'at' => $a->created_at?->toIso8601String()])->values(),
             'levels' => collect(config('mebranding.levels'))->map(fn ($l, $k) => ['value' => $k, 'name' => $l['name']])->values(),
             'open' => in_array($lead->status, ['nieuw', 'aanvulling'], true),
-            'nieuweLink' => ! Uitnodiging::mailWerkt() && $this->creatorAccount($lead) !== null,
+            // Opnieuw uitnodigen: per mail als die werkt, anders de link in beeld (App\Services\Uitnodiging).
+            'opnieuw' => $this->creatorAccount($lead) ? ['mail' => Uitnodiging::mailWerkt()] : null,
         ]);
     }
 
@@ -77,14 +78,15 @@ class ScreeningController extends Controller
         return to_route('team.screening.toon', $lead)->with('melding', "{$lead->name} is goedgekeurd op {$creator->levelName()}.");
     }
 
-    /** Zolang er geen maildienst is: een verse uitnodigingslink die het team zelf doorstuurt (eerdere links vervallen). */
+    /** Uitnodiging opnieuw: dezelfde welkomstmail met een verse link (eerdere links vervallen); zonder mail de link in beeld. */
     public function uitnodigingslink(Lead $lead): RedirectResponse
     {
         Gate::authorize('creators.screenen');
         $user = $this->creatorAccount($lead);
         abort_unless($user, 404);
+        $this->uitnodiging->stuur($user, 'c-welkom', ['niveau' => $user->creator->levelName()]);
 
-        return back()->with('uitnodiging', ['naam' => $user->name, 'email' => $user->email, 'link' => $this->uitnodiging->link($user)]);
+        return back()->with('melding', Uitnodiging::mailWerkt() ? "Uitnodiging opnieuw gemaild naar {$user->email}." : 'Nieuwe uitnodigingslink gemaakt. Eerdere links werken niet meer.');
     }
 
     private function creatorAccount(Lead $lead): ?User
