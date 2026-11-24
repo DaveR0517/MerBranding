@@ -21,6 +21,7 @@ type Props = {
     company: {
         name: string;
         available_points: number;
+        unlimited_credit: boolean;
         reserved_points: number;
     };
     collaborations: SamenwerkingKort[];
@@ -87,6 +88,7 @@ export default function Overzicht({ company, collaborations }: Props) {
                     <Tegoed
                         beschikbaar={company.available_points}
                         gereserveerd={company.reserved_points}
+                        onbeperkt={company.unlimited_credit}
                     />
                     {terControle.map((c) => (
                         <Actie

@@ -57,6 +57,7 @@ type Props = {
     collaboration: SamenwerkingVol;
     can_cancel: boolean;
     available_points: number;
+    unlimited_credit: boolean;
     /** Zelf een creator kiezen: alleen zolang er niemand is en geen uitnodiging openstaat. */
     creators: KiesbareCreator[] | null;
     /** Een open uitnodiging die dit bedrijf zelf verstuurde. */
@@ -200,6 +201,7 @@ export default function Samenwerking({
     collaboration: c,
     can_cancel,
     available_points,
+    unlimited_credit,
     creators,
     own_invitation,
 }: Props) {
@@ -328,7 +330,11 @@ export default function Samenwerking({
                                 <ZelfKiezen
                                     c={c}
                                     creators={creators}
-                                    beschikbaar={available_points + (c.points ?? 0)}
+                                    beschikbaar={
+                                        unlimited_credit
+                                            ? Infinity
+                                            : available_points + (c.points ?? 0)
+                                    }
                                 />
                             )}
 

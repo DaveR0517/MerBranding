@@ -16,6 +16,7 @@ type Bedrijf = {
     locations: string[];
     plan: string | null;
     available_points: number;
+        unlimited_credit: boolean;
 };
 type Pakket = { id: number; name: string; points: number | null; price_cents: number | null };
 type Kennismaking = { id: number; name: string; email: string; phone: string | null; company: string | null; city: string | null };
@@ -115,8 +116,8 @@ export default function Bedrijven({ companies, plans, leads, can }: { companies:
                                                     <>
                                                         <span className="hidden sm:inline">{b.owner && <InloggenAls userId={b.owner.id} naam={b.owner.name} />}</span>
                                                         <span className="text-right">
-                                                            <span className="block font-heading text-xl font-extrabold text-violet tabular-nums">{b.available_points}</span>
-                                                            <span className="block text-xs text-muted-foreground">punten</span>
+                                                            <span className="block font-heading text-xl font-extrabold text-violet tabular-nums">{b.unlimited_credit ? '∞' : b.available_points}</span>
+                                                            <span className="block text-xs text-muted-foreground">{b.unlimited_credit ? 'onbeperkt' : 'punten'}</span>
                                                         </span>
                                                     </>
                                                 }

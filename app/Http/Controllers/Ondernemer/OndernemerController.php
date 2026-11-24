@@ -25,7 +25,7 @@ class OndernemerController extends Controller
         $bedrijf = $this->bedrijf($request);
 
         return Inertia::render('ondernemer/overzicht', [
-            'company' => ['name' => $bedrijf->name, 'available_points' => $bedrijf->availablePoints(), 'reserved_points' => $bedrijf->reservedPoints()],
+            'company' => ['name' => $bedrijf->name, 'reserved_points' => $bedrijf->reservedPoints()] + $bedrijf->tegoed(),
             'collaborations' => $bedrijf->collaborations()->with(['company', 'location', 'creator.user'])->latest()->get()
                 ->map(fn ($c) => SamenwerkingPresenter::kort($c))->values(),
         ]);
@@ -36,7 +36,7 @@ class OndernemerController extends Controller
         $bedrijf = $this->bedrijf($request);
 
         return Inertia::render('ondernemer/aanvragen', [
-            'available_points' => $bedrijf->availablePoints(),
+            ...$bedrijf->tegoed(),
             'locations' => $bedrijf->locations()->get(['id', 'name', 'city']),
             'levels' => collect(config('mebranding.levels'))->map(fn ($l, $k) => [
                 'value' => $k, 'name' => $l['name'], 'points' => $l['points'],
@@ -80,7 +80,7 @@ class OndernemerController extends Controller
         return Inertia::render('ondernemer/samenwerking', [
             'collaboration' => SamenwerkingPresenter::vol($samenwerking, 'ondernemer', $request->user()),
             'can_cancel' => $request->user()->companies()->wherePivot('role', 'eigenaar')->whereKey($samenwerking->company_id)->exists(),
-            'available_points' => $samenwerking->company->availablePoints(),
+            ...$samenwerking->company->tegoed(),
             // Zelf een creator kiezen kan zolang er nog niemand is en er geen uitnodiging openstaat.
             'creators' => $this->kanKiezen($samenwerking) ? $this->matchlijst->voorOndernemer($samenwerking) : null,
             'own_invitation' => $this->eigenUitnodiging($samenwerking),

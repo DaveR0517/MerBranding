@@ -10,10 +10,13 @@ function punten(n: number): string {
 export function Tegoed({
     beschikbaar,
     gereserveerd,
+    onbeperkt = false,
     children,
 }: {
     beschikbaar: number;
     gereserveerd?: number;
+    /** Eigen zaak zonder puntenlimiet: geen saldo, wel verbruik in het overzicht. */
+    onbeperkt?: boolean;
     children?: ReactNode;
 }) {
     return (
@@ -30,10 +33,16 @@ export function Tegoed({
                             className="font-heading text-2xl font-extrabold tabular-nums"
                             data-test="beschikbaar"
                         >
-                            {beschikbaar}{' '}
-                            <span className="text-sm font-semibold">
-                                {punten(beschikbaar)}
-                            </span>
+                            {onbeperkt ? (
+                                'Onbeperkt'
+                            ) : (
+                                <>
+                                    {beschikbaar}{' '}
+                                    <span className="text-sm font-semibold">
+                                        {punten(beschikbaar)}
+                                    </span>
+                                </>
+                            )}
                         </dd>
                     </div>
                     {gereserveerd !== undefined && (
@@ -51,7 +60,9 @@ export function Tegoed({
                     )}
                 </dl>
                 <p className="mt-2 text-xs text-white/75">
-                    Gereserveerd bij de aanvraag, verbruikt na het bezoek.
+                    {onbeperkt
+                        ? 'Eigen zaak van MEBRANDING: aanvragen zonder puntenlimiet. Het verbruik houden we wel bij.'
+                        : 'Gereserveerd bij de aanvraag, verbruikt na het bezoek.'}
                 </p>
                 {children}
             </section>

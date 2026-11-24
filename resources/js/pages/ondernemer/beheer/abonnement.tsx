@@ -40,6 +40,7 @@ type Props = {
     company: {
         name: string;
         available_points: number;
+        unlimited_credit: boolean;
         reserved_points: number;
     };
     subscription: AbonnementT | null;
@@ -189,6 +190,7 @@ export default function Abonnement({
                     <Tegoed
                         beschikbaar={company.available_points}
                         gereserveerd={company.reserved_points}
+                        onbeperkt={company.unlimited_credit}
                     >
                         <p className="mt-2 text-xs text-white/65">
                             Annuleren of een creator die niet komt: je tegoed
@@ -215,7 +217,9 @@ export default function Abonnement({
                             Tegoed per boeking
                         </h2>
                         <span className="text-sm text-muted-foreground">
-                            Saldo {company.available_points} punten
+                            {company.unlimited_credit
+                                ? 'Onbeperkt tegoed'
+                                : `Saldo ${company.available_points} punten`}
                         </span>
                     </div>
                     <p className="-mt-1 mb-3 text-sm text-muted-foreground">

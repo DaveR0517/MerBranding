@@ -13,7 +13,7 @@ class Company extends Model
 
     protected function casts(): array
     {
-        return ['self_confirm_visits' => 'boolean', 'owner_approves_content' => 'boolean'];
+        return ['self_confirm_visits' => 'boolean', 'owner_approves_content' => 'boolean', 'onbeperkt_tegoed' => 'boolean'];
     }
 
     public function users(): BelongsToMany
@@ -52,6 +52,18 @@ class Company extends Model
     }
 
     /** Beschikbaar tegoed: som van alle boekingen in het grootboek. */
+    /** Genoeg tegoed voor een aanvraag van zoveel punten? Een eigen zaak met onbeperkt tegoed altijd. */
+    public function kanBetalen(int $punten): bool
+    {
+        return $this->onbeperkt_tegoed || $this->availablePoints() >= $punten;
+    }
+
+    /** Tegoed voor de schermen: saldo en of het onbeperkt is. */
+    public function tegoed(): array
+    {
+        return ['available_points' => $this->availablePoints(), 'unlimited_credit' => $this->onbeperkt_tegoed];
+    }
+
     public function availablePoints(): int
     {
         return (int) $this->ledger()->sum('points');

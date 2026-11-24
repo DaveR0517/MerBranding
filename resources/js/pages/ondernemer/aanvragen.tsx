@@ -25,6 +25,8 @@ type Niveau = { value: string; name: string; points: number; reward: string };
 
 type Props = {
     available_points: number;
+    /** Eigen zaak zonder puntenlimiet. */
+    unlimited_credit: boolean;
     locations: { id: number; name: string; city: string | null }[];
     levels: Niveau[];
     creators: KiesbareCreator[];
@@ -45,6 +47,7 @@ type Velden = {
 
 export default function Aanvragen({
     available_points,
+    unlimited_credit,
     locations,
     levels,
     creators,
@@ -61,6 +64,8 @@ export default function Aanvragen({
         creator_id: null,
     });
     const { data, setData, errors, processing } = form;
+    // Onbeperkt tegoed (eigen zaak): geen grens bij kiezen en versturen.
+    const budget = unlimited_credit ? Infinity : available_points;
     const zelf = data.keuze === "zelf";
     const creator = zelf
         ? creators.find((c) => c.id === data.creator_id)
@@ -72,7 +77,7 @@ export default function Aanvragen({
               points: creator.points,
           }
         : levels.find((l) => l.value === data.creator_level);
-    const genoeg = !gekozen || gekozen.points <= available_points;
+    const genoeg = !gekozen || gekozen.points <= budget;
     const stad =
         locations.find((l) => String(l.id) === data.location_id)?.city ?? null;
     const fouten = errors as Partial<Record<string, string>>;
@@ -83,7 +88,7 @@ export default function Aanvragen({
             ...d,
             alcohol: waarde,
             creator_id:
-                creator && blokkade(creator, waarde === "1", available_points)
+                creator && blokkade(creator, waarde === "1", budget)
                     ? null
                     : d.creator_id,
         }));
@@ -106,8 +111,16 @@ export default function Aanvragen({
                     omschrijving="Vertel wat je wilt laten zien. Wij zoeken de creator die bij je zaak past, of je kiest er zelf een."
                 />
                 <p className="rounded-lg bg-violet/10 px-3 py-2 text-sm text-violet @4xl:hidden">
-                    Je hebt <strong>{available_points} punten</strong>{" "}
-                    beschikbaar.
+                    {unlimited_credit ? (
+                        <>
+                            Je tegoed is <strong>onbeperkt</strong>.
+                        </>
+                    ) : (
+                        <>
+                            Je hebt <strong>{available_points} punten</strong>{" "}
+                            beschikbaar.
+                        </>
+                    )}
                 </p>
 
                 <form onSubmit={versturen} noValidate>
@@ -386,7 +399,7 @@ export default function Aanvragen({
                                                 }
                                                 alcohol={data.alcohol === "1"}
                                                 stad={stad}
-                                                beschikbaar={available_points}
+                                                beschikbaar={budget}
                                             />
                                             <InputError
                                                 message={
@@ -414,8 +427,7 @@ export default function Aanvragen({
                                             <div className="mt-3 grid gap-3 sm:grid-cols-2">
                                                 {levels.map((l) => {
                                                     const teDuur =
-                                                        l.points >
-                                                        available_points;
+                                                        l.points > budget;
 
                                                     return (
                                                         <Keuze
@@ -466,7 +478,10 @@ export default function Aanvragen({
                         }
                         zij={
                             <div className="space-y-4 @4xl:sticky @4xl:top-4">
-                                <Tegoed beschikbaar={available_points}>
+                                <Tegoed
+                                    beschikbaar={available_points}
+                                    onbeperkt={unlimited_credit}
+                                >
                                     <div
                                         className="mt-4 rounded-lg bg-white/10 p-3 text-sm"
                                         aria-live="polite"
@@ -485,11 +500,10 @@ export default function Aanvragen({
                                                     aria-hidden
                                                 />
                                                 {gekozen.name} kost{" "}
-                                                {gekozen.points} punten. Na
-                                                versturen heb je nog{" "}
-                                                {available_points -
-                                                    gekozen.points}{" "}
-                                                beschikbaar.
+                                                {gekozen.points} punten.{" "}
+                                                {unlimited_credit
+                                                    ? "Je tegoed is onbeperkt, we houden het verbruik bij."
+                                                    : `Na versturen heb je nog ${available_points - gekozen.points} beschikbaar.`}
                                             </p>
                                         )}
                                         {gekozen && !genoeg && (

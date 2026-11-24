@@ -31,6 +31,7 @@ type Bedrijf = {
     phone: string | null;
     account_manager_id: number | null;
     available_points: number;
+        unlimited_credit: boolean;
     reserved_points: number;
 } & Instellingen;
 
@@ -89,7 +90,10 @@ export default function Bedrijf({
                             ) : (
                                 "Geen abonnement"
                             )}{" "}
-                            · {company.available_points} punten beschikbaar,{" "}
+                            ·{" "}
+                            {company.unlimited_credit
+                                ? `onbeperkt tegoed (verbruik ${-company.available_points} punten),`
+                                : `${company.available_points} punten beschikbaar,`}{" "}
                             {company.reserved_points} gereserveerd
                         </>
                     }
@@ -348,7 +352,7 @@ function Tegoed({
     return (
         <Paneel
             titel="Tegoed"
-            sub={`Saldo ${company.available_points} punten. Het saldo is de som van alle boekingen.`}
+            sub={company.unlimited_credit ? `Onbeperkt tegoed: eigen zaak, geen abonnement. Saldo ${company.available_points} punten, de som van alle boekingen.` : `Saldo ${company.available_points} punten. Het saldo is de som van alle boekingen.`}
         >
             {kan && (
                 <form

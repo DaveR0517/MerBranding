@@ -37,7 +37,7 @@ class BeheerController extends Controller
                 'owner' => $b->owners->first()?->only(['id', 'name', 'email']),
                 'locations' => $b->locations->pluck('name'),
                 'plan' => $b->subscriptions->last()?->planVersion->plan->name,
-                'available_points' => $b->availablePoints(),
+                ...$b->tegoed(),
             ])->values(),
             'plans' => Plan::all()->map(fn ($p) => ['id' => $p->id, 'name' => $p->name, 'points' => $p->currentVersion()?->points_per_month, 'price_cents' => $p->currentVersion()?->price_cents])->values(),
             'leads' => Lead::where('type', Lead::TYPE_ONDERNEMER)->where('status', 'nieuw')->latest()->get(['id', 'name', 'email', 'phone', 'company', 'city']),

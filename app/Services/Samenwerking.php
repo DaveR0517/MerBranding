@@ -56,7 +56,7 @@ class Samenwerking
         if ($points < 1) {
             throw ValidationException::withMessages(['creator_level' => 'Kies een niveau.']);
         }
-        if ($company->availablePoints() < $points) {
+        if (! $company->kanBetalen($points)) {
             throw ValidationException::withMessages(['creator_level' => "Je tegoed is te laag: je hebt {$company->availablePoints()} punten, deze samenwerking kost {$points} punten."]);
         }
 

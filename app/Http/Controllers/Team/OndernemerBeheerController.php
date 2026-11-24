@@ -29,7 +29,7 @@ class OndernemerBeheerController extends Controller
 
         return Inertia::render('team/ondernemer-beheer/bedrijf', [
             'company' => $bedrijf->only(['id', 'name', 'kvk', 'branche', 'email', 'phone', 'account_manager_id']) + P::instellingen($bedrijf) + [
-                'available_points' => $bedrijf->availablePoints(), 'reserved_points' => $bedrijf->reservedPoints(),
+                ...$bedrijf->tegoed(), 'reserved_points' => $bedrijf->reservedPoints(),
             ],
             'locations' => P::vestigingen($bedrijf),
             'users' => P::gebruikers($bedrijf),

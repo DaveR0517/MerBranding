@@ -20,7 +20,12 @@ import type { Abonnement } from './_onderdelen/types';
 type Stap = 'vestiging' | 'team' | 'aanvraag';
 
 type Props = {
-    company: { name: string; available_points: number; locations: string[] };
+    company: {
+        name: string;
+        available_points: number;
+        unlimited_credit: boolean;
+        locations: string[];
+    };
     subscription: Abonnement | null;
     account_manager: string | null;
     steps: Record<Stap, boolean>;
@@ -69,7 +74,11 @@ export default function Welkom({
                     <Kerncijfer
                         icoon={Coins}
                         label="Tegoed"
-                        waarde={`${company.available_points} punten`}
+                        waarde={
+                            company.unlimited_credit
+                                ? 'Onbeperkt'
+                                : `${company.available_points} punten`
+                        }
                         toelichting="beschikbaar voor aanvragen"
                     />
                     <Kerncijfer
@@ -159,7 +168,7 @@ export default function Welkom({
                             nummer={3}
                             klaar={steps.aanvraag}
                             titel="Eerste samenwerking aanvragen"
-                            tekst={`Vertel wat je wilt laten zien. Wij koppelen een passende creator, meestal binnen 2 werkdagen. Je hebt ${company.available_points} punten.`}
+                            tekst={`Vertel wat je wilt laten zien. Wij koppelen een passende creator, meestal binnen 2 werkdagen. ${company.unlimited_credit ? 'Je tegoed is onbeperkt.' : `Je hebt ${company.available_points} punten.`}`}
                             actie={
                                 <Link href={aanvragen()}>Aanvraag maken</Link>
                             }

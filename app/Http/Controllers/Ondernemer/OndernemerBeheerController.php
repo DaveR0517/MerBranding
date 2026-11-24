@@ -117,7 +117,7 @@ class OndernemerBeheerController extends Controller
         $bedrijf = $this->bedrijf($request);
 
         return Inertia::render('ondernemer/beheer/abonnement', [
-            'company' => ['name' => $bedrijf->name, 'available_points' => $bedrijf->availablePoints(), 'reserved_points' => $bedrijf->reservedPoints()],
+            'company' => ['name' => $bedrijf->name, 'reserved_points' => $bedrijf->reservedPoints()] + $bedrijf->tegoed(),
             'subscription' => P::abonnement($bedrijf),
             'plans' => P::pakketten(),
             'ledger' => P::grootboek($bedrijf),
@@ -154,7 +154,7 @@ class OndernemerBeheerController extends Controller
         $o = CompanyOnboarding::voor($bedrijf);
 
         return Inertia::render('ondernemer/beheer/welkom', [
-            'company' => ['name' => $bedrijf->name, 'available_points' => $bedrijf->availablePoints(), 'locations' => $bedrijf->locations()->pluck('name')],
+            'company' => ['name' => $bedrijf->name, 'locations' => $bedrijf->locations()->pluck('name')] + $bedrijf->tegoed(),
             'subscription' => P::abonnement($bedrijf),
             'account_manager' => $bedrijf->accountManager?->name,
             'steps' => $o->stand(),
