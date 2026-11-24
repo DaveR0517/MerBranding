@@ -46,3 +46,19 @@ test('wie maar een omgeving heeft, ziet geen wissel; de academy telt voor een cr
     // Zonder zaak geen toegang tot de ondernemerskant.
     $this->actingAs(User::where('email', 'ruben@demo.mebranding.nl')->sole())->get(APP_OW.'/ondernemer')->assertForbidden();
 });
+
+test('een creator die ook in het team komt (Eline) wisselt tussen team en creator met hetzelfde account', function () {
+    config(['mail.default' => 'log']);
+    $eline = User::where('email', 'sophie@demo.mebranding.nl')->sole(); // een goedgekeurde creator
+    $beheerder = User::whereHas('roles', fn ($q) => $q->where('name', 'Super Admin'))->first()
+        ?? tap(User::factory()->create())->assignRole('Super Admin');
+
+    $this->actingAs($beheerder)->post(APP_OW.'/team/medewerkers', ['name' => $eline->name, 'email' => $eline->email, 'rollen' => ['Contentcontrole']])
+        ->assertSessionHasNoErrors()->assertSessionMissing('uitnodiging'); // bestaand account: geen nieuwe wachtwoordlink
+
+    $eline->refresh();
+    expect($eline->omgevingen())->toBe(['team', 'creator'])->and($eline->homePortal())->toBe('team');
+    $this->actingAs($eline)->get(APP_OW.'/creator')->assertOk()->assertInertia(fn ($p) => $p
+        ->where('auth.portal', 'creator')->where('auth.omgevingen.0.key', 'team')->where('auth.omgevingen.1.naam', 'Creator'));
+    $this->actingAs($eline)->get(APP_OW.'/team')->assertInertia(fn ($p) => $p->where('auth.portal', 'team'));
+});
