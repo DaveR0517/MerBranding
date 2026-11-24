@@ -1,8 +1,8 @@
 # Plan: kaart en snelle klussen
 
-Status: in opbouw op branch `kaart`, nog niet live (besluit Dave, 24 nov). Idee van Dave: zaken en klussen op een kaart, en creators die in de buurt zijn een snelle klus kunnen aannemen.
+Status (besluit Dave, 24 nov): fase 1, de kaart voor team en eigenaren, staat live. De creatorkant (fase 2 en 3) staat niet aan en wordt gebouwd op branch `creator-kaart`: eerst genoeg creators per regio. Idee van Dave: zaken en klussen op een kaart, en creators die in de buurt zijn een snelle klus kunnen aannemen.
 
-## Fase 1: kaart voor het team (gebouwd)
+## Fase 1: kaart voor het team (live)
 
 - Team, Relaties, Kaart (`/team/kaart`, recht `bedrijven.bekijken`).
 - Op de kaart: vestigingen van aangesloten zaken (klant, eigen zaak, zonder abonnement), nieuwe aanmeldingen van ondernemers (gestippeld) en per vestiging het aantal open klussen (rode teller).
