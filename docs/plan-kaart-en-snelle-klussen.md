@@ -49,6 +49,8 @@ Voor zaken die snel content nodig hebben, bijvoorbeeld een winkel met een nieuw 
 
 ## Keuzes voor Dave (voordat fase 3 gebouwd wordt)
 
+0. Straf voor niet komen bij een snelle klus zwaarder dan bij een gewone samenwerking? Later besluiten (Dave, 24 nov); tot dan dezelfde regel.
+
 1. ~~Wie krijgt de klus~~: besloten, wie het eerst aanneemt (zie hierboven).
 2. **Prijs:** zelfde punten als een gewone samenwerking, of een spoedtoeslag in punten?
 3. **Beloning creator:** gratis product of bezoek zoals nu, of altijd een vaste vergoeding bij een snelle klus?
