@@ -1,6 +1,7 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { Check, FileSignature, Landmark, Lock, Settings } from 'lucide-react';
 import { Pagina, PaginaKop, TweeKolommen } from '@/components/pagina';
+import { WebappInstellingen } from '@/components/webapp-instellingen';
 import * as profiel from '@/routes/creator/profiel';
 import { edit as instellingen } from '@/routes/profile';
 import {
@@ -295,6 +296,10 @@ export default function Account({
                                         Nog niet getekend. Nu tekenen
                                     </Link>
                                 )}
+                            </TitelKaart>
+
+                            <TitelKaart titel="App en meldingen">
+                                <WebappInstellingen />
                             </TitelKaart>
 
                             <TitelKaart titel="Inloggen en beveiliging">

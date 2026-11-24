@@ -3,6 +3,7 @@
 use App\Http\Controllers\Portaal\PortaalController;
 use App\Http\Middleware\AlleenOmgeving;
 use App\Http\Middleware\TweestapsVerplicht;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,6 +28,8 @@ Route::domain(config('mebranding.domains.site'))->group(function () {
 Route::domain(config('mebranding.domains.app'))->prefix(config('mebranding.app_prefix'))->group(function () {
     // Webhooks van Meta en TikTok en de tijdelijke bestandslink voor plaatsen: zonder inloggen (eigen handtekeningcontrole).
     require base_path('routes/portaal-webhooks.php');
+    // Webapp: manifest, service worker en pushabonnementen.
+    require base_path('routes/portaal-webapp.php');
 
     Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', [PortaalController::class, 'start'])->name('start');
@@ -58,7 +61,7 @@ Route::domain(config('mebranding.domains.app'))->prefix(config('mebranding.app_p
 | Oude adressen (zoals het Forge-testadres) sturen door naar de echte website, met hetzelfde pad.
 | Staat als laatste: alleen verzoeken die bij geen enkel domein hierboven horen, komen hier.
 */
-Route::any('{pad?}', function (Illuminate\Http\Request $request, ?string $pad = null) {
+Route::any('{pad?}', function (Request $request, ?string $pad = null) {
     $site = config('mebranding.domains.site');
     abort_if($request->getHost() === $site || $request->getHost() === config('mebranding.domains.app'), 404);
 

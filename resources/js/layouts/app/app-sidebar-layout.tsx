@@ -8,6 +8,7 @@ import {
     OnderBalk,
     UitnodigingsBalk,
 } from "@/components/portaal-schil";
+import { WebappVenster } from "@/components/webapp-venster";
 import type { AppLayoutProps } from "@/types";
 
 export default function AppSidebarLayout({
@@ -28,6 +29,7 @@ export default function AppSidebarLayout({
             </AppContent>
             <OnderBalk />
             <Flash />
+            <WebappVenster />
         </AppShell>
     );
 }

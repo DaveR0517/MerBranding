@@ -22,14 +22,20 @@ class MessageTemplateSeeder extends Seeder
         $data = json_decode(file_get_contents(database_path('data/berichtsjablonen.json')), true);
 
         foreach ($data['sjablonen'] as $s) {
-            MessageTemplate::firstOrCreate(['key' => $s['id']], [
+            $sjabloon = MessageTemplate::firstOrCreate(['key' => $s['id']], [
                 'role' => $s['rol'],
                 'event' => $s['gebeurtenis'],
                 'channels' => self::KANALEN[$s['id']] ?? $s['kanalen'],
                 'subject' => $s['onderwerp'],
                 'email' => $s['email'] ?? null,
                 'inapp' => $s['inapp'] ?? null,
+                'push' => $s['push'] ?? null,
             ]);
+
+            // Pushtekst kwam later: alleen aanvullen waar hij nog leeg is, wijzigingen van het team blijven staan.
+            if ($sjabloon->push === null && ! empty($s['push'])) {
+                $sjabloon->update(['push' => $s['push']]);
+            }
         }
     }
 }

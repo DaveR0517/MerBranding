@@ -36,6 +36,12 @@
 
         <meta name="robots" content="noindex, nofollow">
         <meta name="theme-color" content="#2E2B48">
+        {{-- Webapp: installeren op het beginscherm (WebappController::manifest). --}}
+        <link rel="manifest" href="{{ route('webapp.manifest') }}">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-title" content="MEBRANDING">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
         @viteReactRefresh
         @vite(['resources/css/app.css', 'resources/js/app.tsx', "resources/js/pages/{$page['component']}.tsx"])

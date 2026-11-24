@@ -3,13 +3,16 @@
 namespace App\Notifications;
 
 use App\Models\MessageTemplate;
+use App\Models\User;
+use App\Notifications\Kanalen\WebpushKanaal;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 /**
- * Eén melding uit de berichtsjablonen (database/data/berichtsjablonen.json): in de app en, als het sjabloon dat zegt, per e-mail.
+ * Eén melding uit de berichtsjablonen (database/data/berichtsjablonen.json): in de app en, als het sjabloon dat zegt,
+ * per e-mail en als pushmelding op de apparaten waar de gebruiker meldingen aanzette (webapp).
  */
 class PlatformMelding extends Notification implements ShouldQueue
 {
@@ -20,7 +23,21 @@ class PlatformMelding extends Notification implements ShouldQueue
 
     public function via(object $notifiable): array
     {
-        return $this->template->wants('email') ? ['database', 'mail'] : ['database'];
+        return array_values(array_filter([
+            'database',
+            $this->template->wants('email') ? 'mail' : null,
+            $this->template->wants('push') && $notifiable instanceof User && $notifiable->pushAbonnementen()->exists() ? WebpushKanaal::class : null,
+        ]));
+    }
+
+    /** @return array{title: string, body: string, url: string} */
+    public function toWebpush(object $notifiable): array
+    {
+        return [
+            'title' => MessageTemplate::vulIn($this->template->subject, $this->vars),
+            'body' => MessageTemplate::vulIn($this->template->push ?: $this->template->inapp, $this->vars),
+            'url' => $this->url,
+        ];
     }
 
     public function toArray(object $notifiable): array
