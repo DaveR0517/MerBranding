@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Team;
 
 use App\Http\Controllers\Controller;
 use App\Models\Collaboration;
+use App\Models\Creator;
 use App\Models\Lead;
 use App\Models\Location;
 use App\Models\Status;
@@ -47,6 +48,12 @@ class KaartController extends Controller
             'lat' => $l->lat, 'lng' => $l->lng, 'precisie' => $l->geo_precisie, 'gezocht' => $l->geocoded_at !== null,
         ])->values();
 
-        return Inertia::render('team/kaart', ['vestigingen' => $vestigingen, 'aanmeldingen' => $aanmeldingen]);
+        // Creators die nu beschikbaar zijn (alleen met de creatorkant aan, config mebranding.creator_kaart).
+        $creators = ! config('mebranding.creator_kaart') ? [] : Creator::with('user')->where('beschikbaar_tot', '>', now())->get()->map(fn (Creator $c) => [
+            'id' => $c->id, 'naam' => $c->user->name, 'niveau' => $c->levelName(), 'plaats' => $c->city,
+            'tot' => $c->beschikbaar_tot->toIso8601String(), 'lat' => $c->beschikbaar_lat, 'lng' => $c->beschikbaar_lng,
+        ])->values();
+
+        return Inertia::render('team/kaart', ['vestigingen' => $vestigingen, 'aanmeldingen' => $aanmeldingen, 'creators' => $creators]);
     }
 }

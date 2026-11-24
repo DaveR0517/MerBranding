@@ -41,18 +41,21 @@ type Aanmelding = {
     gezocht: boolean;
 };
 
-type Filter = 'klant' | 'eigen' | 'zonder' | 'aanmelding';
+type BeschikbareCreator = { id: number; naam: string; niveau: string; plaats: string | null; tot: string; lat: number | null; lng: number | null };
+
+type Filter = 'klant' | 'eigen' | 'zonder' | 'aanmelding' | 'beschikbaar';
 
 const FILTERS: { key: Filter; naam: string; stip: string }[] = [
     { key: 'klant', naam: 'Klanten', stip: 'bg-violet' },
     { key: 'eigen', naam: 'Eigen zaak', stip: 'bg-brand-gradient' },
     { key: 'zonder', naam: 'Zonder abonnement', stip: 'bg-[#8A86A3]' },
     { key: 'aanmelding', naam: 'Aanmeldingen', stip: 'border-2 border-dashed border-amber-600 bg-white' },
+    { key: 'beschikbaar', naam: 'Beschikbare creators', stip: 'bg-emerald-500' },
 ];
 
 /** Kaart voor het team: aangesloten zaken, aanmeldingen van ondernemers en open klussen. */
-export default function KaartPagina({ vestigingen, aanmeldingen }: { vestigingen: Vestiging[]; aanmeldingen: Aanmelding[] }) {
-    const [aan, setAan] = useState<Record<Filter, boolean>>({ klant: true, eigen: true, zonder: true, aanmelding: true });
+export default function KaartPagina({ vestigingen, aanmeldingen, creators = [] }: { vestigingen: Vestiging[]; aanmeldingen: Aanmelding[]; creators?: BeschikbareCreator[] }) {
+    const [aan, setAan] = useState<Record<Filter, boolean>>({ klant: true, eigen: true, zonder: true, aanmelding: true, beschikbaar: true });
     const [alleenOpen, setAlleenOpen] = useState(false);
     const [focus, setFocus] = useState<KaartPunt | null>(null);
     const [inBrowser, setInBrowser] = useState(false);
@@ -81,8 +84,27 @@ export default function KaartPagina({ vestigingen, aanmeldingen }: { vestigingen
                 popup: <AanmeldingPopup a={x} />,
             }));
 
-        return [...v, ...a];
-    }, [vestigingen, aanmeldingen, aan, alleenOpen]);
+        const c = creators
+            .filter((x) => x.lat !== null && x.lng !== null && aan.beschikbaar && !alleenOpen)
+            .map((x) => ({
+                sleutel: `c${x.id}`,
+                lat: x.lat as number,
+                lng: x.lng as number,
+                kleur: 'beschikbaar' as const,
+                titel: `Beschikbaar: ${x.naam}`,
+                popup: (
+                    <div className="text-[13px] leading-snug">
+                        <p className="text-[11px] font-bold tracking-wide text-emerald-700 uppercase">Beschikbaar</p>
+                        <p className="font-heading text-sm font-bold text-aubergine">{x.naam}</p>
+                        <p className="text-muted-foreground">
+                            {x.niveau} · tot {new Date(x.tot).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                    </div>
+                ),
+            }));
+
+        return [...v, ...a, ...c];
+    }, [vestigingen, aanmeldingen, creators, aan, alleenOpen]);
 
     const nietOpKaart = [
         ...vestigingen.filter((x) => x.lat === null).map((x) => ({ sleutel: `v${x.id}`, naam: `${x.bedrijf}, ${x.naam}`, adres: x.adres, gezocht: x.gezocht })),
@@ -100,7 +122,7 @@ export default function KaartPagina({ vestigingen, aanmeldingen }: { vestigingen
                 />
 
                 <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Wat staat er op de kaart">
-                    {FILTERS.map((f) => (
+                    {FILTERS.filter((f) => f.key !== 'beschikbaar' || creators.length > 0).map((f) => (
                         <button
                             key={f.key}
                             type="button"

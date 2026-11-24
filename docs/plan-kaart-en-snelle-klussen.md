@@ -14,6 +14,13 @@ Status (besluit Dave, 24 nov): fase 1, de kaart voor team en eigenaren, staat li
 
 ## Fase 2: kaart voor creators, "Klussen in de buurt"
 
+Gebouwd op branch `creator-kaart`, achter de schakelaar `mebranding.creator_kaart` (standaard uit):
+- pop-up "Ben je beschikbaar voor een klus in de buurt?" bij het openen van de app op de telefoon: 2 uur, 4 uur, rest van de dag of nu niet; één keer per keer openen, na het webapp-venster;
+- plek één keer opgevraagd met toestemming, afgerond op ongeveer 100 meter, alleen binnen Nederland; zonder toestemming telt de woonplaats;
+- balk "Je bent beschikbaar tot ..." met Stoppen; de planner wist verlopen beschikbaarheid en de plek elk kwartier;
+- groene stippen voor beschikbare creators op de teamkaart.
+Nog te bouwen: de creatorkaart zelf met klussen in de buurt en de pushmelding.
+
 - Creator opent de kaart in de webapp en ziet open klussen in de buurt: zaak, wat er te doen is, beloning, afstand.
 - Plek van de creator: alleen op het moment dat de kaart open is, na toestemming van de telefoon. Niet opgeslagen als spoor.
 - Eerlijk over "altijd de locatie zichtbaar": een webapp kan de locatie niet op de achtergrond volgen (iPhone en Android staan dat niet toe), en voor de AVG is permanent volgen zwaar te verantwoorden. Alternatief dat hetzelfde doel haalt:

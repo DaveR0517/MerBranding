@@ -32,6 +32,9 @@ return [
     // Kaart: adressen opzoeken bij PDOK (App\Services\Geocoder). Uit in de tests, die PDOK nabootsen.
     'geocoderen' => (bool) env('MEBRANDING_GEOCODEREN', true),
 
+    // Creatorkant van de kaart: "Ik ben beschikbaar" en straks klussen in de buurt. Uit tot er genoeg creators per regio zijn (Dave, 24 nov).
+    'creator_kaart' => (bool) env('MEBRANDING_CREATOR_KAART', false),
+
     /*
     | Creatorniveaus: punten per samenwerking en vergoeding (CLAUDE.md 7.1 en 7.2).
     | Alleen Platinum en Elite krijgen geld (besloten 18-11-2026). Punten en bedragen: VOORSTEL.

@@ -9,7 +9,7 @@ export type KaartPunt = {
     sleutel: string;
     lat: number;
     lng: number;
-    kleur: 'klant' | 'eigen' | 'zonder' | 'aanmelding';
+    kleur: 'klant' | 'eigen' | 'zonder' | 'aanmelding' | 'beschikbaar';
     teller?: number;
     titel: string;
     popup: ReactNode;
@@ -20,6 +20,7 @@ const KLEUR: Record<KaartPunt['kleur'], string> = {
     eigen: 'background:linear-gradient(135deg,#D9303E,#614ED9);border:3px solid #fff',
     zonder: 'background:#8A86A3;border:3px solid #fff',
     aanmelding: 'background:#fff;border:3px dashed #D97706',
+    beschikbaar: 'background:#10B981;border:3px solid #fff',
 };
 
 function icoon(p: KaartPunt): L.DivIcon {

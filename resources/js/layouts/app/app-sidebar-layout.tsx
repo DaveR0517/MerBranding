@@ -8,6 +8,7 @@ import {
     OnderBalk,
     UitnodigingsBalk,
 } from "@/components/portaal-schil";
+import { BeschikbaarBalk, BeschikbaarVenster } from "@/components/beschikbaar-venster";
 import { WebappVenster } from "@/components/webapp-venster";
 import type { AppLayoutProps } from "@/types";
 
@@ -25,11 +26,13 @@ export default function AppSidebarLayout({
                 <InloggenAlsBalk />
                 <AppSidebarHeader breadcrumbs={breadcrumbs} />
                 <UitnodigingsBalk />
+                <BeschikbaarBalk />
                 {children}
             </AppContent>
             <OnderBalk />
             <Flash />
             <WebappVenster />
+            <BeschikbaarVenster />
         </AppShell>
     );
 }

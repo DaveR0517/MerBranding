@@ -2,6 +2,7 @@
 
 use App\Jobs\MeldGebruiksrechten;
 use App\Jobs\VerversEigenKanalen;
+use App\Services\Beschikbaarheid;
 use App\Services\Geld;
 use App\Services\Samenwerking;
 use App\Services\Score;
@@ -16,6 +17,9 @@ Schedule::call(fn () => app(Samenwerking::class)->rondAf())->name('samenwerkinge
 Schedule::call(fn () => app(Samenwerking::class)->verlopenUitnodigingen())->name('uitnodigingen-verlopen')->everyFifteenMinutes()->withoutOverlapping();
 
 Schedule::command('horizon:snapshot')->everyFiveMinutes();
+
+// Ik ben beschikbaar: verlopen beschikbaarheid en de gedeelde plek wissen.
+Schedule::call(fn () => app(Beschikbaarheid::class)->opruimen())->name('beschikbaarheid-opruimen')->everyFifteenMinutes()->withoutOverlapping();
 
 // Score en niveau (module score-en-klassement, docs/02 flow 5). Tijden en ritme: VOORSTEL.
 Schedule::call(fn () => app(Score::class)->herberekenAlles())->name('score-herberekenen')->dailyAt('03:17')->withoutOverlapping();

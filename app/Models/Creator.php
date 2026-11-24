@@ -14,7 +14,7 @@ class Creator extends Model
 
     protected function casts(): array
     {
-        return ['niches' => 'array', 'birthdate' => 'date', 'payout_details' => 'encrypted'];
+        return ['niches' => 'array', 'birthdate' => 'date', 'payout_details' => 'encrypted', 'beschikbaar_tot' => 'datetime', 'beschikbaar_lat' => 'float', 'beschikbaar_lng' => 'float'];
     }
 
     public function user(): BelongsTo

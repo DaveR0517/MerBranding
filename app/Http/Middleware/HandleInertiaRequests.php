@@ -54,6 +54,7 @@ class HandleInertiaRequests extends Middleware
             ],
             'unread' => fn () => $request->user()?->unreadNotifications()->count() ?? 0,
             'tellers' => fn () => $this->tellers($request),
+            'beschikbaarheid' => fn () => $this->beschikbaarheid($request),
             'flash' => fn () => ['melding' => $request->session()->get('melding'), 'uitnodiging' => $request->session()->get('uitnodiging')],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
@@ -110,5 +111,17 @@ class HandleInertiaRequests extends Middleware
 
         return collect($per)->filter(fn ($aantal, $route) => $aantal > 0 && Route::has($route))
             ->mapWithKeys(fn ($aantal, $route) => [parse_url(route($route), PHP_URL_PATH) => $aantal])->all();
+    }
+
+    /** Creator: staat "Ik ben beschikbaar" aan, tot wanneer, en met of zonder plek. */
+    private function beschikbaarheid(Request $request): ?array
+    {
+        $creator = config('mebranding.creator_kaart') && $this->omgeving($request) === 'creator' ? $request->user()->creator : null;
+        if (! $creator) {
+            return null;
+        }
+        $actief = $creator->beschikbaar_tot?->isFuture() ?? false;
+
+        return ['actief' => $actief, 'tot' => $actief ? $creator->beschikbaar_tot->toIso8601String() : null, 'plek' => $actief && $creator->beschikbaar_lat !== null];
     }
 }
