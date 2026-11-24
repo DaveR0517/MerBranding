@@ -1,7 +1,7 @@
 import { Link, router, usePage } from "@inertiajs/react";
 import { Copy, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { isActief, navigatie } from "@/lib/portaal";
+import { isActief, navigatie, tellerTekst, tellerVan } from "@/lib/portaal";
 import { terug } from "@/routes";
 import type { Auth } from "@/types/auth";
 
@@ -18,9 +18,10 @@ function afbreekbaar(titel: string): string {
 /** Onderbalk op de telefoon (de zijbalk is daar verborgen). */
 export function OnderBalk() {
     const page = usePage();
-    const { auth, unread } = page.props as unknown as {
+    const { auth, unread, tellers } = page.props as unknown as {
         auth: Auth;
         unread: number;
+        tellers?: Record<string, number>;
     };
     const items = navigatie(auth.portal, auth.permissions).filter(
         (i) => i.mobile,
@@ -33,6 +34,7 @@ export function OnderBalk() {
         >
             {items.map((item) => {
                 const actief = isActief(item.href, page.url);
+                const aantal = tellerVan(item, tellers, unread);
 
                 return (
                     <Link
@@ -45,9 +47,12 @@ export function OnderBalk() {
                         <span className="max-w-full px-1 text-center leading-tight [hyphens:manual]">
                             {afbreekbaar(item.title)}
                         </span>
-                        {item.title === "Meldingen" && unread > 0 && (
-                            <span className="absolute top-1 right-[calc(50%-18px)] min-w-4 rounded-full bg-rood px-1 text-[10px] leading-4 text-white">
-                                {unread}
+                        {aantal > 0 && (
+                            <span
+                                className="absolute top-1 right-[calc(50%-18px)] min-w-4 rounded-full bg-rood px-1 text-[10px] leading-4 text-white"
+                                aria-label={`${aantal} open`}
+                            >
+                                {tellerTekst(aantal)}
                             </span>
                         )}
                     </Link>

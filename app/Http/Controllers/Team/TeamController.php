@@ -29,8 +29,7 @@ class TeamController extends Controller
         $user = $request->user();
 
         return Inertia::render('team/werkvoorraad', [
-            'tasks' => Task::open()->with(['collaboration.company', 'company'])->orderByRaw('due_at is null, due_at')->get()
-                ->filter(fn (Task $t) => ! $t->permission || $user->can($t->permission))
+            'tasks' => Task::open()->voor($user)->with(['collaboration.company', 'company'])->orderByRaw('due_at is null, due_at')->get()
                 ->map(fn (Task $t) => [
                     'id' => $t->id, 'type' => $t->type, 'title' => $t->title, 'due_at' => $t->due_at?->toIso8601String(),
                     'overdue' => $t->due_at?->isPast() ?? false, 'collaboration_id' => $t->collaboration_id,

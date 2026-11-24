@@ -102,3 +102,27 @@ export function isActief(href: string, huidigeUrl: string): boolean {
 
     return startpagina ? nu === doel : nu === doel || nu.startsWith(`${doel}/`);
 }
+
+/**
+ * Rode teller bij een menulink: Meldingen telt ongelezen meldingen, andere links de open taken
+ * die de server per pagina meestuurt (HandleInertiaRequests::tellers, sleutel is het pad).
+ */
+export function tellerVan(
+    link: Pick<PortaalLink, 'title' | 'href'>,
+    tellers: Record<string, number> | undefined,
+    unread: number,
+): number {
+    if (link.title === 'Meldingen') {
+        return unread;
+    }
+    try {
+        return tellers?.[new URL(link.href, window.location.origin).pathname] ?? 0;
+    } catch {
+        return 0;
+    }
+}
+
+/** Een teller past in een bolletje: boven de 99 wordt het 99+. */
+export function tellerTekst(aantal: number): string {
+    return aantal > 99 ? '99+' : String(aantal);
+}

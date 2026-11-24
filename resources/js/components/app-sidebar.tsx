@@ -19,12 +19,17 @@ import {
     isActief,
     navigatie,
     secties,
+    tellerTekst,
+    tellerVan,
 } from "@/lib/portaal";
 import { start } from "@/routes";
 
 export function AppSidebar() {
     const page = usePage();
     const { auth, unread } = page.props;
+    const { tellers } = page.props as unknown as {
+        tellers?: Record<string, number>;
+    };
     const huidig = page.url;
     const links = navigatie(auth.portal, auth.permissions);
 
@@ -64,7 +69,10 @@ export function AppSidebar() {
                                 </SidebarGroupLabel>
                             ))}
                         <SidebarMenu>
-                            {groep.links.map((item) => (
+                            {groep.links.map((item) => {
+                                const aantal = tellerVan(item, tellers, unread);
+
+                                return (
                                 <SidebarMenuItem key={item.title}>
                                     <SidebarMenuButton
                                         asChild
@@ -76,14 +84,18 @@ export function AppSidebar() {
                                             <span>{item.title}</span>
                                         </Link>
                                     </SidebarMenuButton>
-                                    {item.title === "Meldingen" &&
-                                        unread > 0 && (
-                                            <SidebarMenuBadge className="bg-rood text-white">
-                                                {unread}
-                                            </SidebarMenuBadge>
-                                        )}
+                                    {aantal > 0 && (
+                                        <SidebarMenuBadge
+                                            className="bg-rood text-white"
+                                            aria-label={`${aantal} open`}
+                                            data-test="teller"
+                                        >
+                                            {tellerTekst(aantal)}
+                                        </SidebarMenuBadge>
+                                    )}
                                 </SidebarMenuItem>
-                            ))}
+                                );
+                            })}
                         </SidebarMenu>
                     </SidebarGroup>
                 ))}
