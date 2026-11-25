@@ -4,6 +4,7 @@ use App\Jobs\MeldGebruiksrechten;
 use App\Jobs\VerversEigenKanalen;
 use App\Services\Dagoverzicht;
 use App\Services\Geld;
+use App\Services\Herinneringen;
 use App\Services\Samenwerking;
 use App\Services\Score;
 use Illuminate\Support\Facades\Schedule;
@@ -15,6 +16,23 @@ Schedule::call(fn () => app(Samenwerking::class)->rondAf())->name('samenwerkinge
 
 // Verlopen uitnodigingen sluiten, zodat het team opnieuw kan koppelen.
 Schedule::call(fn () => app(Samenwerking::class)->verlopenUitnodigingen())->name('uitnodigingen-verlopen')->everyFifteenMinutes()->withoutOverlapping();
+
+// Herinneringen en teamsignalen (App\Services\Herinneringen), elk maar één keer per samenwerking.
+// Ochtendronde: bezoek morgen, publicatiedag en post vergeten (sjablonen noemen 09:00). Overdag elk kwartier de rest, 's nachts geen meldingen.
+Schedule::call(function () {
+    $h = app(Herinneringen::class);
+    $h->bezoekMorgen();
+    $h->publiceerVandaag();
+    $h->post();
+})->name('herinneringen-ochtend')->dailyAt('09:03')->timezone('Europe/Amsterdam')->withoutOverlapping();
+Schedule::call(function () {
+    $h = app(Herinneringen::class);
+    $h->reageer();
+    $h->deadline();
+    $h->teLaat();
+    $h->zoekenLang();
+    $h->controleLang();
+})->name('herinneringen-overdag')->cron('7,22,37,52 8-20 * * *')->timezone('Europe/Amsterdam')->withoutOverlapping();
 
 Schedule::command('horizon:snapshot')->everyFiveMinutes();
 

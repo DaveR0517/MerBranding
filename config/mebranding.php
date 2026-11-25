@@ -55,6 +55,11 @@ return [
         'review_cutoff' => '16:00', // VOORSTEL: later binnen = volgende werkdag
         'measure_days' => 14,
         'late_cancel_hours' => 48, // VOORSTEL: annuleren ondernemer korter dan dit voor het bezoek = verbruikt
+        // Herinneringen (App\Services\Herinneringen). De reactieherinnering gaat halverwege invitation_hours.
+        'deadline_reminder_hours' => 48, // c-deadline; de tekst van het sjabloon noemt 48 uur
+        'post_reminder_days' => 2, // c-herinnering-post: dagen na de publicatiedatum zonder link
+        'zoeken_lang_workdays' => 3, // VOORSTEL: t-zoeken-lang, werkdagen zonder creator na de aanvraag
+        'controle_lang_workdays' => 1, // VOORSTEL: t-controle-lang, werkdagen dat een versie ter controle staat
     ],
 
     /*

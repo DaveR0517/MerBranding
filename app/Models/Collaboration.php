@@ -34,6 +34,7 @@ class Collaboration extends Model
             'live_at' => 'datetime',
             'measure_until' => 'datetime',
             'completed_at' => 'datetime',
+            'herinneringen' => 'array',
         ];
     }
 
