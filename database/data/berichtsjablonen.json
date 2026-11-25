@@ -72,7 +72,7 @@
    "Abonnement en geld",
    "Teamsignalen"
   ],
-  "aantal": 106,
+  "aantal": 109,
   "kanaalregel": {
    "verplicht": "Altijd per mail: vaste afspraken, bevestigingen, account, geld en juridisch (besluit Dave 25-11-2026).",
    "aan": "Per mail, de ontvanger kan het uitzetten.",
@@ -785,7 +785,7 @@
    "rolnaam": "Ondernemer",
    "soort": "Samenwerking",
    "gebeurtenis": "Samenwerking geannuleerd",
-   "ontvanger": "Eigenaar, creator (als gekoppeld)",
+   "ontvanger": "Eigenaar van het bedrijf",
    "moment": "Na annuleren door ondernemer of team",
    "kanalen": {
     "inapp": "verplicht",
@@ -798,13 +798,13 @@
     "aanhef": "Hoi {voornaam},",
     "alineas": [
      "De samenwerking \"{samenwerking}\" is gestopt.",
-     "Je tegoed staat weer klaar. Wil je een nieuwe samenwerking aanvragen?"
+     "{tegoed} Wil je een nieuwe samenwerking aanvragen?"
     ],
     "knop": "Nieuwe samenwerking",
     "deeplink": "Aanvraag"
    },
-   "push": "Samenwerking {samenwerking} gestopt. Je tegoed staat weer klaar.",
-   "inapp": "\"{samenwerking}\" is gestopt. Je tegoed staat weer klaar.",
+   "push": "Samenwerking {samenwerking} gestopt. {tegoed}",
+   "inapp": "\"{samenwerking}\" is gestopt. {tegoed}",
    "bron": "flows_spec flow 4",
    "status": "Voorstel",
    "urgentie": null,
@@ -816,7 +816,8 @@
     "creator": "Sophie de Vries",
     "samenwerking": "Wintersoep en appeltaart",
     "datum": "do 19 nov",
-    "tijd": "14:00"
+    "tijd": "14:00",
+    "tegoed": "Je tegoed staat weer klaar."
    },
    "vorm": "standaard"
   },
@@ -1385,7 +1386,7 @@
     "aanhef": "Hoi {voornaam},",
     "alineas": [
      "Er is feedback op je video voor {zaak}: {aantal} opmerkingen.",
-     "Pas de video aan en upload een nieuwe versie voor {datum}."
+     "Pas de video aan en upload een nieuwe versie in de app."
     ],
     "knop": "Bekijk de feedback",
     "deeplink": "CreatorOpdracht/s8"
@@ -1550,13 +1551,13 @@
     "aanhef": "Hoi {voornaam},",
     "alineas": [
      "Je post voor {zaak} staat live. Goed gedaan.",
-     "Je vergoeding van {bedrag} gaat mee in de betaalrun van vrijdag {datum}. We meten de cijfers 14 dagen."
+     "We meten de cijfers 14 dagen. Je ziet ze in de app."
     ],
     "knop": "Bekijk je cijfers",
     "deeplink": "CreatorOpdracht/s10"
    },
-   "push": "Live. {bedrag} gaat mee in de betaalrun van vrijdag.",
-   "inapp": "Live bij {zaak}. Vergoeding opeisbaar.",
+   "push": "Live: je post voor {zaak} staat online. We meten 14 dagen.",
+   "inapp": "Live bij {zaak}. We meten de cijfers 14 dagen.",
    "bron": "FO §3.6, besluit W6 en W7",
    "status": "FO",
    "urgentie": null,
@@ -2702,16 +2703,12 @@
       "{apparaat}"
      ],
      [
-      "Plaats",
-      "{plaats}"
-     ],
-     [
       "Moment",
       "{datum} om {tijd}"
      ]
     ]
    },
-   "push": "Nieuwe inlog op {apparaat} in {plaats}. Jij?",
+   "push": "Nieuwe inlog op {apparaat}. Was jij dit?",
    "inapp": "Nieuwe inlog vanaf {apparaat}.",
    "bron": "FO §3.6",
    "status": "FO",
@@ -3342,13 +3339,13 @@
    "email": {
     "aanhef": "Hoi {voornaam},",
     "alineas": [
-     "Bij \"{samenwerking}\" is Niet verschenen vastgelegd. Tegoed is teruggezet."
+     "Bij \"{samenwerking}\" is Niet verschenen vastgelegd: {toelichting}."
     ],
     "knop": "Bekijk",
     "deeplink": "AdminSamenwerkingDetail/snv"
    },
    "push": "Niet verschenen bij {zaak}.",
-   "inapp": "Niet verschenen: {samenwerking}.",
+   "inapp": "Niet verschenen: {samenwerking}. {toelichting}.",
    "bron": "FO §8.4",
    "status": "FO",
    "urgentie": "Hoog",
@@ -3356,7 +3353,8 @@
     "voornaam": "Eva",
     "zaak": "Lunchroom Bloesem",
     "samenwerking": "Kerstlunch Franeker",
-    "creator": "Sophie de Vries"
+    "creator": "Sophie de Vries",
+    "toelichting": "de creator kwam niet, het tegoed is teruggezet"
    },
    "vorm": "standaard"
   },
@@ -4459,6 +4457,118 @@
     "voornaam": "Sanne",
     "zaak": "Lunchroom Bloesem",
     "plaats": "Franeker"
+   }
+  },
+  {
+   "id": "c-gestopt",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Samenwerking",
+   "gebeurtenis": "Samenwerking geannuleerd (aan de creator)",
+   "ontvanger": "Creator van de samenwerking",
+   "moment": "Na annuleren door ondernemer of team",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "aan"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Klus gestopt: {zaak}",
+   "vorm": "standaard",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "De klus \"{samenwerking}\" bij {zaak} gaat niet door. Je hoeft niet meer langs te gaan.",
+     "Dit telt niet mee voor je score. Nieuwe klussen zie je in de app."
+    ],
+    "knop": "Bekijk je klussen"
+   },
+   "push": "Klus {zaak} gaat niet door. Je hoeft niet langs te gaan.",
+   "inapp": "\"{samenwerking}\" bij {zaak} gaat niet door.",
+   "bron": "Dave 25-11-2026",
+   "status": "Voorstel",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sophie",
+    "zaak": "Lunchroom Bloesem",
+    "samenwerking": "Kerstlunch Franeker",
+    "datum": "donderdag 19 november",
+    "vestiging": "Franeker"
+   }
+  },
+  {
+   "id": "o-zaak-afwezig",
+   "rol": "o",
+   "rolnaam": "Ondernemer",
+   "soort": "Bezoek",
+   "gebeurtenis": "Niet verschenen: de zaak was er niet toen de creator kwam",
+   "ontvanger": "Eigenaar van het bedrijf",
+   "moment": "Na vastleggen door het team",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "aan"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Over het bezoek van {datum}",
+   "vorm": "standaard",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "{creator} kwam op {datum} langs bij {vestiging}, maar trof niemand aan.",
+     "Het tegoed voor deze samenwerking is daarmee verbruikt. Wil je een nieuw bezoek plannen? Neem contact op of vraag een nieuwe samenwerking aan."
+    ],
+    "knop": "Bekijk de samenwerking"
+   },
+   "push": "Bezoek {datum}: er was niemand bij {vestiging}. Het tegoed is verbruikt.",
+   "inapp": "Bezoek van {creator} op {datum}: er was niemand aanwezig. Tegoed verbruikt.",
+   "bron": "Dave 25-11-2026",
+   "status": "Voorstel",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne",
+    "zaak": "Lunchroom Bloesem",
+    "samenwerking": "Kerstlunch Franeker",
+    "datum": "donderdag 19 november",
+    "vestiging": "Franeker",
+    "creator": "Sophie de Vries"
+   }
+  },
+  {
+   "id": "c-zaak-afwezig",
+   "rol": "c",
+   "rolnaam": "Creator",
+   "soort": "Bezoek",
+   "gebeurtenis": "Niet verschenen: de zaak was er niet toen de creator kwam",
+   "ontvanger": "Creator van de samenwerking",
+   "moment": "Na vastleggen door het team",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "aan"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Over het bezoek van {datum}",
+   "vorm": "standaard",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Je kwam op {datum} langs bij {zaak}, maar er was niemand. Vervelend.",
+     "Dit telt niet tegen je Betrouwbaarheid. We laten je weten of er een nieuw bezoek komt."
+    ],
+    "knop": "Bekijk de klus"
+   },
+   "push": "Je kwam voor niets bij {zaak}. Dit telt niet tegen je.",
+   "inapp": "Bezoek {zaak} op {datum}: de zaak was er niet. Telt niet tegen je.",
+   "bron": "Dave 25-11-2026",
+   "status": "Voorstel",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sophie",
+    "zaak": "Lunchroom Bloesem",
+    "samenwerking": "Kerstlunch Franeker",
+    "datum": "donderdag 19 november",
+    "vestiging": "Franeker"
    }
   }
  ]

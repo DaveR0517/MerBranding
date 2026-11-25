@@ -10,7 +10,6 @@ use Illuminate\Auth\Events\Login;
  * g-nieuw-apparaat: inloggen op een apparaat dat deze gebruiker nog niet eerder gebruikte.
  * Een apparaat is browser plus besturingssysteem uit de user agent (geen versies, geen IP-adres), bewaard in users.apparaten.
  * De eerste inlog ooit legt alleen vast; Inloggen als (Super Admin) telt niet mee.
- * {plaats} is niet betrouwbaar te bepalen zonder IP-locatie: daar staat "onbekende plaats".
  */
 class MeldNieuwApparaat
 {
@@ -34,7 +33,7 @@ class MeldNieuwApparaat
         if ($nieuw) {
             $nu = now('Europe/Amsterdam');
             $this->melder->stuur('g-nieuw-apparaat', $user, [
-                'apparaat' => $apparaat, 'plaats' => 'onbekende plaats', 'datum' => $nu->translatedFormat('l j F'), 'tijd' => $nu->format('H:i'),
+                'apparaat' => $apparaat, 'datum' => $nu->translatedFormat('l j F'), 'tijd' => $nu->format('H:i'),
             ], route('security.edit'));
         }
     }

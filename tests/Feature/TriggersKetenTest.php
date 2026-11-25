@@ -100,7 +100,7 @@ test('beoordelen: c-beoordeling met sterren, bij een laag oordeel t-oordeel-laag
     ketenNietVerstuurd($this->ruben, 't-oordeel-laag');
 });
 
-test('niet verschenen (creator): eigenaar, creator en accountmanager; ondernemer niet aanwezig: geen van deze sjablonen', function () {
+test('niet verschenen: creator kwam niet of zaak was er niet, elk met de eigen sjablonen', function () {
     $c = ketenSamenwerking($this->bloesem, $this->marit, Status::BezoekGepland, ['visit_at' => now()->subHour()]);
     $this->keten->nietVerschenen($c, $this->eva, 'creator');
 
@@ -112,7 +112,10 @@ test('niet verschenen (creator): eigenaar, creator en accountmanager; ondernemer
     $ander = ketenSamenwerking($this->bloesem, $this->marit, Status::BezoekGepland, ['visit_at' => now()->subHour()]);
     Notification::fake();
     $this->keten->nietVerschenen($ander, $this->eva, 'ondernemer');
-    expect(ketenAantal('o-niet-verschenen') + ketenAantal('c-niet-verschenen') + ketenAantal('t-niet-verschenen'))->toBe(0);
+    expect(ketenAantal('o-niet-verschenen') + ketenAantal('c-niet-verschenen'))->toBe(0);
+    ketenVerstuurd($this->sanne, 'o-zaak-afwezig');
+    ketenVerstuurd($this->marit->user, 'c-zaak-afwezig');
+    ketenVerstuurd($this->eva, 't-niet-verschenen', fn ($n) => str_contains($n->vars['toelichting'], 'verbruikt'));
 });
 
 test('uitnodiging verlopen zonder reactie: t-geweigerd naar het koppelteam', function () {
@@ -123,32 +126,33 @@ test('uitnodiging verlopen zonder reactie: t-geweigerd naar het koppelteam', fun
     ketenVerstuurd($this->eva, 't-geweigerd', fn ($n) => $n->vars['creator'] === 'Marit Postma' && str_contains($n->url, "/team/samenwerkingen/{$c->id}"));
 });
 
-test('live met vergoeding: c-live en c-uitbetaling-gepland met bedrag en vrijdag; zonder vergoeding geen c-live', function () {
+test('live: c-live altijd; met vergoeding ook c-uitbetaling-gepland met bedrag en vrijdag', function () {
     $c = ketenSamenwerking($this->bloesem, $this->sophie, Status::Goedgekeurd, ['fee_cents' => 15000, 'publish_on' => today()]);
     $this->keten->liveKoppelen($c, $this->sophie->user, 'instagram', 'https://www.instagram.com/p/abc');
 
     $vrijdag = today()->next('Friday')->translatedFormat('j F');
-    ketenVerstuurd($this->sophie->user, 'c-live', fn ($n) => $n->vars['bedrag'] === '€ 150' && $n->vars['datum'] === $vrijdag);
+    ketenVerstuurd($this->sophie->user, 'c-live');
     ketenVerstuurd($this->sophie->user, 'c-uitbetaling-gepland', fn ($n) => $n->vars['bedrag'] === '€ 150' && $n->vars['datum'] === $vrijdag);
     ketenVerstuurd($this->lid, 'o-live');
 
     $gratis = ketenSamenwerking($this->bloesem, $this->marit, Status::Goedgekeurd, ['fee_cents' => 0, 'publish_on' => today()]);
     $this->keten->liveKoppelen($gratis, $this->marit->user, 'instagram', 'https://www.instagram.com/p/def');
-    ketenNietVerstuurd($this->marit->user, 'c-live');
+    ketenVerstuurd($this->marit->user, 'c-live');
+    ketenNietVerstuurd($this->marit->user, 'c-uitbetaling-gepland');
 });
 
-test('annuleren: o-gestopt naar eigenaar en creator, elk met de eigen link; laat geannuleerd geen "tegoed staat klaar"', function () {
+test('annuleren: o-gestopt naar de eigenaar met de juiste tegoedregel, c-gestopt naar de creator', function () {
     $c = ketenSamenwerking($this->bloesem, $this->marit, Status::BezoekGepland, ['visit_at' => now()->addDays(5)]);
     $this->keten->annuleren($c, $this->eva, 'Zaak dicht', true);
-    ketenVerstuurd($this->sanne, 'o-gestopt', fn ($n) => str_contains($n->url, "/ondernemer/samenwerkingen/{$c->id}"));
-    ketenVerstuurd($this->marit->user, 'o-gestopt', fn ($n) => str_contains($n->url, "/creator/klussen/{$c->id}"));
+    ketenVerstuurd($this->sanne, 'o-gestopt', fn ($n) => str_contains($n->url, "/ondernemer/samenwerkingen/{$c->id}") && $n->vars['tegoed'] === 'Je tegoed staat weer klaar.');
+    ketenVerstuurd($this->marit->user, 'c-gestopt', fn ($n) => str_contains($n->url, "/creator/klussen/{$c->id}"));
     ketenNietVerstuurd($this->lid, 'o-gestopt');
 
     $laat = ketenSamenwerking($this->bloesem, $this->marit, Status::BezoekGepland, ['visit_at' => now()->addHours(5)]);
     Notification::fake();
     $this->keten->annuleren($laat, $this->sanne, 'Toch niet', false);
-    ketenNietVerstuurd($this->sanne, 'o-gestopt');
-    ketenVerstuurd($this->marit->user, 'o-gestopt');
+    ketenVerstuurd($this->sanne, 'o-gestopt', fn ($n) => str_contains($n->vars['tegoed'], 'verbruikt'));
+    ketenVerstuurd($this->marit->user, 'c-gestopt');
 });
 
 test('eigenaar-sjablonen gaan niet naar leden: o-meekijken, o-goedgekeurd, o-beoordelen', function () {
@@ -277,7 +281,7 @@ test('g-nieuw-apparaat: de eerste inlog legt vast, een ander apparaat meldt, het
     ketenNietVerstuurd($user, 'g-nieuw-apparaat');
 
     $inloggen($iphone);
-    ketenVerstuurd($user, 'g-nieuw-apparaat', fn ($n) => $n->vars['apparaat'] === 'Safari op iPhone' && $n->vars['plaats'] === 'onbekende plaats');
+    ketenVerstuurd($user, 'g-nieuw-apparaat', fn ($n) => $n->vars['apparaat'] === 'Safari op iPhone');
 
     $inloggen($iphone);
     $inloggen($windows);

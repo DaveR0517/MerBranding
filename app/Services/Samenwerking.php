@@ -384,14 +384,15 @@ class Samenwerking
 
             $this->melder->stuur('o-live', $this->ondernemers($c), $this->vars($c), $this->urlOndernemer($c));
 
-            // c-live noemt de vergoeding en de betaalrun; zonder geldbedrag (Bronze tot Gold) past die tekst niet en gaat hij niet.
+            $this->melder->stuur('c-live', $door, $this->vars($c), $this->urlCreator($c));
+
+            // Vergoeding in geld (vanaf Platinum): opeisbaar in de eerstvolgende betaalrun.
             if ($c->fee_cents > 0) {
                 $vrijdag = now()->isFriday() ? today() : today()->next('Friday');
                 Payout::create(['creator_id' => $c->creator_id, 'collaboration_id' => $c->id, 'amount_cents' => $c->fee_cents, 'run_on' => $vrijdag]);
                 $this->logboek($c, $door, 'vergoeding_opeisbaar', null, null, null, ['bedrag' => $c->fee_cents, 'betaalrun' => $vrijdag->toDateString()]);
                 // De sjablonen zeggen zelf "vrijdag {datum}": de datum zonder weekdag, het bedrag zonder "gratis bezoek".
                 $betaalrun = array_merge($this->vars($c), ['datum' => $vrijdag->translatedFormat('j F'), 'bedrag' => self::euro($c->fee_cents)]);
-                $this->melder->stuur('c-live', $door, $betaalrun, $this->urlCreator($c));
                 $this->melder->stuur('c-uitbetaling-gepland', $door, $betaalrun, $this->urlCreator($c));
             }
         });
@@ -450,12 +451,9 @@ class Samenwerking
             $this->naar($c, Status::Geannuleerd, $door, $reden, force: true);
             $this->werk->sluit($c);
 
-            // o-gestopt zegt "Je tegoed staat weer klaar": bij laat annuleren zijn de punten verbruikt, dan gaat hij niet naar de ondernemer.
-            $vars = array_merge($this->vars($c), ['reden' => $reden]);
-            if (! $laat) {
-                $this->melder->stuur('o-gestopt', $this->eigenaren($c), $vars, $this->urlOndernemer($c));
-            }
-            $this->melder->stuur('o-gestopt', $c->creator?->user, $vars, $this->urlCreator($c));
+            $tegoed = $laat ? 'Het tegoed is verbruikt, omdat de samenwerking kort voor het bezoek stopte.' : 'Je tegoed staat weer klaar.';
+            $this->melder->stuur('o-gestopt', $this->eigenaren($c), array_merge($this->vars($c), ['tegoed' => $tegoed]), $this->urlOndernemer($c));
+            $this->melder->stuur('c-gestopt', $c->creator?->user, $this->vars($c), $this->urlCreator($c));
         });
     }
 
@@ -473,12 +471,16 @@ class Samenwerking
             $this->naar($c, Status::NietVerschenen, $door, $wie === 'creator' ? 'Creator kwam niet' : 'Ondernemer was er niet', force: true);
             $this->werk->sluit($c);
 
-            // De sjablonen gaan over een creator die niet kwam (tegoed terug). Voor een ondernemer die er niet was bestaat geen sjabloon.
             if ($wie === 'creator') {
                 $this->melder->stuur('o-niet-verschenen', $this->eigenaren($c), $this->vars($c), $this->urlOndernemer($c));
                 $this->melder->stuur('c-niet-verschenen', $c->creator->user, $this->vars($c), $this->urlCreator($c));
-                $this->melder->stuur('t-niet-verschenen', $this->accountmanager($c), $this->vars($c), $this->urlTeam($c));
+            } else {
+                $this->melder->stuur('o-zaak-afwezig', $this->eigenaren($c), $this->vars($c), $this->urlOndernemer($c));
+                $this->melder->stuur('c-zaak-afwezig', $c->creator->user, $this->vars($c), $this->urlCreator($c));
             }
+            $this->melder->stuur('t-niet-verschenen', $this->accountmanager($c), array_merge($this->vars($c), [
+                'toelichting' => $wie === 'creator' ? 'de creator kwam niet, het tegoed is teruggezet' : 'de zaak was er niet, het tegoed is verbruikt',
+            ]), $this->urlTeam($c));
         });
     }
 
