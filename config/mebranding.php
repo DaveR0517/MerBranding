@@ -63,6 +63,13 @@ return [
     ],
 
     /*
+    | Drempels voor teamsignalen. VOORSTEL.
+    */
+    'drempels' => [
+        'oordeel_laag' => 3, // VOORSTEL: t-oordeel-laag bij een beoordeling van minder dan dit aantal sterren (1 tot 5)
+    ],
+
+    /*
     | Tweestapsverificatie verplicht voor het team (CLAUDE.md 5). Standaard aan.
     | Uit te zetten met MEBRANDING_TEAM_2FA=false (tests, eerste inrichting) of door een Super Admin in Instellingen.
     */

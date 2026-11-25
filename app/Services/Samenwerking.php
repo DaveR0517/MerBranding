@@ -193,6 +193,7 @@ class Samenwerking
             $this->logboek($c, null, 'uitnodiging_verlopen', null, null, null, ['creator' => $u->creator->user->name]);
             if ($c->status === Status::CreatorZoeken) {
                 $this->werk->open('geweigerd', "Geen reactie van {$u->creator->user->name}: {$c->company->name}, opnieuw koppelen", $c, 'samenwerkingen.koppelen', now()->addWeekday());
+                $this->melder->stuur('t-geweigerd', $this->melder->team('samenwerkingen.koppelen'), $this->vars($c, $u->creator), $this->urlTeam($c));
             }
         }
 
@@ -279,7 +280,7 @@ class Samenwerking
             $deadline = Werkvoorraad::controleDeadline(now());
             $this->werk->open('contentcontrole', "Controleren: {$c->company->name}, versie {$versie}", $c, 'content.controleren', $deadline);
             $this->melder->stuur('t-ter-controle', $this->melder->team('content.controleren'), $this->vars($c), $this->urlTeam($c));
-            $this->melder->stuur('o-meekijken', $this->ondernemers($c), $this->vars($c), $this->urlOndernemer($c));
+            $this->melder->stuur('o-meekijken', $this->eigenaren($c), $this->vars($c), $this->urlOndernemer($c));
 
             return $v;
         });
@@ -365,7 +366,7 @@ class Samenwerking
 
             $datum = $publicatiedatum->translatedFormat('l j F');
             $this->melder->stuur('c-goedgekeurd', $c->creator->user, array_merge($this->vars($c), ['datum' => $datum]), $this->urlCreator($c));
-            $this->melder->stuur('o-goedgekeurd', $this->ondernemers($c), array_merge($this->vars($c), ['datum' => $datum]), $this->urlOndernemer($c));
+            $this->melder->stuur('o-goedgekeurd', $this->eigenaren($c), array_merge($this->vars($c), ['datum' => $datum]), $this->urlOndernemer($c));
         });
     }
 
@@ -382,13 +383,16 @@ class Samenwerking
             $this->naar($c, Status::Live, $door, $url);
 
             $this->melder->stuur('o-live', $this->ondernemers($c), $this->vars($c), $this->urlOndernemer($c));
-            $this->melder->stuur('c-live', $door, $this->vars($c), $this->urlCreator($c));
 
+            // c-live noemt de vergoeding en de betaalrun; zonder geldbedrag (Bronze tot Gold) past die tekst niet en gaat hij niet.
             if ($c->fee_cents > 0) {
                 $vrijdag = now()->isFriday() ? today() : today()->next('Friday');
                 Payout::create(['creator_id' => $c->creator_id, 'collaboration_id' => $c->id, 'amount_cents' => $c->fee_cents, 'run_on' => $vrijdag]);
                 $this->logboek($c, $door, 'vergoeding_opeisbaar', null, null, null, ['bedrag' => $c->fee_cents, 'betaalrun' => $vrijdag->toDateString()]);
-                $this->melder->stuur('c-uitbetaling-gepland', $door, array_merge($this->vars($c), ['datum' => $vrijdag->translatedFormat('l j F')]), $this->urlCreator($c));
+                // De sjablonen zeggen zelf "vrijdag {datum}": de datum zonder weekdag, het bedrag zonder "gratis bezoek".
+                $betaalrun = array_merge($this->vars($c), ['datum' => $vrijdag->translatedFormat('j F'), 'bedrag' => self::euro($c->fee_cents)]);
+                $this->melder->stuur('c-live', $door, $betaalrun, $this->urlCreator($c));
+                $this->melder->stuur('c-uitbetaling-gepland', $door, $betaalrun, $this->urlCreator($c));
             }
         });
     }
@@ -400,7 +404,7 @@ class Samenwerking
         $this->vereisStatus($c, [Status::Live]);
         $c->forceFill(['completed_at' => now()]);
         $this->naar($c, Status::Afgerond, null, 'Meetperiode van '.config('mebranding.timers.measure_days').' dagen voorbij');
-        $this->melder->stuur('o-beoordelen', $this->ondernemers($c), $this->vars($c), $this->urlOndernemer($c));
+        $this->melder->stuur('o-beoordelen', $this->eigenaren($c), $this->vars($c), $this->urlOndernemer($c));
     }
 
     /** Afronden van alle samenwerkingen waarvan de meetperiode voorbij is. Draait elk uur via de planner. */
@@ -420,7 +424,11 @@ class Samenwerking
         }
         $c->review()->create(['user_id' => $door->id, 'rating' => $cijfer, 'body' => $tekst]);
         $this->logboek($c, $door, 'beoordeeld', null, null, null, ['cijfer' => $cijfer]);
-        $this->melder->stuur('c-beoordeling', $c->creator->user, array_merge($this->vars($c), ['cijfer' => $cijfer]), $this->urlCreator($c));
+        $vars = array_merge($this->vars($c), ['sterren' => $cijfer]);
+        $this->melder->stuur('c-beoordeling', $c->creator->user, $vars, $this->urlCreator($c));
+        if ($cijfer < (int) config('mebranding.drempels.oordeel_laag')) {
+            $this->melder->stuur('t-oordeel-laag', $this->accountmanager($c)->merge($this->melder->admins()), $vars, $this->urlTeam($c));
+        }
     }
 
     /* ----------------------------------------------------------------- Uitzonderingen (tegoed volgens CLAUDE.md 7.2, VOORSTEL) */
@@ -442,7 +450,12 @@ class Samenwerking
             $this->naar($c, Status::Geannuleerd, $door, $reden, force: true);
             $this->werk->sluit($c);
 
-            $this->melder->stuur('o-gestopt', $this->ondernemers($c)->push($c->creator?->user), array_merge($this->vars($c), ['reden' => $reden]), $this->urlOndernemer($c));
+            // o-gestopt zegt "Je tegoed staat weer klaar": bij laat annuleren zijn de punten verbruikt, dan gaat hij niet naar de ondernemer.
+            $vars = array_merge($this->vars($c), ['reden' => $reden]);
+            if (! $laat) {
+                $this->melder->stuur('o-gestopt', $this->eigenaren($c), $vars, $this->urlOndernemer($c));
+            }
+            $this->melder->stuur('o-gestopt', $c->creator?->user, $vars, $this->urlCreator($c));
         });
     }
 
@@ -459,8 +472,13 @@ class Samenwerking
             }
             $this->naar($c, Status::NietVerschenen, $door, $wie === 'creator' ? 'Creator kwam niet' : 'Ondernemer was er niet', force: true);
             $this->werk->sluit($c);
-            $this->melder->stuur('o-niet-verschenen', $this->ondernemers($c), $this->vars($c), $this->urlOndernemer($c));
-            $this->melder->stuur('c-niet-verschenen', $c->creator->user, $this->vars($c), $this->urlCreator($c));
+
+            // De sjablonen gaan over een creator die niet kwam (tegoed terug). Voor een ondernemer die er niet was bestaat geen sjabloon.
+            if ($wie === 'creator') {
+                $this->melder->stuur('o-niet-verschenen', $this->eigenaren($c), $this->vars($c), $this->urlOndernemer($c));
+                $this->melder->stuur('c-niet-verschenen', $c->creator->user, $this->vars($c), $this->urlCreator($c));
+                $this->melder->stuur('t-niet-verschenen', $this->accountmanager($c), $this->vars($c), $this->urlTeam($c));
+            }
         });
     }
 
@@ -511,9 +529,28 @@ class Samenwerking
 
     /* ----------------------------------------------------------------- Ontvangers, variabelen en links (ook voor App\Services\Herinneringen) */
 
+    /** Eigenaar en leden van het bedrijf. */
     public function ondernemers(Collaboration $c)
     {
         return $c->company->users()->get();
+    }
+
+    /** Alleen de eigenaren, voor sjablonen met ontvanger "Eigenaar". */
+    public function eigenaren(Collaboration $c)
+    {
+        return $c->company->owners()->get();
+    }
+
+    /** De accountmanager van het bedrijf; zonder accountmanager het team dat koppelt. */
+    public function accountmanager(Collaboration $c)
+    {
+        return $c->company->accountManager ? collect([$c->company->accountManager]) : $this->melder->team('samenwerkingen.koppelen');
+    }
+
+    /** Geldbedrag voor in een bericht: "€ 50" of "€ 12,50". */
+    public static function euro(int $centen): string
+    {
+        return '€ '.number_format($centen / 100, $centen % 100 ? 2 : 0, ',', '.');
     }
 
     /** Variabelen voor de berichtsjablonen. */

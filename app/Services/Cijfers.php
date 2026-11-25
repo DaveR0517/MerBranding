@@ -129,12 +129,16 @@ class Cijfers
     /** Het team bevestigt dat de handmatige cijfers kloppen met de screenshot. */
     public function akkoord(Collaboration $c, User $door): int
     {
-        $aantal = StatSnapshot::whereIn('publication_id', $c->publications()->select('id'))
-            ->where('source', StatSnapshot::HANDMATIG)->whereNull('reviewed_at')
-            ->update(['reviewed_at' => now(), 'reviewed_by' => $door->id]);
+        $open = StatSnapshot::whereIn('publication_id', $c->publications()->select('id'))
+            ->where('source', StatSnapshot::HANDMATIG)->whereNull('reviewed_at');
+        $indieners = User::whereIn('id', (clone $open)->select('entered_by'))->get();
+        $aantal = $open->update(['reviewed_at' => now(), 'reviewed_by' => $door->id]);
 
         $this->log($c, $door, 'cijfers_gecontroleerd', null, ['regels' => $aantal]);
         $this->sluitTaakAlsKlaar($c);
+
+        // c-publicatie-beoordeeld: wie de cijfers indiende, hoort dat ze zijn goedgekeurd. Afkeuren bestaat niet (het team corrigeert).
+        $this->melder->stuur('c-publicatie-beoordeeld', $indieners, ['zaak' => $c->company->name, 'samenwerking' => $c->title], route('creator.klus', $c));
 
         return $aantal;
     }
