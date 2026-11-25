@@ -3,12 +3,18 @@
 namespace App\Models\Concerns;
 
 /**
- * Een herinnering of signaal gaat maar één keer per ding: de sleutel komt met het moment in de json-kolom `herinneringen`.
- * Gebruikt door samenwerkingen (keten) en gebruikers (account).
+ * Een bericht maar één keer per ding: de kolom herinneringen (json) houdt per sleutel bij wanneer het ging.
+ * Eerst vastleggen, dan versturen: liever één keer te weinig dan dubbel. Gebruikt door samenwerkingen, gebruikers, bedrijven,
+ * creators, koppelingen, cursusdagen, inschrijvingen en betaalruns.
  */
 trait HeeftHerinneringen
 {
-    /** Legt vast dat de herinnering gaat. False als hij al eerder ging. Eerst vastleggen, dan versturen: liever één keer te weinig dan dubbel. */
+    public function initializeHeeftHerinneringen(): void
+    {
+        $this->mergeCasts(['herinneringen' => 'array']);
+    }
+
+    /** Legt vast dat het bericht met deze sleutel gaat. False als het al eerder ging. */
     public function markeerHerinnering(string $sleutel): bool
     {
         $gehad = $this->herinneringen ?? [];

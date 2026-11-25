@@ -5,6 +5,7 @@ namespace App\Listeners;
 use App\Events\SamenwerkingGewijzigd;
 use App\Models\CreatorProfiel;
 use App\Models\Status;
+use App\Services\Geld;
 use App\Services\Melder;
 
 /**
@@ -28,7 +29,7 @@ class UitbetaalgegevensControleren
         }
 
         $this->melder->stuur('c-gegevens-ontbreken', $creator->user, [
-            'bedrag' => '€ '.number_format($c->fee_cents / 100, 2, ',', '.'),
+            'bedrag' => Geld::euro($c->fee_cents),
         ], route('creator.profiel.account'));
     }
 }

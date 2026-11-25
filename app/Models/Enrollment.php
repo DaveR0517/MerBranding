@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HeeftHerinneringen;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -9,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 /** Inschrijving van een student voor een cursusdag, met wachtlijst, check-in en betaalstatus (placeholder). */
 class Enrollment extends Model
 {
+    use HeeftHerinneringen;
+
     public const INGESCHREVEN = 'ingeschreven';
 
     public const WACHTLIJST = 'wachtlijst';

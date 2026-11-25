@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HeeftHerinneringen;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Creator extends Model
 {
+    use HeeftHerinneringen;
+
     protected $fillable = ['user_id', 'level', 'kind', 'niches', 'birthdate', 'city', 'instagram', 'tiktok', 'vat_status', 'payout_details', 'status'];
 
     protected $hidden = ['payout_details'];

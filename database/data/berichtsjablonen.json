@@ -2337,11 +2337,11 @@
     "push": "aan"
    },
    "uitzetten": "Nee",
-   "onderwerp": "Over {n} dagen: {cursusdag} in {plaats}",
+   "onderwerp": "{wanneer}: {cursusdag} in {plaats}",
    "email": {
     "aanhef": "Hoi {voornaam},",
     "alineas": [
-     "Over {n} dagen is het zover. Neem je telefoon mee, volledig opgeladen, en een powerbank."
+     "{wanneer} is het zover. Neem je telefoon mee, volledig opgeladen, en een powerbank."
     ],
     "knop": "Programma bekijken",
     "deeplink": "AcademyCursusdag",
@@ -2360,8 +2360,8 @@
      ]
     ]
    },
-   "push": "Over {n} dagen: {cursusdag} in {plaats}, {tijd}.",
-   "inapp": "{cursusdag} over {n} dagen.",
+   "push": "{wanneer}: {cursusdag} in {plaats}, {tijd}.",
+   "inapp": "{cursusdag} {wanneer_kort}.",
    "bron": "FO §3.6",
    "status": "FO",
    "urgentie": null,
@@ -2371,7 +2371,9 @@
     "n": "7",
     "plaats": "Harlingen",
     "tijd": "09:30",
-    "adres": "Zuiderkruis 12, Leeuwarden"
+    "adres": "Zuiderkruis 12, Leeuwarden",
+    "wanneer": "Over 7 dagen",
+    "wanneer_kort": "over 7 dagen"
    },
    "vorm": "bevestiging"
   },
@@ -3846,17 +3848,17 @@
     "push": "aan"
    },
    "uitzetten": "E-mail per medewerker",
-   "onderwerp": "Tokens: {aantal} verlopen binnenkort",
+   "onderwerp": "Koppelingen: {aantal} verlopen of bijna verlopen",
    "email": {
     "aanhef": "Hoi {voornaam},",
     "alineas": [
-     "{aantal} koppelingen verlopen binnen 7 dagen. De eigenaren hebben een melding gekregen."
+     "{aantal} koppelingen zijn verlopen of verlopen binnen 7 dagen. De eigenaren hebben een melding gekregen."
     ],
     "knop": "API-status",
     "deeplink": "AdminApi"
    },
-   "push": "{aantal} tokens verlopen binnenkort.",
-   "inapp": "{aantal} koppelingen verlopen binnen 7 dagen.",
+   "push": "{aantal} koppelingen verlopen of zijn bijna verlopen.",
+   "inapp": "{aantal} koppelingen zijn verlopen of verlopen binnen 7 dagen.",
    "bron": "FO §8.4",
    "status": "FO",
    "urgentie": "Normaal",

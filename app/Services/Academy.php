@@ -82,6 +82,28 @@ class Academy
     }
 
     /**
+     * Cursusdag bijwerken (team). Nooit minder plekken dan er bezet zijn; meer plekken laten de wachtlijst doorschuiven.
+     * Veranderen datum, tijd of plaats, dan krijgen deelnemers en wachtenden a-gewijzigd met wat er anders is.
+     *
+     * @param  array<string, mixed>  $data
+     * @return list<Enrollment> wie van de wachtlijst doorschoof
+     */
+    public function cursusdagBijwerken(CourseDay $dag, array $data): array
+    {
+        $data['max_participants'] = max($data['max_participants'], $dag->bezet());
+        $voor = $this->moment($dag);
+        $dag->update($data);
+        $wijziging = $this->wijziging($voor, $this->moment($dag->fresh()));
+
+        if ($wijziging !== null && $dag->status === CourseDay::OPEN && $dag->date->gte(today())) {
+            $wie = $dag->enrollments()->whereIn('status', [Enrollment::INGESCHREVEN, Enrollment::WACHTLIJST])->with('user')->get()->pluck('user');
+            $this->melder->stuur('a-gewijzigd', $wie, ['cursusdag' => $dag->naam(), 'wijziging' => $wijziging], route('academy.cursusdag', $dag));
+        }
+
+        return $this->doorschuiven($dag);
+    }
+
+    /**
      * Vrije plekken gaan naar de eerste op de wachtlijst. Die krijgt de melding "plek vrij" met een betaaltermijn (VOORSTEL 24 uur).
      *
      * @return list<Enrollment> wie doorschoof
@@ -263,6 +285,29 @@ class Academy
         ActivityLog::create(['user_id' => $user->id, 'subject_type' => $creator->getMorphClass(), 'subject_id' => $creator->id, 'event' => 'academy_word_creator', 'reason' => $certificaat->number]);
 
         return $creator;
+    }
+
+    /** Datum, tijden en plaats zoals deelnemers ze lezen. */
+    private function moment(CourseDay $dag): array
+    {
+        return [
+            'datum' => $dag->date->translatedFormat('l j F'),
+            'tijd' => $dag->tijden(),
+            'plaats' => $dag->adres(),
+        ];
+    }
+
+    /** "nieuwe datum zaterdag 12 december, nieuwe tijd 10:00 - 16:00", of null als niets veranderde. */
+    private function wijziging(array $voor, array $na): ?string
+    {
+        $delen = [];
+        foreach (['datum' => 'nieuwe datum', 'tijd' => 'nieuwe tijd', 'plaats' => 'nieuwe plaats'] as $sleutel => $label) {
+            if ($voor[$sleutel] !== $na[$sleutel]) {
+                $delen[] = "{$label} {$na[$sleutel]}";
+            }
+        }
+
+        return $delen ? implode(', ', $delen) : null;
     }
 
     private function log(?User $door, Enrollment $inschrijving, string $event, ?string $reden = null): void

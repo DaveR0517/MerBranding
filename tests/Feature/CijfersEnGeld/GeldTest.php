@@ -125,7 +125,7 @@ test('op de 1e van de maand: tegoed toekennen en factuur maken, eenmalig, met me
         ->and(Invoice::where('number', 'MB-2027-0001')->exists())->toBeTrue();
 });
 
-test('herinneringen 7 en 14 dagen na de vervaldatum, elk één keer, ook naar de accountmanager', function () {
+test('herinneringen de dag na de vervaldatum en 7 dagen later, elk één keer, ook naar de accountmanager', function () {
     $this->travelTo(CarbonImmutable::parse('2026-12-01 06:10'));
     $this->geld->maandelijks();
     $f = Invoice::sole();
@@ -133,13 +133,15 @@ test('herinneringen 7 en 14 dagen na de vervaldatum, elk één keer, ook naar de
     $eva = ($this->wie)('eva');
     $herinneringen = fn (User $u) => Notification::sent($u, PlatformMelding::class)->filter(fn ($n) => $n->template->key === 'o-factuur-vervallen')->count();
 
-    $this->travelTo(CarbonImmutable::parse('2026-12-21 09:05')); // 6 dagen te laat
+    $this->travelTo(CarbonImmutable::parse('2026-12-15 09:05')); // vervaldatum zelf
     expect($this->geld->herinneringen())->toBe(0);
-    $this->travelTo(CarbonImmutable::parse('2026-12-22 09:05')); // 7 dagen
+    $this->travelTo(CarbonImmutable::parse('2026-12-16 09:05')); // dag na de vervaldatum
     expect($this->geld->herinneringen())->toBe(1)->and($this->geld->herinneringen())->toBe(0);
     expect($herinneringen($sanne))->toBe(1)->and($herinneringen($eva))->toBe(1);
 
-    $this->travelTo(CarbonImmutable::parse('2026-12-29 09:05')); // 14 dagen
+    $this->travelTo(CarbonImmutable::parse('2026-12-22 09:05')); // 6 dagen later: nog niet
+    expect($this->geld->herinneringen())->toBe(0);
+    $this->travelTo(CarbonImmutable::parse('2026-12-23 09:05')); // 7 dagen na de eerste herinnering
     expect($this->geld->herinneringen())->toBe(1)->and($f->fresh()->reminders_sent)->toBe(2);
     $this->travelTo(CarbonImmutable::parse('2027-01-10 09:05'));
     expect($this->geld->herinneringen())->toBe(0);

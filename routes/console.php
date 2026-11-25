@@ -2,6 +2,7 @@
 
 use App\Jobs\MeldGebruiksrechten;
 use App\Jobs\VerversEigenKanalen;
+use App\Services\Bewaking;
 use App\Services\Dagoverzicht;
 use App\Services\Geld;
 use App\Services\Herinneringen;
@@ -65,3 +66,27 @@ Schedule::call(function () {
     $h->eersteCijfers();
     app(Uitnodiging::class)->herinnerVerloopt();
 })->name('keten-en-account-overdag')->cron('9,24,39,54 8-20 * * *')->timezone('Europe/Amsterdam')->withoutOverlapping();
+
+/* Geld, koppelingen en academy (App\Services\Bewaking): elk bericht maar één keer per ding. Tijden: VOORSTEL, 's nachts geen meldingen. */
+
+// Ochtendronde: maandoverzicht en maandscore (alleen op de eerste werkdag), koppelingen die verlopen of weg zijn,
+// cursusdagen over 7 dagen en morgen, cursusdagen onder het minimum en tegoed dat aan het eind van de maand over is.
+Schedule::call(function () {
+    $b = app(Bewaking::class);
+    $b->maandoverzicht();
+    $b->maandscore();
+    $b->koppelingen();
+    $b->cursusdagHerinnering();
+    $b->academyMinimum();
+    $b->tegoedNietBenut();
+})->name('bewaking-ochtend')->dailyAt('08:13')->timezone('Europe/Amsterdam')->withoutOverlapping();
+
+// Overdag elk uur: tegoed bijna op en een samengestelde betaalrun die klaarstaat voor vrijgave.
+Schedule::call(function () {
+    $b = app(Bewaking::class);
+    $b->tegoed();
+    $b->vrijgave();
+})->name('bewaking-overdag')->cron('43 8-20 * * *')->timezone('Europe/Amsterdam')->withoutOverlapping();
+
+// Woensdag: uitbetaalgegevens ontbreken, zodat de creator voor donderdag aanvult en meegaat in de betaalrun van vrijdag.
+Schedule::call(fn () => app(Bewaking::class)->gegevensOntbreken())->name('bewaking-uitbetaalgegevens')->wednesdays()->at('10:17')->timezone('Europe/Amsterdam')->withoutOverlapping();
