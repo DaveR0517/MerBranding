@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Site;
 
 use App\Http\Controllers\Controller;
-use App\Mail\LeadBevestiging;
 use App\Mail\NieuweLead;
 use App\Models\Lead;
 use App\Models\Uitnodigingslink;
+use App\Services\Melder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -114,7 +114,10 @@ class LeadController extends Controller
         ]);
 
         Mail::to(config('mebranding.team_email'))->queue(new NieuweLead($lead));
-        Mail::to($lead->email, $lead->name)->queue(new LeadBevestiging($lead));
+        app(Melder::class)->stuurNaarAdres($lead->isOndernemer() ? 'o-kennismaking' : 'c-aanmelding', $lead->email, $lead->name, [
+            'zaak' => $lead->company ?: $lead->name,
+            'plaats' => $lead->city ?? '',
+        ], 'https://'.config('mebranding.domains.site'));
 
         return redirect()->route($backRoute)->with('aangemeld', true)->withoutCookie(Uitnodigingslink::COOKIE);
     }

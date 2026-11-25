@@ -28,7 +28,7 @@ class PlatformMelding extends Notification implements ShouldQueue
         $push = $this->template->wants('push') && $notifiable instanceof User && $notifiable->pushAbonnementen()->exists();
 
         return array_values(array_filter([
-            ($this->template->channels['inapp'] ?? 'aan') !== 'nee' ? 'database' : null,
+            $notifiable instanceof User && ($this->template->channels['inapp'] ?? 'aan') !== 'nee' ? 'database' : null,
             $this->template->wants('email') || ($this->template->vangnet() && ! $push) ? 'mail' : null,
             $push ? WebpushKanaal::class : null,
         ]));

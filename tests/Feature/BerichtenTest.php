@@ -41,7 +41,7 @@ test('teamsignalen met samenvatting en berichten zonder mail gaan niet los per m
 test('elke mailvorm rendert met de voorbeeldwaarden en zonder losse {variabelen}', function () {
     $bron = collect(json_decode(file_get_contents(database_path('data/berichtsjablonen.json')), true)['sjablonen'])->keyBy('id');
 
-    foreach (['o-bezoek-vast', 'c-welkom', 'o-factuur', 'g-beveiliging', 'o-welkom', 'c-feedback'] as $key) {
+    foreach (['o-bezoek-vast', 'c-welkom', 'o-factuur', 'g-beveiliging', 'o-welkom', 'c-feedback', 'o-kennismaking', 'c-aanmelding'] as $key) {
         $vars = array_map('strval', $bron[$key]['voorbeeld']) + ['email' => 'sophie@voorbeeld.nl', 'niveau' => 'Bronze', 'bedrag' => '€ 295,00', 'omschrijving' => 'Abonnement Groei', 'datum' => 'ma 1 dec', 'tijd' => '14:05'];
         $html = (string) (new PlatformMelding(MessageTemplate::where('key', $key)->sole(), $vars, 'https://mebranding.nl/app'))->toMail($this->user)->render();
         expect($html)->not->toMatch('/\{[a-z]+\}/')->and($html)->toContain('Team MEBRANDING');

@@ -72,7 +72,7 @@
    "Abonnement en geld",
    "Teamsignalen"
   ],
-  "aantal": 105,
+  "aantal": 106,
   "kanaalregel": {
    "verplicht": "Altijd per mail: vaste afspraken, bevestigingen, account, geld en juridisch (besluit Dave 25-11-2026).",
    "aan": "Per mail, de ontvanger kan het uitzetten.",
@@ -1702,23 +1702,22 @@
    "rolnaam": "Creator",
    "soort": "Creator en niveau",
    "gebeurtenis": "Aanmelding ingediend",
-   "ontvanger": "Aanmelder (contentcontrole krijgt een werkblok)",
-   "moment": "Direct na versturen",
+   "ontvanger": "Aanmelder (heeft nog geen account)",
+   "moment": "Direct na versturen van het aanmeldformulier op de website",
    "kanalen": {
-    "inapp": "verplicht",
+    "inapp": "nee",
     "email": "verplicht",
-    "push": "uit"
+    "push": "nee"
    },
    "uitzetten": "Nee",
-   "onderwerp": "We hebben je aanmelding ontvangen",
+   "onderwerp": "Je aanmelding als creator is binnen",
    "email": {
     "aanhef": "Hoi {voornaam},",
     "alineas": [
-     "Bedankt voor je aanmelding als creator bij MEBRANDING.",
-     "We bekijken je profiel en voorbeeldwerk binnen 5 werkdagen. Je ziet de status altijd in de app."
+     "Bedankt voor je aanmelding als creator bij MEBRANDING. We hebben alles goed ontvangen.",
+     "Ons team bekijkt je profiel en je werk. Binnen 5 werkdagen hoor je of we je kunnen toelaten, of dat we nog iets van je nodig hebben.",
+     "Heb je in de tussentijd een vraag? Beantwoord deze mail gewoon."
     ],
-    "knop": "Bekijk je aanmelding",
-    "deeplink": "CreatorIntake/singediend",
     "gegevens": [
      [
       "Status",
@@ -1728,10 +1727,12 @@
       "Reactie",
       "Binnen 5 werkdagen"
      ]
-    ]
+    ],
+    "knop": "Naar mebranding.nl",
+    "deeplink": "Site"
    },
-   "push": "Aanmelding ontvangen. Binnen 5 werkdagen hoor je van ons.",
-   "inapp": "Je aanmelding is in behandeling.",
+   "push": "",
+   "inapp": "",
    "bron": "FO §3.6",
    "status": "FO",
    "urgentie": null,
@@ -4408,6 +4409,57 @@
     "reden": "het token is verlopen"
    },
    "vorm": "standaard"
+  },
+  {
+   "id": "o-kennismaking",
+   "rol": "o",
+   "rolnaam": "Ondernemer",
+   "soort": "Samenwerking",
+   "gebeurtenis": "Kennismaking aangevraagd via de website",
+   "ontvanger": "Aanvrager (heeft nog geen account)",
+   "moment": "Direct na versturen van het kennismakingsformulier op de website",
+   "kanalen": {
+    "inapp": "nee",
+    "email": "verplicht",
+    "push": "nee"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "We hebben je aanvraag ontvangen",
+   "vorm": "bevestiging",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Bedankt voor je interesse in MEBRANDING. We hebben je aanvraag voor een kennismaking goed ontvangen.",
+     "Binnen twee werkdagen nemen we contact met je op om een moment te plannen. In dat gesprek kijken we samen welke creators en welk pakket bij je zaak passen.",
+     "Heb je in de tussentijd een vraag? Beantwoord deze mail gewoon."
+    ],
+    "gegevens": [
+     [
+      "Zaak",
+      "{zaak}"
+     ],
+     [
+      "Plaats",
+      "{plaats}"
+     ],
+     [
+      "Reactie",
+      "Binnen 2 werkdagen"
+     ]
+    ],
+    "knop": "Naar mebranding.nl",
+    "deeplink": "Site"
+   },
+   "push": "",
+   "inapp": "",
+   "bron": "LeadBevestiging (website), 25-11-2026",
+   "status": "Voorstel",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne",
+    "zaak": "Lunchroom Bloesem",
+    "plaats": "Franeker"
+   }
   }
  ]
 }

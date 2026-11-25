@@ -1,16 +1,22 @@
 <?php
 
-use App\Mail\LeadBevestiging;
 use App\Mail\NieuweLead;
 use App\Models\Lead;
+use App\Notifications\PlatformMelding;
+use Database\Seeders\MessageTemplateSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
 
 uses(RefreshDatabase::class);
 
 const SITE = 'http://mebranding.test';
 
-beforeEach(fn () => Mail::fake());
+beforeEach(function () {
+    Mail::fake();
+    Notification::fake();
+    $this->seed(MessageTemplateSeeder::class);
+});
 
 test('kennismaking ondernemer wordt opgeslagen en gemaild', function () {
     $this->post(SITE.'/kennismaken', [
@@ -36,7 +42,7 @@ test('kennismaking ondernemer wordt opgeslagen en gemaild', function () {
         ->and($lead->consent_at)->not->toBeNull();
 
     Mail::assertQueued(NieuweLead::class, fn ($m) => $m->hasTo(config('mebranding.team_email')));
-    Mail::assertQueued(LeadBevestiging::class, fn ($m) => $m->hasTo('sanne@voorbeeld.nl'));
+    Notification::assertSentOnDemand(PlatformMelding::class, fn ($m, $kanalen, $n) => $m->template->key === 'o-kennismaking' && $n->routes['mail'] === ['sanne@voorbeeld.nl' => 'Sanne Hiemstra']);
 });
 
 test('aanmelding creator wordt opgeslagen met extra velden', function () {

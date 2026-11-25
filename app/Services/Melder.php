@@ -35,6 +35,19 @@ class Melder
         }
     }
 
+    /** Mail naar iemand zonder account (bijvoorbeeld een aanmelding via de website), met hetzelfde sjabloon. */
+    public function stuurNaarAdres(string $key, string $email, string $naam, array $vars, string $url): void
+    {
+        $template = MessageTemplate::where('key', $key)->first();
+        if (! $template) {
+            Log::warning("Berichtsjabloon {$key} ontbreekt");
+
+            return;
+        }
+
+        Notification::route('mail', [$email => $naam])->notify(new PlatformMelding($template, ['voornaam' => Str::before($naam, ' ')] + array_map('strval', $vars), $url));
+    }
+
     /** Beveiligingsmail na een nieuw wachtwoord (g-beveiliging), ook als de gebruiker het zelf deed. */
     public function wachtwoordGewijzigd(User $user): void
     {
