@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HeeftHerinneringen;
 use Illuminate\Database\Eloquent\Model;
 
 /** De wekelijkse betaalrun op vrijdag (W7). Betaalpartij nog niet gekozen: uitbetalen via export. */
 class PayoutRun extends Model
 {
+    use HeeftHerinneringen;
+
     public const SAMENGESTELD = 'samengesteld';
 
     public const UITBETAALD = 'uitbetaald';

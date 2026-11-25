@@ -41,6 +41,7 @@ class Gebruiksrechten
     /**
      * Dagelijks: verlopen rechten op verlopen zetten en de eigenaar melden bij 30 en 7 dagen voor het einde.
      * Eén melding per drempel; valt een recht meteen onder twee drempels, dan één melding.
+     * Alleen advertentierechten: daarover gaat het sjabloon o-rechten (verlengen voor advertenties).
      */
     public function meld(): int
     {
@@ -49,7 +50,7 @@ class Gebruiksrechten
         $drempels = collect(config('content.usage_rights.notify_days'))->map(fn ($d) => (int) $d)->sortDesc()->values();
         $verstuurd = 0;
 
-        UsageRight::with('collaboration.company')->where('status', 'actief')
+        UsageRight::with('collaboration.company')->where('status', 'actief')->where('kind', 'advertentie')
             ->whereDate('ends_on', '>=', today())
             ->whereDate('ends_on', '<=', today()->addDays($drempels->max()))
             ->get()

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HeeftHerinneringen;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -14,6 +15,8 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  */
 class SocialAccount extends Model
 {
+    use HeeftHerinneringen;
+
     public const STATUSSEN = ['niet_gekoppeld', 'handmatig', 'gekoppeld', 'verlopen', 'fout'];
 
     /** Eigenaar van de eigen kanalen van MEBRANDING (geen model, geen klant). */

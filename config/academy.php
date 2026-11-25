@@ -14,6 +14,9 @@ return [
     // VOORSTEL: standaard maximaal aantal deelnemers per cursusdag.
     'max_participants' => 16,
 
+    // VOORSTEL (uit sjabloon t-academy): minder inschrijvingen dan dit, een week voor de dag, geeft academybeheer een signaal.
+    'min_participants' => 6,
+
     // VOORSTEL: wie van de wachtlijst een plek krijgt, heeft zoveel uur om te betalen.
     'offer_hours' => 24,
 

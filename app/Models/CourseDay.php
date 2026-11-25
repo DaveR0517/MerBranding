@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HeeftHerinneringen;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -10,6 +11,8 @@ use Illuminate\Support\Carbon;
 /** Een live cursusdag van de academy. "Vol" volgt uit het aantal plekken, niet uit de status. */
 class CourseDay extends Model
 {
+    use HeeftHerinneringen;
+
     public const OPEN = 'open';
 
     public const AFGESLOTEN = 'afgesloten';
@@ -64,6 +67,12 @@ class CourseDay extends Model
     public function datumTekst(): string
     {
         return $this->date->translatedFormat('D j M');
+    }
+
+    /** Locatie, straat en plaats in één regel. */
+    public function adres(): string
+    {
+        return implode(', ', array_filter([$this->location_name, $this->address, $this->city]));
     }
 
     public function tijden(): string

@@ -132,7 +132,7 @@ class Geld
                 $this->melder->stuur('c-uitbetaling-verstuurd', $p->creator->user, [
                     'bedrag' => self::euro($p->amount_cents), 'zaak' => $p->collaboration->company->name,
                     'samenwerking' => $p->collaboration->title, 'nummer' => $p->collaboration->number,
-                ], route('creator.klus', $p->collaboration_id));
+                ], route('creator.profiel.vergoedingen'));
             }
         });
     }
@@ -218,7 +218,10 @@ class Geld
         return $prefix.str_pad((string) $volgend, 4, '0', STR_PAD_LEFT);
     }
 
-    /** Herinneringen 7 en 14 dagen na de vervaldatum (o-factuur-vervallen), naar de eigenaren en de accountmanager. */
+    /**
+     * Herinneringen na de vervaldatum (o-factuur-vervallen, dagen uit config geld.reminder_days), naar de eigenaren en de accountmanager.
+     * Bij de eerste herinnering krijgt Financieel een teamsignaal (t-factuur), één keer per factuur.
+     */
     public function herinneringen(): int
     {
         $aantal = 0;
@@ -230,10 +233,14 @@ class Geld
             if ($nodig <= $f->reminders_sent) {
                 continue;
             }
+            $eerste = (int) $f->reminders_sent === 0;
             $f->update(['reminders_sent' => $nodig, 'last_reminder_at' => now()]);
-            $this->melder->stuur('o-factuur-vervallen', $f->company->owners()->get()->push($f->company->accountManager), [
-                'nummer' => $f->number, 'bedrag' => self::euro($f->total_cents), 'datum' => $f->due_on->translatedFormat('l j F'), 'zaak' => $f->company->name,
-            ], route('ondernemer.facturen.toon', $f));
+            $vars = ['nummer' => $f->number, 'bedrag' => self::euro($f->total_cents), 'datum' => $f->due_on->translatedFormat('l j F'), 'zaak' => $f->company->name];
+            $this->melder->stuur('o-factuur-vervallen', $f->company->owners()->get()->push($f->company->accountManager), $vars, route('ondernemer.facturen.toon', $f));
+            if ($eerste) {
+                $financieel = $this->melder->team('financieel.bekijken')->merge($this->melder->team('financieel.beheren'));
+                $this->melder->stuur('t-factuur', $financieel, $vars, route('team.financieel.factuur', $f));
+            }
             $aantal++;
         }
 

@@ -61,10 +61,7 @@ class AcademyController extends Controller implements HasMiddleware
 
     public function cursusdagBijwerken(Request $request, CourseDay $dag): RedirectResponse
     {
-        $data = $this->dagGegevens($request, $dag);
-        $data['max_participants'] = max($data['max_participants'], $dag->bezet());
-        $dag->update($data);
-        $geschoven = $this->academy->doorschuiven($dag); // meer plekken: de wachtlijst schuift door
+        $geschoven = $this->academy->cursusdagBijwerken($dag, $this->dagGegevens($request, $dag));
 
         return back()->with('melding', 'Cursusdag bijgewerkt.'.($geschoven ? ' '.count($geschoven).' van de wachtlijst kregen een plek.' : ''));
     }
