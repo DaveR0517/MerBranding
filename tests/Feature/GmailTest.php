@@ -6,6 +6,7 @@ use Database\Seeders\DemoSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 
 /* Gmail van MEBRANDING in het portaal: wie ziet welk postvak (besluit Dave, 27 nov) en lezen, beantwoorden, archiveren. */
 uses(RefreshDatabase::class);
@@ -104,4 +105,25 @@ test('lezen, beantwoorden en archiveren via Gmail, namens het juiste postvak; ge
 
     // Zonder akkoord van Eline: geen toegang tot haar postvak.
     $this->actingAs($this->dave)->post(APP_GM.'/team/kanalen/mail/eline@mebranding.nl/t1/antwoord', ['tekst' => 'x'])->assertForbidden();
+});
+
+test('mailer gmail: portaalmail gaat via de Gmail API vanuit support@, Bcc blijft bezorgd', function () {
+    config(['mail.default' => 'gmail', 'mail.from.address' => 'support@mebranding.nl']);
+    Http::fake([
+        'oauth2.googleapis.com/*' => Http::response(['access_token' => 'tok', 'expires_in' => 3600]),
+        'gmail.googleapis.com/*' => Http::response(['id' => 'm1']),
+    ]);
+
+    Mail::raw('Hallo', fn ($m) => $m->to('klant@voorbeeld.nl')->bcc('stil@voorbeeld.nl')->subject('Test'));
+
+    Http::assertSent(function (Request $r) {
+        if (! str_ends_with($r->url(), '/messages/send')) {
+            return false;
+        }
+        $ruw = base64_decode(strtr($r['raw'], '-_', '+/'));
+
+        return str_contains($ruw, 'To: klant@voorbeeld.nl') && str_starts_with($ruw, 'Bcc: stil@voorbeeld.nl') && str_contains($ruw, 'support@mebranding.nl');
+    });
+    // Token aangevraagd namens support@ (sub in de JWT).
+    Http::assertSent(fn (Request $r) => str_contains($r->url(), 'oauth2') && str_contains(base64_decode(strtr(explode('.', $r['assertion'])[1], '-_', '+/')), '"sub":"support@mebranding.nl"'));
 });
