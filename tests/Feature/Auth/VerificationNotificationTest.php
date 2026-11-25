@@ -3,7 +3,8 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\User;
-use Illuminate\Auth\Notifications\VerifyEmail;
+use App\Notifications\PlatformMelding;
+use Database\Seeders\MessageTemplateSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Laravel\Fortify\Features;
@@ -16,6 +17,7 @@ class VerificationNotificationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->seed(MessageTemplateSeeder::class);
 
         $this->skipUnlessFortifyHas(Features::emailVerification());
     }
@@ -30,7 +32,7 @@ class VerificationNotificationTest extends TestCase
             ->post(route('verification.send'))
             ->assertRedirect(url('/'));
 
-        Notification::assertSentTo($user, VerifyEmail::class);
+        Notification::assertSentTo($user, PlatformMelding::class, fn ($m) => $m->template->key === 'g-bevestig-email');
     }
 
     public function test_does_not_send_verification_notification_if_email_is_verified(): void

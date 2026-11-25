@@ -115,7 +115,7 @@ test('berichtsjabloon: verplicht kanaal kan niet uit, tekst wijzigen wordt gelog
     expect(ActivityLog::where('event', 'berichtsjabloon_gewijzigd')->sole()->data['oud']['subject'])->toBe('Je rechten zijn gewijzigd');
 
     // Een kanaal dat niet vastligt mag wel uit.
-    $n = MessageTemplate::where('key', 'o-aangevraagd')->sole();
+    $n = MessageTemplate::where('key', 'o-maandoverzicht')->sole();
     $this->actingAs($this->baas)->put(TB_APP."/team/berichtsjablonen/{$n->id}", ['subject' => $n->subject, 'inapp' => $n->inapp, 'email' => $n->email, 'channels' => ['email' => 'uit'] + $n->channels])
         ->assertSessionHasNoErrors();
     expect($n->fresh()->channels['email'])->toBe('uit');

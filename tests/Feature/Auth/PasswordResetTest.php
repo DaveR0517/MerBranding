@@ -3,7 +3,8 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\User;
-use Illuminate\Auth\Notifications\ResetPassword;
+use App\Notifications\PlatformMelding;
+use Database\Seeders\MessageTemplateSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Password;
@@ -17,6 +18,7 @@ class PasswordResetTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->seed(MessageTemplateSeeder::class);
 
         $this->skipUnlessFortifyHas(Features::resetPasswords());
     }
@@ -36,7 +38,7 @@ class PasswordResetTest extends TestCase
 
         $this->post(route('password.email'), ['email' => $user->email]);
 
-        Notification::assertSentTo($user, ResetPassword::class);
+        Notification::assertSentTo($user, PlatformMelding::class, fn ($m) => $m->template->key === 'g-wachtwoord-vergeten');
     }
 
     public function test_reset_password_screen_can_be_rendered()
@@ -47,8 +49,8 @@ class PasswordResetTest extends TestCase
 
         $this->post(route('password.email'), ['email' => $user->email]);
 
-        Notification::assertSentTo($user, ResetPassword::class, function ($notification) {
-            $response = $this->get(route('password.reset', $notification->token));
+        Notification::assertSentTo($user, PlatformMelding::class, function ($notification) {
+            $response = $this->get(route('password.reset', self::token($notification)));
 
             $response->assertOk();
 
@@ -64,9 +66,9 @@ class PasswordResetTest extends TestCase
 
         $this->post(route('password.email'), ['email' => $user->email]);
 
-        Notification::assertSentTo($user, ResetPassword::class, function ($notification) use ($user) {
+        Notification::assertSentTo($user, PlatformMelding::class, function ($notification) use ($user) {
             $response = $this->post(route('password.update'), [
-                'token' => $notification->token,
+                'token' => self::token($notification),
                 'email' => $user->email,
                 'password' => 'password',
                 'password_confirmation' => 'password',
@@ -106,5 +108,11 @@ class PasswordResetTest extends TestCase
         ]);
 
         $response->assertSessionHasErrors('email');
+    }
+
+    /** Het token uit de link in de mail (g-wachtwoord-vergeten). */
+    private static function token(PlatformMelding $melding): string
+    {
+        return basename(parse_url($melding->url, PHP_URL_PATH));
     }
 }
