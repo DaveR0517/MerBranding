@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Http\Controllers\Site\LeadController;
 use App\Mail\ScreeningBericht;
 use App\Models\ActivityLog;
 use App\Models\Creator;
@@ -34,7 +35,24 @@ class Screening
             'due_at' => now()->addWeekdays($dagen),
         ]);
 
-        return ScreeningAanmelding::updateOrCreate(['lead_id' => $lead->id], ['task_id' => $taak->id]);
+        $aanmelding = ScreeningAanmelding::updateOrCreate(['lead_id' => $lead->id], ['task_id' => $taak->id]);
+        $this->melder->stuur('t-aanmelding', $this->melder->team('creators.screenen'), [
+            'naam' => $lead->name, 'plaats' => $lead->city ?? 'onbekende plaats', 'soort' => $this->soort($lead),
+        ], route('team.screening.toon', $lead));
+
+        return $aanmelding;
+    }
+
+    /** Wat voor creator iemand zegt te zijn, voor t-aanmelding: "creator (Food en lifestyle)" of gewoon "creator". */
+    private function soort(Lead $lead): string
+    {
+        $data = $lead->data ?? [];
+        if (isset(CreatorProfiel::SOORTEN[$data['soort'] ?? ''])) {
+            return CreatorProfiel::SOORTEN[$data['soort']];
+        }
+        $keuze = collect(LeadController::CREATORSOORTEN)->first(fn ($s) => $s[1] === ($data['niches'] ?? null));
+
+        return $keuze ? "creator ({$keuze[0]})" : 'creator';
     }
 
     public function goedkeuren(Lead $lead, User $door, string $niveau, string $reden): Creator

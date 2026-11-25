@@ -509,13 +509,15 @@ class Samenwerking
         ]);
     }
 
-    private function ondernemers(Collaboration $c)
+    /* ----------------------------------------------------------------- Ontvangers, variabelen en links (ook voor App\Services\Herinneringen) */
+
+    public function ondernemers(Collaboration $c)
     {
         return $c->company->users()->get();
     }
 
     /** Variabelen voor de berichtsjablonen. */
-    private function vars(Collaboration $c, ?Creator $creator = null): array
+    public function vars(Collaboration $c, ?Creator $creator = null): array
     {
         $creator ??= $c->creator;
         $fee = $creator ? $creator->feeCents() : $c->fee_cents;
@@ -534,17 +536,17 @@ class Samenwerking
         ];
     }
 
-    private function urlOndernemer(Collaboration $c): string
+    public function urlOndernemer(Collaboration $c): string
     {
         return route('ondernemer.samenwerking', $c);
     }
 
-    private function urlCreator(Collaboration $c): string
+    public function urlCreator(Collaboration $c): string
     {
         return route('creator.klus', $c);
     }
 
-    private function urlTeam(Collaboration $c): string
+    public function urlTeam(Collaboration $c): string
     {
         return route('team.samenwerking', $c);
     }

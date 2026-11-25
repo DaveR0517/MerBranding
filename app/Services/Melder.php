@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 /** Verstuurt meldingen volgens de berichtsjablonen. */
 class Melder
@@ -37,8 +38,10 @@ class Melder
     /** Teamleden met een bepaald recht, plus Super Admins. */
     public function team(string $permission): Collection
     {
+        // Zonder rollen in de database (een kale installatie, tests zonder RolesSeeder) is er niemand, in plaats van een fout.
         $viaPermission = Permission::where('name', $permission)->exists() ? User::permission($permission)->get() : collect();
+        $admins = Role::where('name', 'Super Admin')->exists() ? User::role('Super Admin')->get() : collect();
 
-        return $viaPermission->merge(User::role('Super Admin')->get())->unique('id');
+        return $viaPermission->merge($admins)->unique('id');
     }
 }
