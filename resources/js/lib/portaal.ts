@@ -15,23 +15,78 @@ export type PortaalLink = {
  * Menu-indeling per omgeving: welke link in welke sectie staat. Modules leveren de links (resources/js/nav),
  * dit is de ene plek die de structuur bepaalt. Een link die hier niet staat, komt onder "Overig".
  */
-const SECTIES: Partial<Record<Exclude<Portal, 'geen'>, Record<string, string[]>>> = {
+const SECTIES: Partial<
+    Record<Exclude<Portal, 'geen'>, Record<string, string[]>>
+> = {
     ondernemer: {
         Samenwerkingen: ['Overzicht', 'Aanvragen', 'Berichten', 'Resultaten'],
-        Content: ['Contentkalender', 'Mediabibliotheek', 'Video-ideeën', 'Gebruiksrechten', 'Maandrapport'],
-        Bedrijf: ['Vestigingen', 'Gebruikers', 'Abonnement', 'Facturen', 'Koppelingen', 'Zichtbaarheid'],
+        Content: [
+            'Contentkalender',
+            'Mediabibliotheek',
+            'Video-ideeën',
+            'Gebruiksrechten',
+            'Maandrapport',
+        ],
+        Bedrijf: [
+            'Vestigingen',
+            'Gebruikers',
+            'Abonnement',
+            'Facturen',
+            'Koppelingen',
+            'Zichtbaarheid',
+        ],
         'Hulp en account': ['Aan de slag', 'Uitnodigen', 'Help', 'Account'],
     },
     team: {
-        MeStudio: ['Ontwerpen', 'Sjablonen', 'Feedplanner', 'Mediatheek', 'Eigen kanalen', 'Mail', 'Merkkit'],
-        Dagelijks: ['Dashboard', 'Werkvoorraad', 'Samenwerkingen', 'Berichten', 'Planning'],
-        Relaties: ['Bedrijven', 'Kaart', 'Content per bedrijf', 'Creators', 'Screening', 'Klassement', 'Cursusdagen', 'Sales'],
+        MeStudio: [
+            'Ontwerpen',
+            'Sjablonen',
+            'Feedplanner',
+            'Mediatheek',
+            'Eigen kanalen',
+            'Merkkit',
+        ],
+        Dagelijks: [
+            'Dashboard',
+            'Werkvoorraad',
+            'Mail',
+            'Samenwerkingen',
+            'Berichten',
+            'Planning',
+        ],
+        Relaties: [
+            'Bedrijven',
+            'Kaart',
+            'Content per bedrijf',
+            'Creators',
+            'Screening',
+            'Klassement',
+            'Cursusdagen',
+            'Sales',
+        ],
         'Cijfers en geld': ['Cijfers', 'Financieel'],
-        Beheer: ['Support', 'API-status', 'Radar', 'Logboek', 'Team en rechten', 'Instellingen', 'Pakketten en prijzen', 'Berichtsjablonen', 'Help'],
+        Beheer: [
+            'Support',
+            'API-status',
+            'Radar',
+            'Logboek',
+            'Team en rechten',
+            'Instellingen',
+            'Pakketten en prijzen',
+            'Berichtsjablonen',
+            'Help',
+        ],
     },
     creator: {
         Werk: ['Mijn klussen', 'Agenda', 'Berichten', 'Cijfers'],
-        'Over mij': ['Score', 'Vergoedingen', 'Profiel', 'Account en uitbetaling', 'Koppelingen', 'Mijn academy'],
+        'Over mij': [
+            'Score',
+            'Vergoedingen',
+            'Profiel',
+            'Account en uitbetaling',
+            'Koppelingen',
+            'Mijn academy',
+        ],
         Hulp: ['Vriend uitnodigen', 'Help'],
     },
 };
@@ -39,18 +94,31 @@ const SECTIES: Partial<Record<Exclude<Portal, 'geen'>, Record<string, string[]>>
 function sectieVan(portal: Portal | null, titel: string): string {
     const indeling = portal && portal !== 'geen' ? SECTIES[portal] : undefined;
 
-    return Object.entries(indeling ?? {}).find(([, titels]) => titels.includes(titel))?.[0] ?? 'Overig';
+    return (
+        Object.entries(indeling ?? {}).find(([, titels]) =>
+            titels.includes(titel),
+        )?.[0] ?? 'Overig'
+    );
 }
 
 /** Secties die in het menu extra opvallen (eigen afdeling). */
 export const UITGELICHTE_SECTIES = ['MeStudio'];
 
 /** Secties in vaste volgorde, met hun links. */
-export function secties(links: PortaalLink[], portal: Portal | null): { naam: string; links: PortaalLink[] }[] {
-    const volgorde = [...Object.keys((portal && portal !== 'geen' && SECTIES[portal]) || {}), 'Overig'];
+export function secties(
+    links: PortaalLink[],
+    portal: Portal | null,
+): { naam: string; links: PortaalLink[] }[] {
+    const volgorde = [
+        ...Object.keys((portal && portal !== 'geen' && SECTIES[portal]) || {}),
+        'Overig',
+    ];
 
     return volgorde
-        .map((naam) => ({ naam, links: links.filter((l) => l.sectie === naam) }))
+        .map((naam) => ({
+            naam,
+            links: links.filter((l) => l.sectie === naam),
+        }))
         .filter((g) => g.links.length > 0);
 }
 
@@ -69,13 +137,19 @@ export type NavItem = {
 export type NavModule = Partial<Record<Exclude<Portal, 'geen'>, NavItem[]>>;
 
 /** Alle modules in resources/js/nav/*.ts. Een nieuwe module voegt alleen een eigen bestand toe. */
-const modules = import.meta.glob<{ default: NavModule }>('../nav/*.ts', { eager: true });
+const modules = import.meta.glob<{ default: NavModule }>('../nav/*.ts', {
+    eager: true,
+});
 
 /** Navigatie per omgeving. Elke omgeving heeft eigen schermen in resources/js/pages/<omgeving>. */
-export function navigatie(portal: Portal | null, permissions: string[] = []): PortaalLink[] {
-    const items = portal && portal !== 'geen'
-        ? Object.values(modules).flatMap((m) => m.default[portal] ?? [])
-        : [];
+export function navigatie(
+    portal: Portal | null,
+    permissions: string[] = [],
+): PortaalLink[] {
+    const items =
+        portal && portal !== 'geen'
+            ? Object.values(modules).flatMap((m) => m.default[portal] ?? [])
+            : [];
 
     const zichtbaar = items
         .filter((i) => !i.permission || permissions.includes(i.permission))
@@ -90,14 +164,26 @@ export function navigatie(portal: Portal | null, permissions: string[] = []): Po
             mobile: i.mobile && ++mobiel <= 3,
             sectie: sectieVan(portal, i.title),
         })),
-        { title: 'Meldingen', href: meldingen.url(), icon: Bell, mobile: true, sectie: 'Meldingen' },
+        {
+            title: 'Meldingen',
+            href: meldingen.url(),
+            icon: Bell,
+            mobile: true,
+            sectie: 'Meldingen',
+        },
     ];
 }
 
 /** Is deze link de huidige pagina (of een onderliggende pagina)? Startpagina's alleen bij exacte match. */
 export function isActief(href: string, huidigeUrl: string): boolean {
-    const doel = new URL(href, window.location.href).pathname.replace(/\/$/, '');
-    const nu = new URL(huidigeUrl, window.location.href).pathname.replace(/\/$/, '');
+    const doel = new URL(href, window.location.href).pathname.replace(
+        /\/$/,
+        '',
+    );
+    const nu = new URL(huidigeUrl, window.location.href).pathname.replace(
+        /\/$/,
+        '',
+    );
     const startpagina = /\/(team|creator|ondernemer|academy)$/.test(doel);
 
     return startpagina ? nu === doel : nu === doel || nu.startsWith(`${doel}/`);
@@ -116,7 +202,9 @@ export function tellerVan(
         return unread;
     }
     try {
-        return tellers?.[new URL(link.href, window.location.origin).pathname] ?? 0;
+        return (
+            tellers?.[new URL(link.href, window.location.origin).pathname] ?? 0
+        );
     } catch {
         return 0;
     }

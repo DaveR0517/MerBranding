@@ -9,7 +9,10 @@ import kanalen from '@/routes/team/kanalen';
 
 export type PlatformSleutel = 'instagram' | 'tiktok';
 
-export const PLATFORMS: Record<PlatformSleutel, { naam: string; icoon: LucideIcon }> = {
+export const PLATFORMS: Record<
+    PlatformSleutel,
+    { naam: string; icoon: LucideIcon }
+> = {
     instagram: { naam: 'Instagram', icoon: Instagram },
     tiktok: { naam: 'TikTok', icoon: Music2 },
 };
@@ -34,27 +37,52 @@ export function getal(n: number | null | undefined): string {
         return '-';
     }
 
-    return n >= 100000 ? new Intl.NumberFormat('nl-NL', { notation: 'compact', maximumFractionDigits: 1 }).format(n) : n.toLocaleString('nl-NL');
+    return n >= 100000
+        ? new Intl.NumberFormat('nl-NL', {
+              notation: 'compact',
+              maximumFractionDigits: 1,
+          }).format(n)
+        : n.toLocaleString('nl-NL');
 }
 
 /** Tabbladen tussen de drie schermen (links, zodat elk scherm een eigen adres heeft). */
-export function KanalenTabs({ actief, ongelezen = 0 }: { actief: 'overzicht' | 'posts' | 'berichten' | 'mail'; ongelezen?: number }) {
-    const { auth } = usePage().props as unknown as { auth: { permissions: string[] } };
+export function KanalenTabs({
+    actief,
+    ongelezen = 0,
+}: {
+    actief: 'overzicht' | 'posts' | 'berichten';
+    ongelezen?: number;
+}) {
+    const { auth } = usePage().props as unknown as {
+        auth: { permissions: string[] };
+    };
     const kanalenRecht = auth.permissions.includes('kanalen.beheren');
-    const tabs = [
-        ...(kanalenRecht
+    const tabs = (kanalenRecht
             ? [
-                  { key: 'overzicht', label: 'Overzicht', href: kanalen.index.url() },
-                  { key: 'posts', label: 'Posts en filmpjes', href: kanalen.posts.url() },
-                  { key: 'berichten', label: 'Berichten', href: kanalen.berichten.url(), aantal: ongelezen },
+                  {
+                      key: 'overzicht',
+                      label: 'Overzicht',
+                      href: kanalen.index.url(),
+                  },
+                  {
+                      key: 'posts',
+                      label: 'Posts en filmpjes',
+                      href: kanalen.posts.url(),
+                  },
+                  {
+                      key: 'berichten',
+                      label: 'Berichten',
+                      href: kanalen.berichten.url(),
+                      aantal: ongelezen,
+                  },
               ]
-            : []),
-        // Gmail-postvakken: eigen toegangsregels per postvak (zie App\Services\Gmail\Postvakken).
-        ...(auth.permissions.includes('mail.postvak') ? [{ key: 'mail', label: 'Mail', href: kanalen.mail.url() }] : []),
-    ];
+            : []);
 
     return (
-        <nav aria-label="Eigen kanalen" className="-mx-4 flex gap-1 overflow-x-auto border-b px-4 md:mx-0 md:px-0">
+        <nav
+            aria-label="Eigen kanalen"
+            className="-mx-4 flex gap-1 overflow-x-auto border-b px-4 md:mx-0 md:px-0"
+        >
             {tabs.map((t) => (
                 <Link
                     key={t.key}
@@ -62,11 +90,17 @@ export function KanalenTabs({ actief, ongelezen = 0 }: { actief: 'overzicht' | '
                     aria-current={t.key === actief ? 'page' : undefined}
                     className={cn(
                         '-mb-px shrink-0 border-b-2 px-3 py-2 text-sm font-semibold whitespace-nowrap',
-                        t.key === actief ? 'border-violet text-violet' : 'border-transparent text-muted-foreground hover:text-foreground',
+                        t.key === actief
+                            ? 'border-violet text-violet'
+                            : 'border-transparent text-muted-foreground hover:text-foreground',
                     )}
                 >
                     {t.label}
-                    {!!t.aantal && <span className="ml-1.5 rounded-full bg-violet px-1.5 text-xs text-white tabular-nums">{t.aantal}</span>}
+                    {!!t.aantal && (
+                        <span className="ml-1.5 rounded-full bg-violet px-1.5 text-xs text-white tabular-nums">
+                            {t.aantal}
+                        </span>
+                    )}
                 </Link>
             ))}
         </nav>
@@ -77,22 +111,50 @@ export function KanalenTabs({ actief, ongelezen = 0 }: { actief: 'overzicht' | '
  * Weergaven per dag als staafjes (één reeks, één kleur). Hover of focus op een staaf toont dag en waarde;
  * de tabel eronder is er voor schermlezers.
  */
-export function Staafjes({ reeks, label }: { reeks: { datum: string; waarde: number }[]; label: string }) {
+export function Staafjes({
+    reeks,
+    label,
+}: {
+    reeks: { datum: string; waarde: number }[];
+    label: string;
+}) {
     const max = Math.max(1, ...reeks.map((r) => r.waarde));
-    const dag = (iso: string) => new Date(iso).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
+    const dag = (iso: string) =>
+        new Date(iso).toLocaleDateString('nl-NL', {
+            day: 'numeric',
+            month: 'short',
+        });
 
     if (reeks.length === 0) {
-        return <p className="py-6 text-center text-sm text-muted-foreground">Nog geen verloop. Na een paar dagen ophalen staat het hier.</p>;
+        return (
+            <p className="py-6 text-center text-sm text-muted-foreground">
+                Nog geen verloop. Na een paar dagen ophalen staat het hier.
+            </p>
+        );
     }
 
     return (
         <figure className="space-y-1">
-            <div className="flex h-24 items-end gap-0.5 border-b border-border" aria-hidden>
+            <div
+                className="flex h-24 items-end gap-0.5 border-b border-border"
+                aria-hidden
+            >
                 {reeks.map((r) => (
-                    <div key={r.datum} className="group relative flex h-full flex-1 items-end">
-                        <div className="w-full rounded-t-[4px] bg-violet/80 group-hover:bg-violet" style={{ height: `${Math.max(2, (r.waarde / max) * 100)}%` }} />
+                    <div
+                        key={r.datum}
+                        className="group relative flex h-full flex-1 items-end"
+                    >
+                        <div
+                            className="w-full rounded-t-[4px] bg-violet/80 group-hover:bg-violet"
+                            style={{
+                                height: `${Math.max(2, (r.waarde / max) * 100)}%`,
+                            }}
+                        />
                         <span className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 hidden -translate-x-1/2 rounded-md border bg-popover px-2 py-1 text-xs whitespace-nowrap text-popover-foreground shadow group-hover:block">
-                            {dag(r.datum)}: <strong className="tabular-nums">{r.waarde.toLocaleString('nl-NL')}</strong>
+                            {dag(r.datum)}:{' '}
+                            <strong className="tabular-nums">
+                                {r.waarde.toLocaleString('nl-NL')}
+                            </strong>
                         </span>
                     </div>
                 ))}
