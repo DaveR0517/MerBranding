@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HeeftHerinneringen;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -13,6 +15,8 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  */
 class Collaboration extends Model
 {
+    use HeeftHerinneringen;
+
     protected $fillable = [
         'number', 'company_id', 'location_id', 'creator_id', 'requested_by', 'title', 'briefing',
         'period_from', 'period_to', 'alcohol', 'status', 'points', 'creator_level', 'fee_cents',
@@ -101,5 +105,20 @@ class Collaboration extends Model
     public function openInvitation(): ?Invitation
     {
         return $this->invitations->first(fn (Invitation $i) => $i->isOpen());
+    }
+
+    /**
+     * Bij een bedrijf dat bezoeken zelf bevestigt (W2): het moment waarop het bezoek zonder reactie vaststaat,
+     * self_confirm_hours na het plannen. Null als het bedrijf niet zelf bevestigt of het bezoek niet gepland is.
+     */
+    public function bezoekVastOp(): ?CarbonImmutable
+    {
+        if ($this->status !== Status::BezoekGepland || ! $this->company->self_confirm_visits) {
+            return null;
+        }
+        $gepland = ActivityLog::where('subject_type', $this->getMorphClass())->where('subject_id', $this->id)
+            ->where('to_status', Status::BezoekGepland->value)->latest('id')->value('created_at');
+
+        return $gepland ? CarbonImmutable::parse($gepland)->addHours((int) config('mebranding.timers.self_confirm_hours')) : null;
     }
 }

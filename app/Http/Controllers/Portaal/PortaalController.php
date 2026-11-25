@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\DeliverableVersion;
 use App\Models\User;
+use App\Services\Melder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -82,10 +83,19 @@ class PortaalController extends Controller
     }
 
     /** Super Admin bekijkt het platform als een andere gebruiker. Altijd in het logboek. */
-    public function inloggenAls(Request $request, User $user): RedirectResponse
+    public function inloggenAls(Request $request, User $user, Melder $melder): RedirectResponse
     {
-        abort_unless($request->user()->hasRole('Super Admin'), 403);
-        ActivityLog::create(['user_id' => $request->user()->id, 'subject_type' => $user->getMorphClass(), 'subject_id' => $user->id, 'event' => 'inloggen_als', 'reason' => $user->name]);
+        $door = $request->user();
+        abort_unless($door->hasRole('Super Admin'), 403);
+        $reden = $request->validate(['reden' => ['nullable', 'string', 'max:255']])['reden'] ?? null;
+        ActivityLog::create(['user_id' => $door->id, 'subject_type' => $user->getMorphClass(), 'subject_id' => $user->id, 'event' => 'inloggen_als', 'reason' => $reden ?? $user->name]);
+
+        // t-inloggen-als: de andere Super Admins horen het. Er wordt (nog) geen reden gevraagd; dan staat er dat er geen is.
+        $nu = now('Europe/Amsterdam');
+        $melder->stuur('t-inloggen-als', $melder->admins()->reject(fn (User $u) => $u->id === $door->id), [
+            'wie' => $door->name, 'naam' => $user->name, 'datum' => $nu->translatedFormat('l j F'), 'tijd' => $nu->format('H:i'),
+            'reden' => $reden ?? 'geen reden opgegeven',
+        ], route('team.logboek'));
 
         $request->session()->put('inloggen_als_van', $request->user()->id);
         Auth::login($user);

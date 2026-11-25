@@ -7,6 +7,7 @@ use App\Services\Geld;
 use App\Services\Herinneringen;
 use App\Services\Samenwerking;
 use App\Services\Score;
+use App\Services\Uitnodiging;
 use Illuminate\Support\Facades\Schedule;
 
 /* Timers van de keten (CLAUDE.md 7.4). Forge draait schedule:run elke minuut. */
@@ -54,3 +55,13 @@ Schedule::job(new VerversEigenKanalen)->name('eigen-kanalen-verversen')->hourlyA
 
 // Dagoverzicht voor het team: signalen die op "samenvatting" staan, in één mail op werkdagen (besluit Dave 25-11-2026).
 Schedule::call(fn () => app(Dagoverzicht::class)->stuur())->name('team-dagoverzicht')->weekdays()->at('07:47')->timezone('Europe/Amsterdam')->withoutOverlapping();
+
+/* Keten en account */
+// Signalen van de keten (App\Services\Herinneringen) en de accountherinnering (App\Services\Uitnodiging), elk maar één keer per ding.
+Schedule::call(fn () => app(Herinneringen::class)->linkOntbreekt())->name('keten-link-ontbreekt')->dailyAt('09:04')->timezone('Europe/Amsterdam')->withoutOverlapping();
+Schedule::call(function () {
+    $h = app(Herinneringen::class);
+    $h->bezoekOnbevestigd();
+    $h->eersteCijfers();
+    app(Uitnodiging::class)->herinnerVerloopt();
+})->name('keten-en-account-overdag')->cron('9,24,39,54 8-20 * * *')->timezone('Europe/Amsterdam')->withoutOverlapping();

@@ -60,8 +60,13 @@ class Melder
     {
         // Zonder rollen in de database (een kale installatie, tests zonder RolesSeeder) is er niemand, in plaats van een fout.
         $viaPermission = Permission::where('name', $permission)->exists() ? User::permission($permission)->get() : collect();
-        $admins = Role::where('name', 'Super Admin')->exists() ? User::role('Super Admin')->get() : collect();
 
-        return $viaPermission->merge($admins)->unique('id');
+        return $viaPermission->merge($this->admins())->unique('id');
+    }
+
+    /** Super Admins (signalen die alleen voor de eigenaren van het platform zijn, zoals Inloggen als). */
+    public function admins(): Collection
+    {
+        return Role::where('name', 'Super Admin')->exists() ? User::role('Super Admin')->get() : collect();
     }
 }

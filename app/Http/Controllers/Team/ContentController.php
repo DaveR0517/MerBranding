@@ -19,6 +19,7 @@ use App\Models\VideoIdea;
 use App\Services\Contentkalender;
 use App\Services\Koppelingen\Koppelingen;
 use App\Services\Melder;
+use App\Services\Samenwerking;
 use App\Services\Werkvoorraad;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
@@ -79,7 +80,7 @@ class ContentController extends Controller
     }
 
     /** Handmatige controle "post verwijderd" (W8): gevonden of niet gevonden, met logregel. Geen strafpunten (open punt 5). */
-    public function postControle(Request $request, Publication $publicatie, Melder $melder): RedirectResponse
+    public function postControle(Request $request, Publication $publicatie, Melder $melder, Samenwerking $keten): RedirectResponse
     {
         Gate::authorize('koppelingen.beheren');
         $data = $request->validate([
@@ -99,8 +100,10 @@ class ContentController extends Controller
         ]);
 
         $c = Collaboration::with(['company', 'creator.user'])->find($publicatie->collaboration_id);
-        if (! $gevonden && ($data['melden'] ?? false) && $c->creator) {
-            $melder->stuur('c-post-weg', $c->creator->user, ['zaak' => $c->company->name, 'samenwerking' => $c->title], route('creator.klus', $c));
+        // Melden (W8): de creator krijgt 24 uur, contentcontrole krijgt het signaal. Eén keer per publicatie.
+        if (! $gevonden && ($data['melden'] ?? false) && $c->creator && $c->markeerHerinnering("post-weg-{$publicatie->id}")) {
+            $melder->stuur('c-post-weg', $c->creator->user, $keten->vars($c), $keten->urlCreator($c));
+            $melder->stuur('t-post-weg', $melder->team('content.controleren'), $keten->vars($c), $keten->urlTeam($c));
         }
 
         return back()->with('melding', $gevonden ? 'Vastgelegd: de post is gevonden.' : 'Vastgelegd: de post is niet gevonden.');
@@ -130,17 +133,10 @@ class ContentController extends Controller
 
         // Zonder bevestiging: wacht op een tijdvak van de creator (3), of wacht op de ondernemer bij "zelf bevestigen" (4, 24 uur).
         $wachtTijdvak = $basis()->where('status', Status::CreatorGevonden->value)->oldest('updated_at')->get();
-        $uren = (int) config('mebranding.timers.self_confirm_hours');
         $wachtOndernemer = $basis()->where('status', Status::BezoekGepland->value)
             ->whereHas('company', fn ($q) => $q->where('self_confirm_visits', true))
             ->get()
-            ->map(function (Collaboration $c) use ($uren) {
-                $gepland = ActivityLog::where('subject_type', $c->getMorphClass())->where('subject_id', $c->id)
-                    ->where('to_status', Status::BezoekGepland->value)->latest('id')->value('created_at');
-                $c->setAttribute('vast_op', $gepland ? CarbonImmutable::parse($gepland)->addHours($uren) : null);
-
-                return $c;
-            })
+            ->map(fn (Collaboration $c) => $c->setAttribute('vast_op', $c->bezoekVastOp()))
             ->filter(fn ($c) => $c->vast_op?->isFuture())->values();
 
         $bezoek = fn (Collaboration $c, string $wacht) => [

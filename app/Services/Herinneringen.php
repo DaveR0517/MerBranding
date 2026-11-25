@@ -4,8 +4,8 @@ namespace App\Services;
 
 use App\Models\Collaboration;
 use App\Models\Invitation;
+use App\Models\StatSnapshot;
 use App\Models\Status;
-use Illuminate\Support\Collection;
 
 /**
  * Tijdgestuurde herinneringen en teamsignalen van de keten (berichtsjablonen, moment uit FO 3.6 en 8.4).
@@ -39,7 +39,7 @@ class Herinneringen
 
         foreach ($open as $u) {
             $halverwege = $u->created_at->copy()->addSeconds((int) ($u->created_at->diffInSeconds($u->expires_at) / 2));
-            if ($halverwege->isFuture() || ! $this->markeer($u->collaboration, "reageer-{$u->id}")) {
+            if ($halverwege->isFuture() || ! $u->collaboration->markeerHerinnering("reageer-{$u->id}")) {
                 continue;
             }
             $c = $u->collaboration;
@@ -73,7 +73,7 @@ class Herinneringen
             'te-laat',
             function (Collaboration $c) {
                 $this->melder->stuur('c-te-laat', $c->creator->user, $this->keten->vars($c), $this->keten->urlCreator($c));
-                $this->melder->stuur('t-content-laat', $this->accountmanager($c), $this->keten->vars($c), $this->keten->urlTeam($c));
+                $this->melder->stuur('t-content-laat', $this->keten->accountmanager($c), $this->keten->vars($c), $this->keten->urlTeam($c));
             },
         );
     }
@@ -122,7 +122,7 @@ class Herinneringen
 
         foreach (Collaboration::where('status', Status::TerControle)->with('latestVersion')->get() as $c) {
             $v = $c->latestVersion;
-            if (! $v || $v->created_at->copy()->addWeekdays($termijn)->isFuture() || ! $this->markeer($c, "controle-lang-v{$v->version}")) {
+            if (! $v || $v->created_at->copy()->addWeekdays($termijn)->isFuture() || ! $c->markeerHerinnering("controle-lang-v{$v->version}")) {
                 continue;
             }
             $this->melder->stuur('t-controle-lang', $this->melder->team('content.controleren'), $this->keten->vars($c), $this->keten->urlTeam($c));
@@ -132,32 +132,89 @@ class Herinneringen
         return $aantal;
     }
 
+    /** t-bezoek-onbevestigd: het bezoek is morgen en de ondernemer (instelling "zelf bevestigen") heeft het nog niet bevestigd. */
+    public function bezoekOnbevestigd(): int
+    {
+        $morgen = today()->addDay();
+        $query = Collaboration::where('status', Status::BezoekGepland)->whereBetween('visit_at', [$morgen, $morgen->copy()->endOfDay()])
+            ->whereHas('company', fn ($q) => $q->where('self_confirm_visits', true));
+        $aantal = 0;
+
+        foreach ($query->get() as $c) {
+            if (! $c->bezoekVastOp()?->isFuture() || ! $c->markeerHerinnering('bezoek-onbevestigd')) {
+                continue;
+            }
+            $this->melder->stuur('t-bezoek-onbevestigd', $this->melder->team('samenwerkingen.plannen'), $this->keten->vars($c), $this->keten->urlTeam($c));
+            $aantal++;
+        }
+
+        return $aantal;
+    }
+
+    /** t-link-ontbreekt: goedgekeurde samenwerkingen zonder link, de termijn van c-herinnering-post na de publicatiedatum. Eén bundel; elke samenwerking telt één keer mee. */
+    public function linkOntbreekt(): int
+    {
+        $nieuw = $this->zonderLink()->whereDate('publish_on', '<=', today()->subDays(config('mebranding.timers.post_reminder_days')))->get()
+            ->filter(fn (Collaboration $c) => $c->markeerHerinnering('link-ontbreekt'));
+
+        if ($nieuw->isNotEmpty()) {
+            $this->melder->stuur('t-link-ontbreekt', $this->melder->team('koppelingen.beheren'), ['aantal' => $nieuw->count()], route('team.werkvoorraad'));
+        }
+
+        return $nieuw->count();
+    }
+
+    /**
+     * o-eerste-cijfers: 24 uur na Live, zodra er views zijn van de eerste publicatie (over platforms wordt niet opgeteld).
+     * Komen er pas na 48 uur cijfers, dan gaat hij niet meer: de tekst zegt "na 24 uur".
+     */
+    public function eersteCijfers(): int
+    {
+        $aantal = 0;
+        $live = Collaboration::where('status', Status::Live)->whereBetween('live_at', [now()->subHours(48), now()->subHours(24)])->with('publications')->get();
+
+        foreach ($live as $c) {
+            $views = $this->eersteViews($c);
+            if ($views === null || ! $c->markeerHerinnering('eerste-cijfers')) {
+                continue;
+            }
+            $this->melder->stuur('o-eerste-cijfers', $this->keten->eigenaren($c), array_merge($this->keten->vars($c), [
+                'views' => number_format($views, 0, ',', '.'),
+                'datum' => $c->measure_until->translatedFormat('l j F'),
+            ]), route('ondernemer.resultaten'));
+            $aantal++;
+        }
+
+        return $aantal;
+    }
+
     /* ----------------------------------------------------------------- Intern */
+
+    /** Views van de eerste publicatie met views, uit de nieuwste geldige meting. */
+    private function eersteViews(Collaboration $c): ?int
+    {
+        foreach ($c->publications->sortBy('id') as $p) {
+            $meting = StatSnapshot::geldig()->where('publication_id', $p->id)->where('metric', 'views')->orderByDesc('fetched_at')->orderByDesc('id')->first();
+            if ($meting) {
+                return (int) $meting->value;
+            }
+        }
+
+        return null;
+    }
 
     /** Stuurt per samenwerking uit de query één keer (op sleutel) en telt hoe vaak. */
     private function elk($query, string $sleutel, callable $stuur): int
     {
         $aantal = 0;
         foreach ($query->get() as $c) {
-            if ($this->markeer($c, $sleutel)) {
+            if ($c->markeerHerinnering($sleutel)) {
                 $stuur($c);
                 $aantal++;
             }
         }
 
         return $aantal;
-    }
-
-    /** Legt vast dat de herinnering gaat. False als hij al eerder ging. Eerst vastleggen, dan versturen: liever één keer te weinig dan dubbel. */
-    private function markeer(Collaboration $c, string $sleutel): bool
-    {
-        $gehad = $c->herinneringen ?? [];
-        if (array_key_exists($sleutel, $gehad)) {
-            return false;
-        }
-        $c->forceFill(['herinneringen' => $gehad + [$sleutel => now()->toIso8601String()]])->save();
-
-        return true;
     }
 
     private function zonderVersie()
@@ -168,11 +225,5 @@ class Herinneringen
     private function zonderLink()
     {
         return Collaboration::where('status', Status::Goedgekeurd)->whereNotNull('publish_on')->whereDoesntHave('publications');
-    }
-
-    /** De accountmanager van het bedrijf; zonder accountmanager het team dat koppelt. */
-    private function accountmanager(Collaboration $c): Collection
-    {
-        return $c->company->accountManager ? collect([$c->company->accountManager]) : $this->melder->team('samenwerkingen.koppelen');
     }
 }
