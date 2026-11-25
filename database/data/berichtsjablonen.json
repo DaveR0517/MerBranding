@@ -1,6 +1,6 @@
 {
  "meta": {
-  "versie": "concept 18-11-2026",
+  "versie": "25-11-2026",
   "status": "Voorstel: alle lopende teksten zijn concepttekst; onderwerpregels met bron FO §3.6 komen uit het functioneel ontwerp",
   "afzender": "MEBRANDING",
   "spelregels": [
@@ -72,7 +72,22 @@
    "Abonnement en geld",
    "Teamsignalen"
   ],
-  "aantal": 99
+  "aantal": 105,
+  "kanaalregel": {
+   "verplicht": "Altijd per mail: vaste afspraken, bevestigingen, account, geld en juridisch (besluit Dave 25-11-2026).",
+   "aan": "Per mail, de ontvanger kan het uitzetten.",
+   "vangnet": "Alleen per mail als de ontvanger geen pushmeldingen heeft; anders push en het portaal.",
+   "samenvatting": "Niet los per mail; komt in de dagelijkse samenvatting voor het team (t-dagoverzicht).",
+   "uit": "Nooit per mail: push en het portaal."
+  },
+  "vormen": {
+   "standaard": "Tekst en één knop",
+   "bevestiging": "Met een blok gegevens (wie, wanneer, waar)",
+   "welkom": "Met genummerde startstappen",
+   "geld": "Met het bedrag groot in beeld",
+   "beveiliging": "Met een waarschuwingsregel: was jij dit niet?",
+   "samenvatting": "Lijst met signalen per soort"
+  }
  },
  "sjablonen": [
   {
@@ -84,20 +99,34 @@
    "ontvanger": "Eigenaar en leden van de vestiging",
    "moment": "Direct na versturen van de aanvraag",
    "kanalen": {
-    "inapp": "aan",
-    "email": "aan",
-    "push": "uit"
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "aan"
    },
    "uitzetten": "Ja (e-mail)",
    "onderwerp": "Samenwerking ontvangen",
    "email": {
     "aanhef": "Hoi {voornaam},",
     "alineas": [
-     "We hebben je aanvraag \"{samenwerking}\" voor {vestiging} goed ontvangen. Nummer: {nummer}.",
+     "We hebben je aanvraag goed ontvangen.",
      "We zoeken nu een creator die bij {zaak} past. Binnen {aantal} werkdagen hoor je van ons wie er langskomt."
     ],
     "knop": "Bekijk je aanvraag",
-    "deeplink": "SamenwerkingDetail/s1"
+    "deeplink": "SamenwerkingDetail/s1",
+    "gegevens": [
+     [
+      "Aanvraag",
+      "{samenwerking}"
+     ],
+     [
+      "Nummer",
+      "{nummer}"
+     ],
+     [
+      "Vestiging",
+      "{vestiging}"
+     ]
+    ]
    },
    "push": "Aanvraag ontvangen: {samenwerking}. We zoeken nu een creator voor je.",
    "inapp": "We hebben je aanvraag \"{samenwerking}\" ontvangen. We zoeken een creator die bij je past.",
@@ -115,7 +144,8 @@
     "tijd": "14:00",
     "nummer": "SW-2026-0148",
     "aantal": "2"
-   }
+   },
+   "vorm": "bevestiging"
   },
   {
    "id": "o-vraag",
@@ -127,7 +157,7 @@
    "moment": "Als het team iets nodig heeft om verder te kunnen",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "verplicht",
+    "email": "vangnet",
     "push": "aan"
    },
    "uitzetten": "Nee",
@@ -158,7 +188,8 @@
     "tijd": "14:00",
     "am": "Eva",
     "vraag": "Mag de creator ook in de keuken filmen?"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "o-creator-gekozen",
@@ -170,7 +201,7 @@
    "moment": "Zodra de creator de uitnodiging accepteert (besluit W1)",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "aan",
+    "email": "vangnet",
     "push": "aan"
    },
    "uitzetten": "Ja (e-mail)",
@@ -198,7 +229,8 @@
     "samenwerking": "Wintersoep en appeltaart",
     "datum": "do 19 nov",
     "tijd": "14:00"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "o-bezoek-bevestigen",
@@ -210,7 +242,7 @@
    "moment": "Na keuze tijdvak door de creator. Zonder reactie binnen 24 uur staat het bezoek vast (W2)",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "verplicht",
+    "email": "vangnet",
     "push": "aan"
    },
    "uitzetten": "Nee",
@@ -218,11 +250,25 @@
    "email": {
     "aanhef": "Hoi {voornaam},",
     "alineas": [
-     "{creator} wil op {datum} om {tijd} langskomen bij {vestiging}.",
-     "Past dat? Bevestig of kies een ander moment. Reageer je niet binnen 24 uur, dan staat het bezoek vast."
+     "{creator} wil graag langskomen. Past dit moment?",
+     "Bevestig of kies een ander moment. Reageer je niet binnen 24 uur, dan staat het bezoek vast."
     ],
     "knop": "Bevestig of verplaats",
-    "deeplink": "SamenwerkingDetail/s4"
+    "deeplink": "SamenwerkingDetail/s4",
+    "gegevens": [
+     [
+      "Wie",
+      "{creator}"
+     ],
+     [
+      "Voorstel",
+      "{datum} om {tijd}"
+     ],
+     [
+      "Waar",
+      "{vestiging}"
+     ]
+    ]
    },
    "push": "Bevestig het bezoek van {creator}: {datum} om {tijd}. Binnen 24 uur.",
    "inapp": "Bevestig of verplaats het bezoek van {creator} op {datum}, {tijd}.",
@@ -238,7 +284,8 @@
     "samenwerking": "Wintersoep en appeltaart",
     "datum": "do 19 nov",
     "tijd": "14:00"
-   }
+   },
+   "vorm": "bevestiging"
   },
   {
    "id": "o-bezoek-vast",
@@ -251,18 +298,32 @@
    "kanalen": {
     "inapp": "verplicht",
     "email": "verplicht",
-    "push": "nee"
+    "push": "aan"
    },
    "uitzetten": "Nee",
    "onderwerp": "Bezoek {creator} op {datum}",
    "email": {
     "aanhef": "Hoi {voornaam},",
     "alineas": [
-     "Het bezoek staat vast: {creator} komt op {datum} om {tijd} bij {vestiging}.",
-     "In de bijlage vind je de agenda-uitnodiging. Zorg dat er iemand is die {creator} ontvangt en het gerecht of product klaar heeft."
+     "Het bezoek staat vast. {creator} komt langs voor \"{samenwerking}\".",
+     "Zorg dat er iemand is die {creator} ontvangt en het gerecht of product klaar heeft. Moet het toch anders? Verzet het bezoek in het portaal."
     ],
     "knop": "Bekijk het bezoek",
-    "deeplink": "SamenwerkingDetail/s4"
+    "deeplink": "SamenwerkingDetail/s4",
+    "gegevens": [
+     [
+      "Wie",
+      "{creator}"
+     ],
+     [
+      "Wanneer",
+      "{datum} om {tijd}"
+     ],
+     [
+      "Waar",
+      "{vestiging}"
+     ]
+    ]
    },
    "push": "Bezoek staat vast: {creator} op {datum} om {tijd}.",
    "inapp": "Bezoek van {creator} staat vast op {datum} om {tijd}.",
@@ -278,7 +339,8 @@
     "samenwerking": "Wintersoep en appeltaart",
     "datum": "do 19 nov",
     "tijd": "14:00"
-   }
+   },
+   "vorm": "bevestiging"
   },
   {
    "id": "o-bezoek-morgen",
@@ -290,7 +352,7 @@
    "moment": "Dag voor het bezoek, 09:00",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "aan",
+    "email": "vangnet",
     "push": "aan"
    },
    "uitzetten": "Ja (e-mail)",
@@ -298,11 +360,24 @@
    "email": {
     "aanhef": "Hoi {voornaam},",
     "alineas": [
-     "Morgen om {tijd} komt {creator} bij {vestiging}.",
      "Tip: zet het gerecht klaar en zorg voor goed licht bij het raam."
     ],
     "knop": "Bekijk de details",
-    "deeplink": "SamenwerkingDetail/s4"
+    "deeplink": "SamenwerkingDetail/s4",
+    "gegevens": [
+     [
+      "Wie",
+      "{creator}"
+     ],
+     [
+      "Wanneer",
+      "morgen om {tijd}"
+     ],
+     [
+      "Waar",
+      "{vestiging}"
+     ]
+    ]
    },
    "push": "Morgen om {tijd} komt {creator} bij {vestiging}.",
    "inapp": "Morgen om {tijd}: bezoek van {creator}.",
@@ -318,7 +393,8 @@
     "samenwerking": "Wintersoep en appeltaart",
     "datum": "wo 18 nov",
     "tijd": "14:00"
-   }
+   },
+   "vorm": "bevestiging"
   },
   {
    "id": "o-bezoek-gewijzigd",
@@ -338,11 +414,24 @@
    "email": {
     "aanhef": "Hoi {voornaam},",
     "alineas": [
-     "Het bezoek van {creator} bij {vestiging} is gewijzigd.",
-     "Nieuw moment: {datum} om {tijd}. Past dit niet? Kies een ander moment."
+     "Het bezoek van {creator} is verzet. Past het nieuwe moment niet? Kies een ander moment in het portaal."
     ],
     "knop": "Bekijk de wijziging",
-    "deeplink": "SamenwerkingDetail/s4"
+    "deeplink": "SamenwerkingDetail/s4",
+    "gegevens": [
+     [
+      "Wie",
+      "{creator}"
+     ],
+     [
+      "Nieuw moment",
+      "{datum} om {tijd}"
+     ],
+     [
+      "Waar",
+      "{vestiging}"
+     ]
+    ]
    },
    "push": "Bezoek gewijzigd: {creator} komt nu op {datum} om {tijd}.",
    "inapp": "Bezoek van {creator} gewijzigd naar {datum}, {tijd}.",
@@ -358,7 +447,8 @@
     "samenwerking": "Wintersoep en appeltaart",
     "datum": "vr 20 nov",
     "tijd": "14:00"
-   }
+   },
+   "vorm": "bevestiging"
   },
   {
    "id": "o-niet-verschenen",
@@ -371,7 +461,7 @@
    "kanalen": {
     "inapp": "verplicht",
     "email": "verplicht",
-    "push": "nee"
+    "push": "aan"
    },
    "uitzetten": "Nee",
    "onderwerp": "Over het bezoek van {datum}",
@@ -398,7 +488,8 @@
     "samenwerking": "Wintersoep en appeltaart",
     "datum": "do 19 nov",
     "tijd": "14:00"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "o-content-keuren",
@@ -410,8 +501,8 @@
    "moment": "Na aanlevering; herinnering na 3 en 6 werkdagen, daarna neemt MEBRANDING over (W3)",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "verplicht",
-    "push": "nee"
+    "email": "vangnet",
+    "push": "aan"
    },
    "uitzetten": "Nee",
    "onderwerp": "Keur de content van {creator}",
@@ -438,7 +529,8 @@
     "samenwerking": "Wintersoep en appeltaart",
     "datum": "do 19 nov",
     "tijd": "14:00"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "o-meekijken",
@@ -451,7 +543,7 @@
    "kanalen": {
     "inapp": "aan",
     "email": "uit",
-    "push": "uit"
+    "push": "aan"
    },
    "uitzetten": "Ja",
    "onderwerp": "Video in controle: {samenwerking}",
@@ -478,7 +570,8 @@
     "samenwerking": "Wintersoep en appeltaart",
     "datum": "do 19 nov",
     "tijd": "14:00"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "o-laatste-ronde",
@@ -490,7 +583,7 @@
    "moment": "Bij start van de laatste toegestane ronde",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "aan",
+    "email": "vangnet",
     "push": "aan"
    },
    "uitzetten": "Ja (e-mail)",
@@ -518,7 +611,8 @@
     "samenwerking": "Wintersoep en appeltaart",
     "datum": "do 19 nov",
     "tijd": "14:00"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "o-goedgekeurd",
@@ -529,9 +623,9 @@
    "ontvanger": "Eigenaar",
    "moment": "Na goedkeuring door het team",
    "kanalen": {
-    "inapp": "aan",
-    "email": "uit",
-    "push": "uit"
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "aan"
    },
    "uitzetten": "Ja",
    "onderwerp": "Goedgekeurd: {samenwerking}",
@@ -558,7 +652,8 @@
     "samenwerking": "Wintersoep en appeltaart",
     "datum": "do 26 nov",
     "tijd": "14:00"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "o-live",
@@ -570,7 +665,7 @@
    "moment": "Zodra de creator de postlink koppelt",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "aan",
+    "email": "vangnet",
     "push": "aan"
    },
    "uitzetten": "Ja (e-mail)",
@@ -598,7 +693,8 @@
     "samenwerking": "Wintersoep en appeltaart",
     "datum": "do 26 nov",
     "tijd": "14:00"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "o-eerste-cijfers",
@@ -610,7 +706,7 @@
    "moment": "24 uur na Live",
    "kanalen": {
     "inapp": "aan",
-    "email": "aan",
+    "email": "uit",
     "push": "aan"
    },
    "uitzetten": "Ja",
@@ -639,7 +735,8 @@
     "datum": "do 10 dec",
     "tijd": "14:00",
     "views": "3.412"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "o-beoordelen",
@@ -651,7 +748,7 @@
    "moment": "Na de meetperiode van 14 dagen",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "aan",
+    "email": "vangnet",
     "push": "aan"
    },
    "uitzetten": "Ja (e-mail)",
@@ -679,7 +776,8 @@
     "samenwerking": "Wintersoep en appeltaart",
     "datum": "do 10 dec",
     "tijd": "14:00"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "o-gestopt",
@@ -692,7 +790,7 @@
    "kanalen": {
     "inapp": "verplicht",
     "email": "verplicht",
-    "push": "nee"
+    "push": "aan"
    },
    "uitzetten": "Nee",
    "onderwerp": "Samenwerking gestopt: {samenwerking}",
@@ -719,7 +817,8 @@
     "samenwerking": "Wintersoep en appeltaart",
     "datum": "do 19 nov",
     "tijd": "14:00"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "o-concept",
@@ -730,9 +829,9 @@
    "ontvanger": "Aanvrager",
    "moment": "3 dagen na opslaan als concept",
    "kanalen": {
-    "inapp": "aan",
-    "email": "aan",
-    "push": "uit"
+    "inapp": "verplicht",
+    "email": "vangnet",
+    "push": "aan"
    },
    "uitzetten": "Ja",
    "onderwerp": "Je aanvraag staat nog klaar",
@@ -759,7 +858,8 @@
     "samenwerking": "Wintersoep en appeltaart",
     "datum": "do 19 nov",
     "tijd": "14:00"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "o-maandoverzicht",
@@ -802,7 +902,8 @@
     "maand": "november",
     "aantal": "3",
     "views": "18.240"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "o-rechten",
@@ -843,7 +944,8 @@
     "datum": "vr 26 feb 2027",
     "tijd": "14:00",
     "aantal": "2"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "c-uitnodiging",
@@ -855,7 +957,7 @@
    "moment": "Bij uitnodigen; status 3 begint pas bij acceptatie (W1)",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "verplicht",
+    "email": "vangnet",
     "push": "aan"
    },
    "uitzetten": "Nee",
@@ -863,11 +965,25 @@
    "email": {
     "aanhef": "Hoi {voornaam},",
     "alineas": [
-     "{zaak} in {plaats} zoekt een creator voor \"{samenwerking}\". Vergoeding: {bedrag}.",
-     "Lees de briefing en zeg ja of nee. Bij ja kies je direct een tijdvak voor het bezoek."
+     "{zaak} zoekt een creator voor \"{samenwerking}\".",
+     "Lees de briefing en zeg ja of nee. Bij ja kies je direct een tijdvak voor het bezoek. Wie het eerst ja zegt, krijgt de klus."
     ],
     "knop": "Bekijk de uitnodiging",
-    "deeplink": "CreatorUitnodiging"
+    "deeplink": "CreatorUitnodiging",
+    "gegevens": [
+     [
+      "Zaak",
+      "{zaak}, {plaats}"
+     ],
+     [
+      "Klus",
+      "{samenwerking}"
+     ],
+     [
+      "Vergoeding",
+      "{bedrag}"
+     ]
+    ]
    },
    "push": "Nieuwe samenwerking: {zaak} in {plaats}, {bedrag}. Ja of nee?",
    "inapp": "Uitnodiging van {zaak} in {plaats}. Reageer binnen {aantal} uur.",
@@ -882,7 +998,8 @@
     "samenwerking": "Kerstlunch Franeker",
     "bedrag": "gratis bezoek (kerstlunch)",
     "aantal": "48"
-   }
+   },
+   "vorm": "bevestiging"
   },
   {
    "id": "c-herinnering-reageer",
@@ -894,7 +1011,7 @@
    "moment": "{aantal} uur na de uitnodiging",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "aan",
+    "email": "vangnet",
     "push": "aan"
    },
    "uitzetten": "Ja (e-mail)",
@@ -919,7 +1036,8 @@
     "plaats": "Franeker",
     "niveau": "Bronze",
     "aantal": "24"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "c-tijdvak",
@@ -931,8 +1049,8 @@
    "moment": "Direct na accepteren (W2: tijdvak kiezen staat direct vast)",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "verplicht",
-    "push": "nee"
+    "email": "vangnet",
+    "push": "aan"
    },
    "uitzetten": "Nee",
    "onderwerp": "Kies je bezoekmoment bij {zaak}",
@@ -959,7 +1077,8 @@
     "datum": "do 19 nov",
     "tijd": "14:00",
     "bedrag": "€ 125"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "c-bezoek-vast",
@@ -972,18 +1091,32 @@
    "kanalen": {
     "inapp": "verplicht",
     "email": "verplicht",
-    "push": "nee"
+    "push": "aan"
    },
    "uitzetten": "Nee",
    "onderwerp": "Bezoek {zaak} op {datum}",
    "email": {
     "aanhef": "Hoi {voornaam},",
     "alineas": [
-     "Je bezoek bij {zaak} in {vestiging} staat vast: {datum} om {tijd}.",
-     "Adres, parkeren en de shotlist staan in de samenwerking. De agenda-uitnodiging zit in de bijlage."
+     "Je bezoek bij {zaak} staat vast.",
+     "Adres, parkeren en de shotlist staan in de klus. Lukt het toch niet? Verzet het op tijd in de app, dan telt het niet als niet verschenen."
     ],
     "knop": "Bekijk de briefing",
-    "deeplink": "CreatorOpdracht/s4"
+    "deeplink": "CreatorOpdracht/s4",
+    "gegevens": [
+     [
+      "Zaak",
+      "{zaak}"
+     ],
+     [
+      "Wanneer",
+      "{datum} om {tijd}"
+     ],
+     [
+      "Waar",
+      "{vestiging}, {plaats}"
+     ]
+    ]
    },
    "push": "Bezoek staat vast: {zaak}, {datum} om {tijd}.",
    "inapp": "Bezoek bij {zaak} op {datum} om {tijd}.",
@@ -999,7 +1132,8 @@
     "datum": "do 19 nov",
     "tijd": "14:00",
     "bedrag": "€ 125"
-   }
+   },
+   "vorm": "bevestiging"
   },
   {
    "id": "c-bezoek-morgen",
@@ -1011,7 +1145,7 @@
    "moment": "Dag voor het bezoek, 09:00",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "aan",
+    "email": "vangnet",
     "push": "aan"
    },
    "uitzetten": "Ja (e-mail)",
@@ -1019,11 +1153,24 @@
    "email": {
     "aanhef": "Hoi {voornaam},",
     "alineas": [
-     "Morgen om {tijd} ben je bij {zaak} in {vestiging}.",
      "Neem je shotlist door en zorg dat je telefoon is opgeladen."
     ],
     "knop": "Bekijk de shotlist",
-    "deeplink": "N_video_ideeen"
+    "deeplink": "N_video_ideeen",
+    "gegevens": [
+     [
+      "Zaak",
+      "{zaak}"
+     ],
+     [
+      "Wanneer",
+      "morgen om {tijd}"
+     ],
+     [
+      "Waar",
+      "{vestiging}, {plaats}"
+     ]
+    ]
    },
    "push": "Morgen {tijd}: bezoek bij {zaak} in {vestiging}.",
    "inapp": "Morgen om {tijd} bij {zaak}.",
@@ -1039,7 +1186,8 @@
     "datum": "do 19 nov",
     "tijd": "14:00",
     "bedrag": "€ 125"
-   }
+   },
+   "vorm": "bevestiging"
   },
   {
    "id": "c-bezoek-gewijzigd",
@@ -1059,11 +1207,24 @@
    "email": {
     "aanhef": "Hoi {voornaam},",
     "alineas": [
-     "{zaak} heeft het bezoek gewijzigd.",
-     "Nieuw moment: {datum} om {tijd}. Past dit niet? Kies een ander tijdvak."
+     "{zaak} heeft het bezoek verzet. Past het nieuwe moment niet? Kies een ander tijdvak in de app."
     ],
     "knop": "Bekijk de wijziging",
-    "deeplink": "CreatorOpdracht/s4"
+    "deeplink": "CreatorOpdracht/s4",
+    "gegevens": [
+     [
+      "Zaak",
+      "{zaak}"
+     ],
+     [
+      "Nieuw moment",
+      "{datum} om {tijd}"
+     ],
+     [
+      "Waar",
+      "{vestiging}, {plaats}"
+     ]
+    ]
    },
    "push": "Bezoek bij {zaak} gewijzigd naar {datum}, {tijd}.",
    "inapp": "Bezoek gewijzigd naar {datum}, {tijd}.",
@@ -1079,7 +1240,8 @@
     "datum": "vr 20 nov",
     "tijd": "14:00",
     "bedrag": "€ 125"
-   }
+   },
+   "vorm": "bevestiging"
   },
   {
    "id": "c-niet-verschenen",
@@ -1092,7 +1254,7 @@
    "kanalen": {
     "inapp": "verplicht",
     "email": "verplicht",
-    "push": "nee"
+    "push": "aan"
    },
    "uitzetten": "Nee",
    "onderwerp": "Over het bezoek van {datum}",
@@ -1119,7 +1281,8 @@
     "datum": "do 19 nov",
     "tijd": "14:00",
     "bedrag": "€ 125"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "c-deadline",
@@ -1131,7 +1294,7 @@
    "moment": "48 uur voor de deadline",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "aan",
+    "email": "vangnet",
     "push": "aan"
    },
    "uitzetten": "Ja (e-mail)",
@@ -1159,7 +1322,8 @@
     "datum": "ma 23 nov",
     "tijd": "14:00",
     "bedrag": "€ 125"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "c-te-laat",
@@ -1171,8 +1335,8 @@
    "moment": "Direct na het verstrijken van de deadline",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "verplicht",
-    "push": "nee"
+    "email": "vangnet",
+    "push": "aan"
    },
    "uitzetten": "Nee",
    "onderwerp": "Te laat: content voor {zaak}",
@@ -1199,7 +1363,8 @@
     "datum": "do 19 nov",
     "tijd": "14:00",
     "bedrag": "€ 125"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "c-feedback",
@@ -1211,7 +1376,7 @@
    "moment": "Na \"Feedback versturen\", gebundeld",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "verplicht",
+    "email": "vangnet",
     "push": "aan"
    },
    "uitzetten": "Nee",
@@ -1240,7 +1405,8 @@
     "tijd": "14:00",
     "bedrag": "€ 125",
     "aantal": "2"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "c-goedgekeurd",
@@ -1252,7 +1418,7 @@
    "moment": "Zelfde werkdag als aanleveren (na 16:00: volgende werkdag, W4)",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "verplicht",
+    "email": "vangnet",
     "push": "aan"
    },
    "uitzetten": "Nee",
@@ -1280,7 +1446,8 @@
     "datum": "do 26 nov",
     "tijd": "14:00",
     "bedrag": "€ 125"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "c-publiceer-vandaag",
@@ -1292,7 +1459,7 @@
    "moment": "Op de publicatiedatum, 09:00 (W5)",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "verplicht",
+    "email": "vangnet",
     "push": "aan"
    },
    "uitzetten": "Nee",
@@ -1320,7 +1487,8 @@
     "datum": "do 26 nov",
     "tijd": "14:00",
     "bedrag": "€ 125"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "c-herinnering-post",
@@ -1332,7 +1500,7 @@
    "moment": "2 dagen na goedkeuring zonder gekoppelde link",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "verplicht",
+    "email": "vangnet",
     "push": "aan"
    },
    "uitzetten": "Nee",
@@ -1360,7 +1528,8 @@
     "datum": "do 26 nov",
     "tijd": "14:00",
     "bedrag": "€ 125"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "c-live",
@@ -1400,7 +1569,8 @@
     "datum": "27 nov",
     "tijd": "14:00",
     "bedrag": "€ 125"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "c-post-weg",
@@ -1440,7 +1610,8 @@
     "datum": "do 19 nov",
     "tijd": "14:00",
     "bedrag": "€ 125"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "c-publicatie-beoordeeld",
@@ -1451,9 +1622,9 @@
    "ontvanger": "Indiener",
    "moment": "Na beoordeling door contentcontrole",
    "kanalen": {
-    "inapp": "verplicht",
-    "email": "verplicht",
-    "push": "nee"
+    "inapp": "aan",
+    "email": "uit",
+    "push": "aan"
    },
    "uitzetten": "Goedgekeurd ja, afgekeurd nee",
    "onderwerp": "Je publicatie is goedgekeurd",
@@ -1480,7 +1651,8 @@
     "datum": "do 19 nov",
     "tijd": "14:00",
     "bedrag": "€ 125"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "c-beoordeling",
@@ -1521,7 +1693,8 @@
     "tijd": "14:00",
     "bedrag": "€ 125",
     "sterren": "5"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "c-aanmelding",
@@ -1534,7 +1707,7 @@
    "kanalen": {
     "inapp": "verplicht",
     "email": "verplicht",
-    "push": "nee"
+    "push": "uit"
    },
    "uitzetten": "Nee",
    "onderwerp": "We hebben je aanmelding ontvangen",
@@ -1545,7 +1718,17 @@
      "We bekijken je profiel en voorbeeldwerk binnen 5 werkdagen. Je ziet de status altijd in de app."
     ],
     "knop": "Bekijk je aanmelding",
-    "deeplink": "CreatorIntake/singediend"
+    "deeplink": "CreatorIntake/singediend",
+    "gegevens": [
+     [
+      "Status",
+      "In behandeling"
+     ],
+     [
+      "Reactie",
+      "Binnen 5 werkdagen"
+     ]
+    ]
    },
    "push": "Aanmelding ontvangen. Binnen 5 werkdagen hoor je van ons.",
    "inapp": "Je aanmelding is in behandeling.",
@@ -1557,7 +1740,8 @@
     "zaak": "Lunchroom Bloesem",
     "plaats": "Franeker",
     "niveau": "Bronze"
-   }
+   },
+   "vorm": "bevestiging"
   },
   {
    "id": "c-aanvulling",
@@ -1595,7 +1779,8 @@
     "plaats": "Franeker",
     "niveau": "Bronze",
     "toelichting": "Zet je Instagram om naar een professioneel account."
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "c-welkom",
@@ -1616,12 +1801,16 @@
     "aanhef": "Hoi {voornaam},",
     "alineas": [
      "Goed nieuws: je bent goedgekeurd als creator bij MEBRANDING. Je start op niveau {niveau}.",
-     "Je inloggegevens: je logt in met dit e-mailadres, {email}. Je wachtwoord kies je zelf via de knop hieronder. Daarna ben je direct ingelogd. De link werkt 7 dagen.",
-     "Rond daarna je checklist af: profiel, raamovereenkomst en uitbetaalgegevens. Dan kun je uitgenodigd worden voor klussen.",
-     "Vragen? Beantwoord deze mail, dan helpen we je."
+     "Zo ga je van start:"
     ],
     "knop": "Wachtwoord kiezen en inloggen",
-    "deeplink": "CreatorOverzicht/swelkom"
+    "deeplink": "CreatorOverzicht/swelkom",
+    "naschrift": "De link om je wachtwoord te kiezen werkt 7 dagen. Vragen? Beantwoord deze mail, dan helpen we je.",
+    "stappen": [
+     "Kies je wachtwoord via de knop hieronder. Je logt in met {email}.",
+     "Zet MEBRANDING op het beginscherm van je telefoon en zet meldingen aan. Zo zie je een nieuwe klus als eerste.",
+     "Rond je checklist af: profiel, raamovereenkomst en uitbetaalgegevens."
+    ]
    },
    "push": "Welkom bij MEBRANDING. Rond je checklist af.",
    "inapp": "Goedgekeurd. Start op {niveau}.",
@@ -1633,7 +1822,8 @@
     "zaak": "Lunchroom Bloesem",
     "plaats": "Franeker",
     "niveau": "Bronze"
-   }
+   },
+   "vorm": "welkom"
   },
   {
    "id": "c-afgewezen",
@@ -1646,7 +1836,7 @@
    "kanalen": {
     "inapp": "verplicht",
     "email": "verplicht",
-    "push": "nee"
+    "push": "aan"
    },
    "uitzetten": "Nee",
    "onderwerp": "Over je aanmelding",
@@ -1670,7 +1860,8 @@
     "plaats": "Franeker",
     "niveau": "Bronze",
     "reden": "te weinig voorbeeldwerk"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "c-niveau-omhoog",
@@ -1681,8 +1872,8 @@
    "ontvanger": "Creator",
    "moment": "Na de herberekening",
    "kanalen": {
-    "inapp": "verplicht",
-    "email": "aan",
+    "inapp": "aan",
+    "email": "uit",
     "push": "aan"
    },
    "uitzetten": "Ja (e-mail)",
@@ -1706,7 +1897,8 @@
     "zaak": "Lunchroom Bloesem",
     "plaats": "Franeker",
     "niveau": "Silver"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "c-niveau-gevaar",
@@ -1718,7 +1910,7 @@
    "moment": "14 dagen voor herberekening",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "aan",
+    "email": "vangnet",
     "push": "aan"
    },
    "uitzetten": "Ja (e-mail)",
@@ -1747,7 +1939,8 @@
     "tijd": "14:00",
     "bedrag": "€ 125",
     "niveau": "Elite"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "c-niveau-omlaag",
@@ -1788,7 +1981,8 @@
     "tijd": "14:00",
     "bedrag": "€ 125",
     "niveau": "Platinum"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "c-maandscore",
@@ -1799,8 +1993,8 @@
    "ontvanger": "Creator",
    "moment": "Eerste werkdag van de maand",
    "kanalen": {
-    "inapp": "verplicht",
-    "email": "aan",
+    "inapp": "aan",
+    "email": "uit",
     "push": "aan"
    },
    "uitzetten": "Ja (e-mail)",
@@ -1832,7 +2026,8 @@
     "score": "96",
     "plek": "1",
     "regio": "Friesland"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "c-koppeling-verloopt",
@@ -1844,7 +2039,7 @@
    "moment": "7 dagen vooraf",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "verplicht",
+    "email": "vangnet",
     "push": "aan"
    },
    "uitzetten": "Nee",
@@ -1873,7 +2068,8 @@
     "tijd": "14:00",
     "bedrag": "€ 125",
     "platform": "Instagram"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "c-koppeling-weg",
@@ -1885,7 +2081,7 @@
    "moment": "Direct",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "verplicht",
+    "email": "vangnet",
     "push": "aan"
    },
    "uitzetten": "Nee",
@@ -1914,7 +2110,8 @@
     "tijd": "14:00",
     "bedrag": "€ 125",
     "platform": "TikTok"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "o-koppeling-verloopt",
@@ -1926,7 +2123,7 @@
    "moment": "7 dagen vooraf",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "verplicht",
+    "email": "vangnet",
     "push": "aan"
    },
    "uitzetten": "Nee",
@@ -1955,7 +2152,8 @@
     "datum": "ma 30 nov",
     "tijd": "14:00",
     "platform": "Instagram"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "o-koppeling-weg",
@@ -1967,7 +2165,7 @@
    "moment": "Direct",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "verplicht",
+    "email": "vangnet",
     "push": "aan"
    },
    "uitzetten": "Nee",
@@ -1996,7 +2194,8 @@
     "datum": "do 19 nov",
     "tijd": "14:00",
     "platform": "TikTok"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "a-ingeschreven",
@@ -2009,18 +2208,31 @@
    "kanalen": {
     "inapp": "verplicht",
     "email": "verplicht",
-    "push": "nee"
+    "push": "uit"
    },
    "uitzetten": "Nee",
    "onderwerp": "Je plek op {cursusdag} is zeker",
    "email": {
     "aanhef": "Hoi {voornaam},",
     "alineas": [
-     "Je bent ingeschreven voor {cursusdag} op {datum} in {plaats}.",
-     "De agenda-uitnodiging zit in de bijlage. Een week vooraf sturen we het programma en wat je meeneemt."
+     "Je plek is zeker. Een week vooraf sturen we het programma en wat je meeneemt."
     ],
     "knop": "Bekijk je inschrijving",
-    "deeplink": "CreatorAcademy"
+    "deeplink": "CreatorAcademy",
+    "gegevens": [
+     [
+      "Cursusdag",
+      "{cursusdag}"
+     ],
+     [
+      "Datum",
+      "{datum}"
+     ],
+     [
+      "Plaats",
+      "{plaats}"
+     ]
+    ]
    },
    "push": "Je plek op {cursusdag} op {datum} is zeker.",
    "inapp": "Ingeschreven voor {cursusdag}.",
@@ -2032,7 +2244,8 @@
     "cursusdag": "Cursusdag Content maken",
     "datum": "za 24 okt",
     "plaats": "Harlingen"
-   }
+   },
+   "vorm": "bevestiging"
   },
   {
    "id": "a-wachtlijst",
@@ -2045,7 +2258,7 @@
    "kanalen": {
     "inapp": "verplicht",
     "email": "verplicht",
-    "push": "nee"
+    "push": "uit"
    },
    "uitzetten": "Nee",
    "onderwerp": "Je staat op de wachtlijst voor {cursusdag}",
@@ -2068,7 +2281,8 @@
     "cursusdag": "Cursusdag Content maken",
     "datum": "za 12 dec",
     "plek": "2"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "a-plek-vrij",
@@ -2080,7 +2294,7 @@
    "moment": "Zodra een plek vrijkomt",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "verplicht",
+    "email": "vangnet",
     "push": "aan"
    },
    "uitzetten": "Nee",
@@ -2104,7 +2318,8 @@
     "cursusdag": "Cursusdag Content maken",
     "datum": "za 12 dec",
     "tijd": "di 17 nov 18:00"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "a-herinnering",
@@ -2116,19 +2331,32 @@
    "moment": "7 dagen en 1 dag voor de cursusdag",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "verplicht",
-    "push": "nee"
+    "email": "vangnet",
+    "push": "aan"
    },
    "uitzetten": "Nee",
    "onderwerp": "Over {n} dagen: {cursusdag} in {plaats}",
    "email": {
     "aanhef": "Hoi {voornaam},",
     "alineas": [
-     "Over {n} dagen is {cursusdag} in {plaats}. We beginnen om {tijd}.",
-     "Adres: {adres}. Neem je telefoon mee, volledig opgeladen, en een powerbank."
+     "Over {n} dagen is het zover. Neem je telefoon mee, volledig opgeladen, en een powerbank."
     ],
     "knop": "Programma bekijken",
-    "deeplink": "AcademyCursusdag"
+    "deeplink": "AcademyCursusdag",
+    "gegevens": [
+     [
+      "Cursusdag",
+      "{cursusdag}"
+     ],
+     [
+      "Begint om",
+      "{tijd}"
+     ],
+     [
+      "Adres",
+      "{adres}"
+     ]
+    ]
    },
    "push": "Over {n} dagen: {cursusdag} in {plaats}, {tijd}.",
    "inapp": "{cursusdag} over {n} dagen.",
@@ -2141,8 +2369,9 @@
     "n": "7",
     "plaats": "Harlingen",
     "tijd": "09:30",
-    "adres": "Hotel Wadzicht, Harlingen"
-   }
+    "adres": "Zuiderkruis 12, Leeuwarden"
+   },
+   "vorm": "bevestiging"
   },
   {
    "id": "a-gewijzigd",
@@ -2177,7 +2406,8 @@
     "voornaam": "Marit",
     "cursusdag": "Cursusdag Content maken",
     "wijziging": "start nu om 10:00"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "a-certificaat",
@@ -2190,7 +2420,7 @@
    "kanalen": {
     "inapp": "verplicht",
     "email": "verplicht",
-    "push": "nee"
+    "push": "uit"
    },
    "uitzetten": "Nee",
    "onderwerp": "Je certificaat {nummer} staat klaar",
@@ -2211,7 +2441,8 @@
    "voorbeeld": {
     "voornaam": "Marit",
     "nummer": "MBA-2026-0312"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "a-word-creator",
@@ -2222,9 +2453,9 @@
    "ontvanger": "Deelnemer met status Aanwezig",
    "moment": "Na uitreiking certificaat",
    "kanalen": {
-    "inapp": "aan",
-    "email": "aan",
-    "push": "uit"
+    "inapp": "verplicht",
+    "email": "vangnet",
+    "push": "aan"
    },
    "uitzetten": "Ja",
    "onderwerp": "Word creator bij MEBRANDING",
@@ -2232,10 +2463,15 @@
     "aanhef": "Hoi {voornaam},",
     "alineas": [
      "Je hebt de cursusdag gevolgd. Wil je ook echt samenwerkingen doen?",
-     "Je gegevens uit de academy staan al klaar. Aanmelden duurt 3 minuten."
+     "Zo werkt het:"
     ],
     "knop": "Aanmelden als creator",
-    "deeplink": "WebsiteCreator/sacademy"
+    "deeplink": "WebsiteCreator/sacademy",
+    "stappen": [
+     "Meld je aan: je gegevens uit de academy staan al klaar.",
+     "Wij bekijken je aanmelding binnen 5 werkdagen.",
+     "Na goedkeuring krijg je je eerste klussen."
+    ]
    },
    "push": "Word creator: je gegevens staan al klaar.",
    "inapp": "Meld je aan als creator.",
@@ -2244,7 +2480,8 @@
    "urgentie": null,
    "voorbeeld": {
     "voornaam": "Marit"
-   }
+   },
+   "vorm": "welkom"
   },
   {
    "id": "g-uitnodiging",
@@ -2265,11 +2502,15 @@
     "aanhef": "Hoi {voornaam},",
     "alineas": [
      "{naam} nodigt je uit om mee te werken in het portaal van {zaak} als {rol}.",
-     "Je inloggegevens: je logt in met dit e-mailadres, {email}. Je wachtwoord kies je zelf via de knop hieronder. Daarna ben je direct ingelogd.",
-     "De uitnodiging is 7 dagen geldig."
+     "Zo ga je van start:"
     ],
     "knop": "Wachtwoord kiezen en inloggen",
-    "deeplink": "Inloggen"
+    "deeplink": "Inloggen",
+    "naschrift": "De uitnodiging is 7 dagen geldig. Vragen? Beantwoord deze mail, dan helpen we je.",
+    "stappen": [
+     "Kies je wachtwoord via de knop hieronder. Je logt in met {email}.",
+     "Zet MEBRANDING op het beginscherm van je telefoon en zet meldingen aan."
+    ]
    },
    "push": "",
    "inapp": "",
@@ -2281,7 +2522,8 @@
     "naam": "Sanne Hiemstra",
     "zaak": "Lunchroom Bloesem",
     "rol": "Lid (Sneek)"
-   }
+   },
+   "vorm": "welkom"
   },
   {
    "id": "g-uitnodiging-verloopt",
@@ -2316,7 +2558,8 @@
     "voornaam": "Jorrit",
     "naam": "Sanne",
     "zaak": "Lunchroom Bloesem"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "g-bevestig-email",
@@ -2336,7 +2579,7 @@
    "email": {
     "aanhef": "Hoi {voornaam},",
     "alineas": [
-     "Bevestig dat dit je e-mailadres is. De link is 24 uur geldig."
+     "Bevestig dat dit je e-mailadres is via de knop hieronder. De link werkt {geldig}."
     ],
     "knop": "E-mailadres bevestigen",
     "deeplink": "Inloggen"
@@ -2347,8 +2590,10 @@
    "status": "FO",
    "urgentie": null,
    "voorbeeld": {
-    "voornaam": "Sanne"
-   }
+    "voornaam": "Sanne",
+    "geldig": "1 uur"
+   },
+   "vorm": "beveiliging"
   },
   {
    "id": "g-wachtwoord-vergeten",
@@ -2368,8 +2613,8 @@
    "email": {
     "aanhef": "Hoi {voornaam},",
     "alineas": [
-     "Je hebt gevraagd om een nieuw wachtwoord. De link is 60 minuten geldig.",
-     "Heb je dit niet zelf gevraagd? Dan hoef je niets te doen."
+     "Je hebt gevraagd om een nieuw wachtwoord. Kies het via de knop hieronder. De link werkt {geldig}.",
+     "Heb je dit niet zelf gevraagd? Dan hoef je niets te doen. Je huidige wachtwoord blijft gewoon werken."
     ],
     "knop": "Nieuw wachtwoord instellen",
     "deeplink": "Inloggen/sreset"
@@ -2380,8 +2625,10 @@
    "status": "FO",
    "urgentie": null,
    "voorbeeld": {
-    "voornaam": "Sanne"
-   }
+    "voornaam": "Sanne",
+    "geldig": "1 uur"
+   },
+   "vorm": "beveiliging"
   },
   {
    "id": "g-beveiliging",
@@ -2394,18 +2641,24 @@
    "kanalen": {
     "inapp": "verplicht",
     "email": "verplicht",
-    "push": "verplicht"
+    "push": "aan"
    },
    "uitzetten": "Nee",
    "onderwerp": "Je wachtwoord is gewijzigd",
    "email": {
     "aanhef": "Hoi {voornaam},",
     "alineas": [
-     "Het wachtwoord van je MEBRANDING-account is gewijzigd op {datum} om {tijd}.",
-     "Was jij dit niet? Zet direct je account op slot."
+     "Het wachtwoord van je MEBRANDING-account is gewijzigd.",
+     "Was jij dit niet? Zet direct je account op slot via de knop."
     ],
     "knop": "Dit was ik niet",
-    "deeplink": "AccountInstellingen/so"
+    "deeplink": "AccountInstellingen/so",
+    "gegevens": [
+     [
+      "Moment",
+      "{datum} om {tijd}"
+     ]
+    ]
    },
    "push": "Je wachtwoord is gewijzigd. Was jij dit niet? Tik hier.",
    "inapp": "Wachtwoord gewijzigd op {datum}, {tijd}.",
@@ -2416,7 +2669,8 @@
     "voornaam": "Sanne",
     "datum": "ma 16 nov",
     "tijd": "09:12"
-   }
+   },
+   "vorm": "beveiliging"
   },
   {
    "id": "g-nieuw-apparaat",
@@ -2429,18 +2683,32 @@
    "kanalen": {
     "inapp": "verplicht",
     "email": "verplicht",
-    "push": "verplicht"
+    "push": "aan"
    },
    "uitzetten": "Nee",
    "onderwerp": "Nieuwe inlog op {apparaat}",
    "email": {
     "aanhef": "Hoi {voornaam},",
     "alineas": [
-     "Er is ingelogd op je account vanaf {apparaat} in {plaats}, op {datum} om {tijd}.",
-     "Was jij dit niet? Wijzig je wachtwoord en log overal uit."
+     "Er is ingelogd op je MEBRANDING-account vanaf een nieuw apparaat.",
+     "Was jij dit niet? Wijzig direct je wachtwoord en log overal uit."
     ],
     "knop": "Dit was ik niet",
-    "deeplink": "AccountInstellingen/so"
+    "deeplink": "AccountInstellingen/so",
+    "gegevens": [
+     [
+      "Apparaat",
+      "{apparaat}"
+     ],
+     [
+      "Plaats",
+      "{plaats}"
+     ],
+     [
+      "Moment",
+      "{datum} om {tijd}"
+     ]
+    ]
    },
    "push": "Nieuwe inlog op {apparaat} in {plaats}. Jij?",
    "inapp": "Nieuwe inlog vanaf {apparaat}.",
@@ -2453,7 +2721,8 @@
     "plaats": "Leeuwarden",
     "datum": "ma 16 nov",
     "tijd": "07:58"
-   }
+   },
+   "vorm": "beveiliging"
   },
   {
    "id": "o-factuur",
@@ -2466,18 +2735,32 @@
    "kanalen": {
     "inapp": "verplicht",
     "email": "verplicht",
-    "push": "nee"
+    "push": "aan"
    },
    "uitzetten": "Nee",
    "onderwerp": "Factuur {nummer} van MEBRANDING",
    "email": {
     "aanhef": "Hoi {voornaam},",
     "alineas": [
-     "Je factuur {nummer} voor {omschrijving} staat klaar. Totaal {bedrag} inclusief btw.",
-     "Het bedrag wordt rond {datum} afgeschreven via de betaalpartij."
+     "Je factuur van MEBRANDING staat klaar. Het bedrag is inclusief btw en wordt automatisch afgeschreven via de betaalpartij."
     ],
     "knop": "Factuur bekijken",
-    "deeplink": "FactuurDocument"
+    "deeplink": "FactuurDocument",
+    "gegevens": [
+     [
+      "Factuur",
+      "{nummer}"
+     ],
+     [
+      "Voor",
+      "{omschrijving}"
+     ],
+     [
+      "Afschrijving",
+      "rond {datum}"
+     ]
+    ],
+    "bedrag": "{bedrag}"
    },
    "push": "Factuur {nummer} staat klaar: {bedrag}.",
    "inapp": "Factuur {nummer}, {bedrag}.",
@@ -2490,7 +2773,8 @@
     "omschrijving": "abonnement Groei, november",
     "bedrag": "€ 961,95",
     "datum": "di 10 nov"
-   }
+   },
+   "vorm": "geld"
   },
   {
    "id": "o-factuur-vervallen",
@@ -2503,18 +2787,28 @@
    "kanalen": {
     "inapp": "verplicht",
     "email": "verplicht",
-    "push": "nee"
+    "push": "aan"
    },
    "uitzetten": "Nee",
    "onderwerp": "Herinnering: factuur {nummer}",
    "email": {
     "aanhef": "Hoi {voornaam},",
     "alineas": [
-     "Factuur {nummer} van {bedrag} staat nog open. De vervaldatum was {datum}.",
-     "Betaal via de link, of neem contact op als er iets niet klopt."
+     "Deze factuur staat nog open. Betaal via de knop, of beantwoord deze mail als er iets niet klopt."
     ],
     "knop": "Factuur betalen",
-    "deeplink": "FactuurDocument/sopen"
+    "deeplink": "FactuurDocument/sopen",
+    "gegevens": [
+     [
+      "Factuur",
+      "{nummer}"
+     ],
+     [
+      "Vervaldatum",
+      "{datum}"
+     ]
+    ],
+    "bedrag": "{bedrag}"
    },
    "push": "Factuur {nummer} staat nog open.",
    "inapp": "Factuur {nummer} over de vervaldatum.",
@@ -2526,7 +2820,8 @@
     "nummer": "MB-2026-1110",
     "bedrag": "€ 961,95",
     "datum": "ma 16 nov"
-   }
+   },
+   "vorm": "geld"
   },
   {
    "id": "o-tegoed",
@@ -2537,8 +2832,8 @@
    "ontvanger": "Eigenaar",
    "moment": "Bij 1 resterende samenwerking",
    "kanalen": {
-    "inapp": "verplicht",
-    "email": "aan",
+    "inapp": "aan",
+    "email": "uit",
     "push": "aan"
    },
    "uitzetten": "Ja (e-mail)",
@@ -2561,7 +2856,8 @@
     "voornaam": "Sanne",
     "n": "1",
     "pakket": "Groei"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "o-betaalmethode",
@@ -2594,7 +2890,8 @@
    "urgentie": null,
    "voorbeeld": {
     "voornaam": "Sanne"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "o-abonnement",
@@ -2607,18 +2904,31 @@
    "kanalen": {
     "inapp": "verplicht",
     "email": "verplicht",
-    "push": "nee"
+    "push": "aan"
    },
    "uitzetten": "Nee",
    "onderwerp": "Je abonnement is gewijzigd",
    "email": {
     "aanhef": "Hoi {voornaam},",
     "alineas": [
-     "Je abonnement is gewijzigd van {oud} naar {nieuw}, met ingang van {datum}.",
-     "Je tegoed en het nieuwe maandbedrag zie je in je abonnement."
+     "Je abonnement is gewijzigd. Je tegoed en het nieuwe maandbedrag zie je in het portaal."
     ],
     "knop": "Bekijk je abonnement",
-    "deeplink": "Abonnement"
+    "deeplink": "Abonnement",
+    "gegevens": [
+     [
+      "Was",
+      "{oud}"
+     ],
+     [
+      "Wordt",
+      "{nieuw}"
+     ],
+     [
+      "Per",
+      "{datum}"
+     ]
+    ]
    },
    "push": "Je abonnement is gewijzigd naar {nieuw} per {datum}.",
    "inapp": "Abonnement: {nieuw} per {datum}.",
@@ -2630,7 +2940,8 @@
     "oud": "Groei",
     "nieuw": "Regio",
     "datum": "di 1 dec"
-   }
+   },
+   "vorm": "bevestiging"
   },
   {
    "id": "c-uitbetaling-gepland",
@@ -2641,8 +2952,8 @@
    "ontvanger": "Creator",
    "moment": "Bij Live: opeisbaar, mee in de eerstvolgende betaalrun (W7)",
    "kanalen": {
-    "inapp": "verplicht",
-    "email": "aan",
+    "inapp": "aan",
+    "email": "uit",
     "push": "aan"
    },
    "uitzetten": "Ja (e-mail)",
@@ -2650,11 +2961,21 @@
    "email": {
     "aanhef": "Hoi {voornaam},",
     "alineas": [
-     "Je vergoeding van {bedrag} voor {zaak} staat klaar voor de betaalrun van vrijdag {datum}.",
-     "De specificatie vind je in de app."
+     "Je vergoeding staat klaar voor de betaalrun van vrijdag. De specificatie vind je in de app."
     ],
     "knop": "Bekijk de specificatie",
-    "deeplink": "SpecificatieDocument/sgepland"
+    "deeplink": "SpecificatieDocument/sgepland",
+    "gegevens": [
+     [
+      "Voor",
+      "{zaak}"
+     ],
+     [
+      "Betaalrun",
+      "vrijdag {datum}"
+     ]
+    ],
+    "bedrag": "{bedrag}"
    },
    "push": "{bedrag} gaat vrijdag {datum} naar je rekening.",
    "inapp": "Uitbetaling {bedrag} gepland op {datum}.",
@@ -2670,7 +2991,8 @@
     "datum": "27 nov",
     "tijd": "14:00",
     "bedrag": "€ 125"
-   }
+   },
+   "vorm": "geld"
   },
   {
    "id": "c-uitbetaling-verstuurd",
@@ -2683,18 +3005,28 @@
    "kanalen": {
     "inapp": "verplicht",
     "email": "verplicht",
-    "push": "nee"
+    "push": "aan"
    },
    "uitzetten": "Nee",
    "onderwerp": "{bedrag} is naar je rekening gestuurd",
    "email": {
     "aanhef": "Hoi {voornaam},",
     "alineas": [
-     "We hebben {bedrag} naar je rekening gestuurd voor {zaak}.",
-     "Het staat meestal binnen 1 werkdag op je rekening. De specificatie staat in de app."
+     "We hebben je vergoeding overgemaakt. De specificatie staat in de app."
     ],
     "knop": "Specificatie bekijken",
-    "deeplink": "SpecificatieDocument"
+    "deeplink": "SpecificatieDocument",
+    "gegevens": [
+     [
+      "Voor",
+      "{zaak}"
+     ],
+     [
+      "Op je rekening",
+      "meestal binnen 1 werkdag"
+     ]
+    ],
+    "bedrag": "{bedrag}"
    },
    "push": "{bedrag} is naar je rekening gestuurd.",
    "inapp": "Uitbetaald: {bedrag}.",
@@ -2710,7 +3042,8 @@
     "datum": "do 19 nov",
     "tijd": "14:00",
     "bedrag": "€ 151,25"
-   }
+   },
+   "vorm": "geld"
   },
   {
    "id": "c-uitbetaling-mislukt",
@@ -2730,11 +3063,21 @@
    "email": {
     "aanhef": "Hoi {voornaam},",
     "alineas": [
-     "Je uitbetaling van {bedrag} is niet gelukt. Reden: {reden}.",
-     "Controleer je gegevens. We sturen het bedrag mee in de volgende betaalrun op {datum}."
+     "Je uitbetaling is niet gelukt. Controleer je gegevens, dan sturen we het bedrag mee in de volgende betaalrun."
     ],
     "knop": "Gegevens controleren",
-    "deeplink": "N_uitbetalingen"
+    "deeplink": "N_uitbetalingen",
+    "gegevens": [
+     [
+      "Reden",
+      "{reden}"
+     ],
+     [
+      "Volgende poging",
+      "{datum}"
+     ]
+    ],
+    "bedrag": "{bedrag}"
    },
    "push": "Uitbetaling {bedrag} niet gelukt. Controleer je gegevens.",
    "inapp": "Uitbetaling mislukt: {reden}.",
@@ -2751,7 +3094,8 @@
     "tijd": "14:00",
     "bedrag": "€ 151,25",
     "reden": "rekeningnummer onbekend"
-   }
+   },
+   "vorm": "geld"
   },
   {
    "id": "c-gegevens-ontbreken",
@@ -2771,11 +3115,12 @@
    "email": {
     "aanhef": "Hoi {voornaam},",
     "alineas": [
-     "Je hebt {bedrag} tegoed, maar we missen nog je uitbetaalgegevens of btw-status.",
+     "Je hebt een vergoeding tegoed, maar we missen nog je uitbetaalgegevens of btw-status.",
      "Vul ze voor donderdag in, dan gaat het mee in de betaalrun van vrijdag."
     ],
     "knop": "Gegevens invullen",
-    "deeplink": "N_uitbetalingen"
+    "deeplink": "N_uitbetalingen",
+    "bedrag": "{bedrag}"
    },
    "push": "Vul je uitbetaalgegevens in om {bedrag} te ontvangen.",
    "inapp": "Uitbetaalgegevens ontbreken.",
@@ -2788,7 +3133,8 @@
     "plaats": "Leeuwarden",
     "niveau": "Platinum",
     "bedrag": "€ 110"
-   }
+   },
+   "vorm": "geld"
   },
   {
    "id": "t-nieuw",
@@ -2800,7 +3146,7 @@
    "moment": "Direct",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "aan",
+    "email": "samenvatting",
     "push": "aan"
    },
    "uitzetten": "E-mail per medewerker",
@@ -2825,7 +3171,8 @@
     "samenwerking": "Kerstlunch Franeker",
     "creator": "Sophie de Vries",
     "vestiging": "Franeker"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "t-zoeken-lang",
@@ -2837,7 +3184,7 @@
    "moment": "Direct",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "aan",
+    "email": "samenvatting",
     "push": "aan"
    },
    "uitzetten": "E-mail per medewerker",
@@ -2861,7 +3208,8 @@
     "samenwerking": "Kerstlunch Franeker",
     "creator": "Sophie de Vries",
     "dagen": "3"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "t-geweigerd",
@@ -2873,7 +3221,7 @@
    "moment": "Direct",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "aan",
+    "email": "samenvatting",
     "push": "aan"
    },
    "uitzetten": "E-mail per medewerker",
@@ -2897,7 +3245,8 @@
     "zaak": "Lunchroom Bloesem",
     "samenwerking": "Kerstlunch Franeker",
     "creator": "Marit Hylkema"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "t-bezoek-onbevestigd",
@@ -2909,7 +3258,7 @@
    "moment": "Direct",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "aan",
+    "email": "samenvatting",
     "push": "aan"
    },
    "uitzetten": "E-mail per medewerker",
@@ -2933,7 +3282,8 @@
     "samenwerking": "Kerstlunch Franeker",
     "creator": "Sophie de Vries",
     "tijd": "10:00"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "t-bezoek-gewijzigd",
@@ -2945,7 +3295,7 @@
    "moment": "Direct",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "aan",
+    "email": "samenvatting",
     "push": "aan"
    },
    "uitzetten": "E-mail per medewerker",
@@ -2970,7 +3320,8 @@
     "creator": "Sophie de Vries",
     "wie": "Sophie",
     "datum": "vr 20 nov"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "t-niet-verschenen",
@@ -2982,8 +3333,8 @@
    "moment": "Direct",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "uit",
-    "push": "uit"
+    "email": "samenvatting",
+    "push": "aan"
    },
    "uitzetten": "E-mail per medewerker",
    "onderwerp": "Niet verschenen: {samenwerking}",
@@ -3005,7 +3356,8 @@
     "zaak": "Lunchroom Bloesem",
     "samenwerking": "Kerstlunch Franeker",
     "creator": "Sophie de Vries"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "t-content-laat",
@@ -3017,7 +3369,7 @@
    "moment": "Direct",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "aan",
+    "email": "samenvatting",
     "push": "aan"
    },
    "uitzetten": "E-mail per medewerker",
@@ -3040,7 +3392,8 @@
     "zaak": "Lunchroom Bloesem",
     "samenwerking": "Kerstlunch Franeker",
     "creator": "Sophie de Vries"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "t-ter-controle",
@@ -3052,8 +3405,8 @@
    "moment": "Direct",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "uit",
-    "push": "uit"
+    "email": "samenvatting",
+    "push": "aan"
    },
    "uitzetten": "E-mail per medewerker",
    "onderwerp": "Ter controle: {zaak}",
@@ -3075,7 +3428,8 @@
     "zaak": "Lunchroom Bloesem",
     "samenwerking": "Kerstlunch Franeker",
     "creator": "Sophie de Vries"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "t-controle-lang",
@@ -3087,7 +3441,7 @@
    "moment": "Direct",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "aan",
+    "email": "samenvatting",
     "push": "aan"
    },
    "uitzetten": "E-mail per medewerker",
@@ -3110,7 +3464,8 @@
     "zaak": "Lunchroom Bloesem",
     "samenwerking": "Kerstlunch Franeker",
     "creator": "Sophie de Vries"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "t-ondernemer-stil",
@@ -3122,8 +3477,8 @@
    "moment": "Direct",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "uit",
-    "push": "uit"
+    "email": "samenvatting",
+    "push": "aan"
    },
    "uitzetten": "E-mail per medewerker",
    "onderwerp": "Wacht op ondernemer: {zaak}",
@@ -3145,7 +3500,8 @@
     "zaak": "Lunchroom Bloesem",
     "samenwerking": "Kerstlunch Franeker",
     "creator": "Sophie de Vries"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "t-max-rondes",
@@ -3157,8 +3513,8 @@
    "moment": "Direct",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "uit",
-    "push": "uit"
+    "email": "samenvatting",
+    "push": "aan"
    },
    "uitzetten": "E-mail per medewerker",
    "onderwerp": "Maximum rondes: {samenwerking}",
@@ -3180,7 +3536,8 @@
     "zaak": "Lunchroom Bloesem",
     "samenwerking": "Kerstlunch Franeker",
     "creator": "Sophie de Vries"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "t-link-ontbreekt",
@@ -3193,7 +3550,7 @@
    "kanalen": {
     "inapp": "verplicht",
     "email": "samenvatting",
-    "push": "uit"
+    "push": "aan"
    },
    "uitzetten": "E-mail per medewerker",
    "onderwerp": "Publicatielink ontbreekt: {aantal} samenwerkingen",
@@ -3216,7 +3573,8 @@
     "samenwerking": "Kerstlunch Franeker",
     "creator": "Sophie de Vries",
     "aantal": "2"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "t-post-weg",
@@ -3228,7 +3586,7 @@
    "moment": "Direct",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "aan",
+    "email": "samenvatting",
     "push": "aan"
    },
    "uitzetten": "E-mail per medewerker",
@@ -3251,7 +3609,8 @@
     "zaak": "Lunchroom Bloesem",
     "samenwerking": "Kerstlunch Franeker",
     "creator": "Sophie de Vries"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "t-reclamelabel",
@@ -3264,7 +3623,7 @@
    "kanalen": {
     "inapp": "verplicht",
     "email": "verplicht",
-    "push": "verplicht"
+    "push": "aan"
    },
    "uitzetten": "E-mail per medewerker",
    "onderwerp": "Reclamelabel ontbreekt: {zaak}",
@@ -3286,7 +3645,8 @@
     "zaak": "Lunchroom Bloesem",
     "samenwerking": "Kerstlunch Franeker",
     "creator": "Sophie de Vries"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "t-oordeel-laag",
@@ -3298,7 +3658,7 @@
    "moment": "Direct",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "aan",
+    "email": "samenvatting",
     "push": "aan"
    },
    "uitzetten": "E-mail per medewerker",
@@ -3322,7 +3682,8 @@
     "samenwerking": "Kerstlunch Franeker",
     "creator": "Sophie de Vries",
     "sterren": "2"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "t-tegoed-niet-benut",
@@ -3335,7 +3696,7 @@
    "kanalen": {
     "inapp": "verplicht",
     "email": "samenvatting",
-    "push": "uit"
+    "push": "aan"
    },
    "uitzetten": "E-mail per medewerker",
    "onderwerp": "Tegoed niet benut: {aantal} ondernemers",
@@ -3359,7 +3720,8 @@
     "creator": "Sophie de Vries",
     "aantal": "4",
     "dagen": "7"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "t-opgezegd",
@@ -3371,7 +3733,7 @@
    "moment": "Direct",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "aan",
+    "email": "samenvatting",
     "push": "aan"
    },
    "uitzetten": "E-mail per medewerker",
@@ -3396,7 +3758,8 @@
     "creator": "Sophie de Vries",
     "pakket": "Lokaal",
     "datum": "vr 1 jan 2027"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "t-aanmelding",
@@ -3409,7 +3772,7 @@
    "kanalen": {
     "inapp": "verplicht",
     "email": "samenvatting",
-    "push": "uit"
+    "push": "aan"
    },
    "uitzetten": "E-mail per medewerker",
    "onderwerp": "Nieuwe aanmelding: {naam}",
@@ -3431,7 +3794,8 @@
     "naam": "Marit Hylkema",
     "plaats": "Franeker",
     "soort": "Beide"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "t-cijfers-handmatig",
@@ -3443,8 +3807,8 @@
    "moment": "Direct",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "uit",
-    "push": "uit"
+    "email": "samenvatting",
+    "push": "aan"
    },
    "uitzetten": "E-mail per medewerker",
    "onderwerp": "Handmatige cijfers: {creator}",
@@ -3466,7 +3830,8 @@
     "zaak": "Lunchroom Bloesem",
     "samenwerking": "Kerstlunch Franeker",
     "creator": "Sophie de Vries"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "t-token",
@@ -3479,7 +3844,7 @@
    "kanalen": {
     "inapp": "verplicht",
     "email": "samenvatting",
-    "push": "uit"
+    "push": "aan"
    },
    "uitzetten": "E-mail per medewerker",
    "onderwerp": "Tokens: {aantal} verlopen binnenkort",
@@ -3502,7 +3867,8 @@
     "samenwerking": "Kerstlunch Franeker",
     "creator": "Sophie de Vries",
     "aantal": "3"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "t-sync",
@@ -3514,8 +3880,8 @@
    "moment": "Direct",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "uit",
-    "push": "uit"
+    "email": "samenvatting",
+    "push": "aan"
    },
    "uitzetten": "E-mail per medewerker",
    "onderwerp": "Synchronisatie mislukt: {platform}, {aantal} accounts",
@@ -3539,7 +3905,8 @@
     "creator": "Sophie de Vries",
     "platform": "TikTok",
     "aantal": "1"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "t-storing",
@@ -3552,7 +3919,7 @@
    "kanalen": {
     "inapp": "verplicht",
     "email": "verplicht",
-    "push": "verplicht"
+    "push": "aan"
    },
    "uitzetten": "E-mail per medewerker",
    "onderwerp": "Storing: {platform}",
@@ -3576,7 +3943,8 @@
     "creator": "Sophie de Vries",
     "platform": "Instagram",
     "percentage": "80%"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "t-klassement",
@@ -3588,8 +3956,8 @@
    "moment": "Direct",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "uit",
-    "push": "uit"
+    "email": "samenvatting",
+    "push": "aan"
    },
    "uitzetten": "E-mail per medewerker",
    "onderwerp": "Afwijking klassement: {naam}",
@@ -3609,7 +3977,8 @@
    "voorbeeld": {
     "voornaam": "Ruben",
     "naam": "Daan Postma"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "t-academy",
@@ -3621,8 +3990,8 @@
    "moment": "Direct",
    "kanalen": {
     "inapp": "verplicht",
-    "email": "uit",
-    "push": "uit"
+    "email": "samenvatting",
+    "push": "aan"
    },
    "uitzetten": "E-mail per medewerker",
    "onderwerp": "Academy: {cursusdag}",
@@ -3644,7 +4013,8 @@
     "cursusdag": "Cursusdag Content maken",
     "datum": "za 12 dec",
     "aantal": "4"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "t-factuur",
@@ -3657,7 +4027,7 @@
    "kanalen": {
     "inapp": "verplicht",
     "email": "samenvatting",
-    "push": "uit"
+    "push": "aan"
    },
    "uitzetten": "E-mail per medewerker",
    "onderwerp": "Openstaand: {nummer}",
@@ -3679,7 +4049,8 @@
     "nummer": "MB-2026-1104",
     "zaak": "Kapsalon Knip",
     "bedrag": "€ 422,29"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "t-vrijgave",
@@ -3692,7 +4063,7 @@
    "kanalen": {
     "inapp": "verplicht",
     "email": "samenvatting",
-    "push": "uit"
+    "push": "aan"
    },
    "uitzetten": "E-mail per medewerker",
    "onderwerp": "Betaalrun vrijdag: {aantal} vergoedingen",
@@ -3714,7 +4085,8 @@
     "aantal": "14",
     "bedrag": "€ 2.140",
     "datum": "20 nov"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "t-juridisch",
@@ -3727,7 +4099,7 @@
    "kanalen": {
     "inapp": "verplicht",
     "email": "samenvatting",
-    "push": "uit"
+    "push": "aan"
    },
    "uitzetten": "E-mail per medewerker",
    "onderwerp": "Voorwaarden niet geaccepteerd: {aantal}",
@@ -3747,7 +4119,8 @@
    "voorbeeld": {
     "voornaam": "Mirthe",
     "aantal": "3"
-   }
+   },
+   "vorm": "standaard"
   },
   {
    "id": "t-rechten",
@@ -3781,7 +4154,8 @@
     "voornaam": "Ruben",
     "wie": "Mirthe Brouwer",
     "rollen": "Contentcontrole, Accountmanager"
-   }
+   },
+   "vorm": "beveiliging"
   },
   {
    "id": "t-inloggen-als",
@@ -3794,7 +4168,7 @@
    "kanalen": {
     "inapp": "verplicht",
     "email": "samenvatting",
-    "push": "uit"
+    "push": "aan"
    },
    "uitzetten": "E-mail per medewerker",
    "onderwerp": "Inloggen als: {naam}",
@@ -3818,7 +4192,222 @@
     "datum": "ma 16 nov",
     "tijd": "11:20",
     "reden": "Hulp bij aanvraag"
-   }
+   },
+   "vorm": "standaard"
+  },
+  {
+   "id": "o-welkom",
+   "rol": "o",
+   "rolnaam": "Ondernemer",
+   "soort": "Account en beveiliging",
+   "gebeurtenis": "Ondernemer goedgekeurd: account voor de eigenaar aangemaakt",
+   "ontvanger": "Eigenaar van het bedrijf",
+   "moment": "Direct na goedkeuring van de kennismaking",
+   "kanalen": {
+    "inapp": "nee",
+    "email": "verplicht",
+    "push": "nee"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Welkom bij MEBRANDING, {zaak}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Welkom bij MEBRANDING. Het portaal voor {zaak} staat klaar.",
+     "Zo ga je van start:"
+    ],
+    "stappen": [
+     "Kies je wachtwoord via de knop hieronder. Je logt in met {email}.",
+     "Zet MEBRANDING op het beginscherm van je telefoon en zet meldingen aan. Zo weet je direct wanneer een creator langskomt.",
+     "Vraag je eerste samenwerking aan. Wij zoeken de creator die bij je zaak past."
+    ],
+    "naschrift": "De link om je wachtwoord te kiezen werkt 7 dagen. Vragen? Beantwoord deze mail, dan helpen we je.",
+    "knop": "Wachtwoord kiezen en inloggen",
+    "deeplink": "Inloggen"
+   },
+   "push": "",
+   "inapp": "",
+   "bron": "Dave 25-11-2026",
+   "status": "nieuw",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Sanne",
+    "zaak": "Lunchroom Bloesem",
+    "email": "sanne@lunchroombloesem.nl"
+   },
+   "vorm": "welkom"
+  },
+  {
+   "id": "t-dagoverzicht",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Dagelijkse samenvatting van teamsignalen die nog open staan",
+   "ontvanger": "Teamleden met signalen in de afgelopen 24 uur",
+   "moment": "Werkdagen om 08:00",
+   "kanalen": {
+    "inapp": "nee",
+    "email": "verplicht",
+    "push": "nee"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Je dag bij MEBRANDING: {aantal} signalen",
+   "email": {
+    "aanhef": "Goedemorgen {voornaam},",
+    "alineas": [
+     "Dit kwam er de afgelopen 24 uur binnen en vraagt aandacht:"
+    ],
+    "knop": "Open de werkvoorraad",
+    "deeplink": "Werkvoorraad"
+   },
+   "push": "",
+   "inapp": "",
+   "bron": "Dave 25-11-2026",
+   "status": "nieuw",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Taipan",
+    "aantal": "3"
+   },
+   "vorm": "samenvatting"
+  },
+  {
+   "id": "t-kanaal-bericht",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Nieuw bericht op het eigen Instagram-account",
+   "ontvanger": "Team met recht kanalen.beheren",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "aan",
+    "email": "uit",
+    "push": "aan"
+   },
+   "uitzetten": "Ja",
+   "onderwerp": "Nieuw Instagram-bericht van {afzender}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "{afzender} stuurde een bericht naar het Instagram-account van MEBRANDING: \"{tekst}\"",
+     "Antwoord binnen 24 uur, daarna staat Meta geen antwoord meer toe."
+    ],
+    "knop": "Bericht openen"
+   },
+   "push": "{afzender} op Instagram: {tekst}",
+   "inapp": "Nieuw Instagram-bericht van {afzender}: {tekst}",
+   "bron": "Eigen kanalen 25-11-2026",
+   "status": "Voorstel",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Taipan",
+    "afzender": "lunchroombloesem",
+    "tekst": "Hoi! Hoe werkt een samenwerking precies?"
+   },
+   "vorm": "standaard"
+  },
+  {
+   "id": "t-kanaal-reactie",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Nieuwe reactie op een post van het eigen Instagram-account",
+   "ontvanger": "Team met recht kanalen.beheren",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "aan",
+    "email": "uit",
+    "push": "aan"
+   },
+   "uitzetten": "Ja",
+   "onderwerp": "Nieuwe reactie van {afzender}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "{afzender} reageerde op een post van MEBRANDING: \"{tekst}\""
+    ],
+    "knop": "Reactie openen"
+   },
+   "push": "Reactie van {afzender}: {tekst}",
+   "inapp": "Nieuwe reactie op Instagram van {afzender}: {tekst}",
+   "bron": "Eigen kanalen 25-11-2026",
+   "status": "Voorstel",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Taipan",
+    "afzender": "sophie.creates",
+    "tekst": "Wat een mooie video!"
+   },
+   "vorm": "standaard"
+  },
+  {
+   "id": "t-kanaal-plaatsen",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Ontwerp uit MeStudio geplaatst op Instagram (of mislukt)",
+   "ontvanger": "Team met recht kanalen.beheren",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "uit",
+    "push": "uit"
+   },
+   "uitzetten": "Ja",
+   "onderwerp": "Plaatsen op Instagram: {ontwerp}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "\"{ontwerp}\" {uitkomst}."
+    ],
+    "knop": "Feedplanner openen"
+   },
+   "push": "",
+   "inapp": "\"{ontwerp}\" {uitkomst}.",
+   "bron": "Eigen kanalen 25-11-2026",
+   "status": "Voorstel",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Taipan",
+    "ontwerp": "Kerstcarrousel",
+    "uitkomst": "staat live op Instagram"
+   },
+   "vorm": "standaard"
+  },
+  {
+   "id": "t-kanaal-koppeling",
+   "rol": "t",
+   "rolnaam": "Team",
+   "soort": "Teamsignalen",
+   "gebeurtenis": "Koppeling van een eigen kanaal werkt niet meer",
+   "ontvanger": "Team met recht kanalen.beheren",
+   "moment": "Direct",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "aan"
+   },
+   "uitzetten": "Ja",
+   "onderwerp": "Koppel {platform} opnieuw",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "De koppeling met het {platform}-account van MEBRANDING werkt niet meer: {reden}",
+     "Koppel het account opnieuw onder Eigen kanalen."
+    ],
+    "knop": "Opnieuw koppelen"
+   },
+   "push": "{platform} is ontkoppeld. Koppel opnieuw.",
+   "inapp": "De koppeling met {platform} werkt niet meer. Koppel opnieuw onder Eigen kanalen.",
+   "bron": "Eigen kanalen 25-11-2026",
+   "status": "Voorstel",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Taipan",
+    "platform": "Instagram",
+    "reden": "het token is verlopen"
+   },
+   "vorm": "standaard"
   }
  ]
 }

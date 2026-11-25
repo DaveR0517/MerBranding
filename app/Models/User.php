@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\Melder;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\URL;
 use Laravel\Fortify\Contracts\PasskeyUser;
 use Laravel\Fortify\PasskeyAuthenticatable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -50,6 +52,30 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
         ];
+    }
+
+    /** Wachtwoord vergeten: eigen MEBRANDING-mail (g-wachtwoord-vergeten) in plaats van de standaardmail van Laravel. */
+    public function sendPasswordResetNotification($token): void
+    {
+        app(Melder::class)->stuur('g-wachtwoord-vergeten', $this, ['geldig' => self::duur((int) config('auth.passwords.users.expire'))], route('password.reset', ['token' => $token, 'email' => $this->email]));
+    }
+
+    /** E-mailadres bevestigen: eigen MEBRANDING-mail (g-bevestig-email). */
+    public function sendEmailVerificationNotification(): void
+    {
+        $minuten = (int) config('auth.verification.expire', 60);
+        $link = URL::temporarySignedRoute('verification.verify', now()->addMinutes($minuten), ['id' => $this->getKey(), 'hash' => sha1($this->getEmailForVerification())]);
+        app(Melder::class)->stuur('g-bevestig-email', $this, ['geldig' => self::duur($minuten)], $link);
+    }
+
+    /** Geldigheid in gewone taal: 60 wordt "1 uur", 10080 wordt "7 dagen". */
+    private static function duur(int $minuten): string
+    {
+        return match (true) {
+            $minuten % 1440 === 0 => ($minuten / 1440).' '.($minuten === 1440 ? 'dag' : 'dagen'),
+            $minuten % 60 === 0 => ($minuten / 60).' uur',
+            default => $minuten.' minuten',
+        };
     }
 
     public function companies(): BelongsToMany

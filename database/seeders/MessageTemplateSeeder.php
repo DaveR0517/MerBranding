@@ -6,35 +6,33 @@ use App\Models\MessageTemplate;
 use Illuminate\Database\Seeder;
 
 /**
- * Berichtsjablonen uit database/data/berichtsjablonen.json (concept 18-11-2026). Veilig om vaker te draaien:
- * alleen ontbrekende sjablonen worden aangemaakt, zodat wijzigingen van het team (Instellingen, Berichtsjablonen) blijven staan.
+ * Berichtsjablonen uit database/data/berichtsjablonen.json, de enige bron voor teksten, kanalen en mailvorm.
+ * Veilig om vaker te draaien: nieuwe sjablonen worden aangemaakt, bestaande alleen bijgewerkt als het team ze niet
+ * zelf heeft aangepast (de inhoud is nog gelijk aan de vorige standaardversie, standaard_hash).
  */
 class MessageTemplateSeeder extends Seeder
 {
-    /** Afwijkingen van het bestand, met reden. */
-    private const KANALEN = [
-        // Dave (22-11-2026): bij goedkeuring krijgt de ondernemer de video te zien plus een melding, ook per e-mail.
-        'o-goedgekeurd' => ['inapp' => 'verplicht', 'email' => 'aan', 'push' => 'uit'],
-    ];
-
     public function run(): void
     {
         $data = json_decode(file_get_contents(database_path('data/berichtsjablonen.json')), true);
 
         foreach ($data['sjablonen'] as $s) {
-            $sjabloon = MessageTemplate::firstOrCreate(['key' => $s['id']], [
+            $inhoud = [
                 'role' => $s['rol'],
                 'event' => $s['gebeurtenis'],
-                'channels' => self::KANALEN[$s['id']] ?? $s['kanalen'],
+                'vorm' => $s['vorm'] ?? 'standaard',
+                'channels' => $s['kanalen'],
                 'subject' => $s['onderwerp'],
                 'email' => $s['email'] ?? null,
                 'inapp' => $s['inapp'] ?? null,
                 'push' => $s['push'] ?? null,
-            ]);
+            ];
+            $sjabloon = MessageTemplate::firstWhere('key', $s['id']);
 
-            // Pushtekst kwam later: alleen aanvullen waar hij nog leeg is, wijzigingen van het team blijven staan.
-            if ($sjabloon->push === null && ! empty($s['push'])) {
-                $sjabloon->update(['push' => $s['push']]);
+            if (! $sjabloon) {
+                MessageTemplate::create(['key' => $s['id'], ...$inhoud, 'standaard_hash' => MessageTemplate::vingerafdruk($inhoud)]);
+            } elseif ($sjabloon->standaard_hash === null || $sjabloon->standaard_hash === MessageTemplate::vingerafdruk($sjabloon->only(array_keys($inhoud)))) {
+                $sjabloon->update([...$inhoud, 'standaard_hash' => MessageTemplate::vingerafdruk($inhoud)]);
             }
         }
     }

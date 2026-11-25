@@ -52,6 +52,7 @@
         <!-- inhoud -->
         <tr>
           <td class="mb-pad" style="padding:32px 32px 8px;font-family:'Noto Sans',Arial,Helvetica,sans-serif;font-size:15px;line-height:24px;color:#22203A;">
+            @if (! empty($label))<p style="margin:0 0 8px;font-family:'Noto Sans',Arial,Helvetica,sans-serif;font-size:12px;line-height:16px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:{{ $labelKleur ?? '#614ED9' }};">{{ $label }}</p>@endif
             <h1 class="mb-h1" style="margin:0 0 16px;font-family:'Montserrat','Arial Black',Arial,sans-serif;font-weight:900;font-size:22px;line-height:28px;color:#22203A;">{{ $onderwerp }}</h1>
             <p style="margin:0 0 14px;">{{ $aanhef }}</p>
             @yield('alineas')
@@ -72,6 +73,11 @@
           </td>
         </tr>
         @endisset
+        @hasSection('na')
+        <tr>
+          <td class="mb-pad" style="padding:0 32px 20px;font-family:'Noto Sans',Arial,Helvetica,sans-serif;font-size:13px;line-height:21px;color:#6B6880;">@yield('na')</td>
+        </tr>
+        @endif
         <!-- afsluiting -->
         <tr>
           <td class="mb-pad" style="padding:0 32px 28px;font-family:'Noto Sans',Arial,Helvetica,sans-serif;font-size:15px;line-height:24px;color:#22203A;">Groet,<br>Team MEBRANDING</td>

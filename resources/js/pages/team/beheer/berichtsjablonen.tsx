@@ -1,4 +1,4 @@
-import { Head, Link, useForm } from "@inertiajs/react";
+import { Head, Link, useForm } from '@inertiajs/react';
 import {
     ArrowLeft,
     Lock,
@@ -7,18 +7,24 @@ import {
     Search,
     Smartphone,
     Trash2,
-} from "lucide-react";
-import { useMemo, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import * as team from "@/routes/team";
-import * as beheer from "@/routes/team/beheer";
-import { opslaan, testmail } from "@/routes/team/beheer/berichtsjablonen";
-import { Kerncijfer, KaartRaster, Leeg, Pagina, PaginaKop } from "@/components/pagina";
-import { Label, Paneel, Veld, invoer } from "../_onderdelen/basis";
-import { Voorstel } from "./_onderdelen/beheer";
+} from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import * as team from '@/routes/team';
+import * as beheer from '@/routes/team/beheer';
+import { opslaan, testmail } from '@/routes/team/beheer/berichtsjablonen';
+import {
+    Kerncijfer,
+    KaartRaster,
+    Leeg,
+    Pagina,
+    PaginaKop,
+} from '@/components/pagina';
+import { Label, Paneel, Veld, invoer } from '../_onderdelen/basis';
+import { Voorstel } from './_onderdelen/beheer';
 
-type Kanaal = "inapp" | "email" | "push";
+type Kanaal = 'inapp' | 'email' | 'push';
 type Sjabloon = {
     id: number;
     key: string;
@@ -44,26 +50,27 @@ type Props = {
 };
 
 const KANALEN: { key: Kanaal; naam: string }[] = [
-    { key: "inapp", naam: "In-app" },
-    { key: "email", naam: "E-mail" },
-    { key: "push", naam: "Push" },
+    { key: 'inapp', naam: 'In-app' },
+    { key: 'email', naam: 'E-mail' },
+    { key: 'push', naam: 'Push' },
 ];
 const STAND: Record<string, string> = {
-    aan: "Aan",
-    uit: "Uit",
-    samenvatting: "Samenvatting",
-    verplicht: "Verplicht",
-    nee: "Niet beschikbaar",
+    aan: 'Aan',
+    uit: 'Uit',
+    samenvatting: 'Samenvatting',
+    vangnet: 'Alleen zonder push',
+    verplicht: 'Verplicht',
+    nee: 'Niet beschikbaar',
 };
 const aan = (w: string | undefined) =>
-    w === "aan" || w === "verplicht" || w === "samenvatting";
+    w === 'aan' || w === 'verplicht' || w === 'samenvatting' || w === 'vangnet';
 
 /** Vult {variabelen} in, net als MessageTemplate::vulIn. Onbekende variabelen blijven zichtbaar. */
 function vulIn(
     tekst: string | null | undefined,
     vars: Record<string, string>,
 ): string {
-    return (tekst ?? "").replace(/\{(\w+)\}/gu, (m, k: string) =>
+    return (tekst ?? '').replace(/\{(\w+)\}/gu, (m, k: string) =>
         k in vars ? vars[k] : m,
     );
 }
@@ -74,10 +81,10 @@ export default function Berichtsjablonen({
     soorten,
     spelregels,
 }: Props) {
-    const [zoek, setZoek] = useState("");
+    const [zoek, setZoek] = useState('');
     const [rol, setRol] = useState<string | null>(null);
-    const [soort, setSoort] = useState("");
-    const [kanaal, setKanaal] = useState("");
+    const [soort, setSoort] = useState('');
+    const [kanaal, setKanaal] = useState('');
     const [gekozenId, setGekozenId] = useState<number | null>(null);
 
     const lijst = useMemo(() => {
@@ -87,17 +94,17 @@ export default function Berichtsjablonen({
             (s) =>
                 (!rol || s.role === rol) &&
                 (!soort || s.soort === soort) &&
-                (kanaal !== "email" || aan(s.channels.email)) &&
-                (kanaal !== "push" || aan(s.channels.push)) &&
-                (kanaal !== "vast" ||
-                    Object.values(s.channels).includes("verplicht")) &&
-                (kanaal !== "voorstel" || s.voorstel) &&
+                (kanaal !== 'email' || aan(s.channels.email)) &&
+                (kanaal !== 'push' || aan(s.channels.push)) &&
+                (kanaal !== 'vast' ||
+                    Object.values(s.channels).includes('verplicht')) &&
+                (kanaal !== 'voorstel' || s.voorstel) &&
                 (!z ||
                     [
                         s.key,
                         s.event,
                         s.subject,
-                        s.inapp ?? "",
+                        s.inapp ?? '',
                         ...s.email.alineas,
                     ].some((t) => t.toLowerCase().includes(z))),
         );
@@ -105,10 +112,10 @@ export default function Berichtsjablonen({
 
     const gekozen = sjablonen.find((s) => s.id === gekozenId) ?? null;
     const wissen = () => {
-        setZoek("");
+        setZoek('');
         setRol(null);
-        setSoort("");
-        setKanaal("");
+        setSoort('');
+        setKanaal('');
     };
 
     return (
@@ -135,7 +142,7 @@ export default function Berichtsjablonen({
                         label="E-mail verplicht"
                         waarde={
                             sjablonen.filter(
-                                (s) => s.channels.email === "verplicht",
+                                (s) => s.channels.email === 'verplicht',
                             ).length
                         }
                         toelichting="Beveiliging, geld en voortgang"
@@ -157,8 +164,8 @@ export default function Berichtsjablonen({
                 <div className="grid gap-5 @4xl:grid-cols-[minmax(0,380px)_minmax(0,1fr)]">
                     <div
                         className={cn(
-                            "min-w-0 space-y-3",
-                            gekozen && "hidden lg:block",
+                            'min-w-0 space-y-3',
+                            gekozen && 'hidden lg:block',
                         )}
                     >
                         <div className="relative">
@@ -185,13 +192,13 @@ export default function Berichtsjablonen({
                         >
                             {[null, ...Object.keys(rollen)].map((r) => (
                                 <button
-                                    key={r ?? "alle"}
+                                    key={r ?? 'alle'}
                                     type="button"
                                     aria-pressed={rol === r}
                                     onClick={() => setRol(r)}
-                                    className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${rol === r ? "border-violet bg-violet text-white" : "bg-background hover:border-violet"}`}
+                                    className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${rol === r ? 'border-violet bg-violet text-white' : 'bg-background hover:border-violet'}`}
                                 >
-                                    {r ? rollen[r] : "Alle"}{" "}
+                                    {r ? rollen[r] : 'Alle'}{' '}
                                     <span className="opacity-70">
                                         {r
                                             ? sjablonen.filter(
@@ -262,9 +269,9 @@ export default function Berichtsjablonen({
                                             onClick={() => setGekozenId(s.id)}
                                             aria-current={s.id === gekozenId}
                                             className={cn(
-                                                "block w-full p-3 text-left text-sm hover:bg-muted/50",
+                                                'block w-full p-3 text-left text-sm hover:bg-muted/50',
                                                 s.id === gekozenId &&
-                                                    "bg-violet/5",
+                                                    'bg-violet/5',
                                             )}
                                         >
                                             <span className="flex items-center gap-2">
@@ -339,21 +346,21 @@ function Bewerken({
 }) {
     const form = useForm({
         subject: sjabloon.subject,
-        inapp: sjabloon.inapp ?? "",
+        inapp: sjabloon.inapp ?? '',
         email: {
             aanhef: sjabloon.email.aanhef,
             alineas: sjabloon.email.alineas.length
                 ? sjabloon.email.alineas
-                : [""],
+                : [''],
             knop: sjabloon.email.knop,
         },
         channels: { ...sjabloon.channels },
     });
     const errors = form.errors as Record<string, string>;
-    const vars = { voornaam: "Sanne", ...sjabloon.voorbeeld };
+    const vars = { voornaam: 'Sanne', ...sjabloon.voorbeeld };
     const variabelen = [
         ...new Set(
-            `${form.data.subject} ${form.data.inapp} ${form.data.email.aanhef} ${form.data.email.alineas.join(" ")}`.match(
+            `${form.data.subject} ${form.data.inapp} ${form.data.email.aanhef} ${form.data.email.alineas.join(' ')}`.match(
                 /\{\w+\}/g,
             ) ?? [],
         ),
@@ -361,7 +368,7 @@ function Bewerken({
     const id = `s-${sjabloon.id}`;
 
     const zetAlinea = (i: number, tekst: string) =>
-        form.setData("email", {
+        form.setData('email', {
             ...form.data.email,
             alineas: form.data.email.alineas.map((a, j) =>
                 j === i ? tekst : a,
@@ -399,7 +406,7 @@ function Bewerken({
                     }
                     sub={
                         <>
-                            <span className="font-mono">{sjabloon.key}</span> ·{" "}
+                            <span className="font-mono">{sjabloon.key}</span> ·{' '}
                             {rolnaam}
                             {sjabloon.soort && ` · ${sjabloon.soort}`}
                         </>
@@ -410,13 +417,13 @@ function Bewerken({
                             <dt className="text-xs text-muted-foreground">
                                 Ontvanger
                             </dt>
-                            <dd>{sjabloon.ontvanger ?? "-"}</dd>
+                            <dd>{sjabloon.ontvanger ?? '-'}</dd>
                         </div>
                         <div>
                             <dt className="text-xs text-muted-foreground">
                                 Moment
                             </dt>
-                            <dd>{sjabloon.moment ?? "-"}</dd>
+                            <dd>{sjabloon.moment ?? '-'}</dd>
                         </div>
                     </dl>
 
@@ -444,7 +451,7 @@ function Bewerken({
                                             <Lock
                                                 className="size-3.5"
                                                 aria-hidden
-                                            />{" "}
+                                            />{' '}
                                             {STAND[form.data.channels[k.key]] ??
                                                 form.data.channels[k.key]}
                                             <span className="sr-only">
@@ -456,7 +463,7 @@ function Bewerken({
                                             id={`${id}-${k.key}`}
                                             value={form.data.channels[k.key]}
                                             onChange={(e) =>
-                                                form.setData("channels", {
+                                                form.setData('channels', {
                                                     ...form.data.channels,
                                                     [k.key]: e.target.value,
                                                 })
@@ -465,10 +472,15 @@ function Bewerken({
                                         >
                                             <option value="aan">Aan</option>
                                             <option value="uit">Uit</option>
-                                            {k.key === "email" && (
-                                                <option value="samenvatting">
-                                                    Samenvatting
-                                                </option>
+                                            {k.key === 'email' && (
+                                                <>
+                                                    <option value="vangnet">
+                                                        Alleen zonder push
+                                                    </option>
+                                                    <option value="samenvatting">
+                                                        Samenvatting
+                                                    </option>
+                                                </>
                                             )}
                                         </select>
                                     )}
@@ -502,7 +514,7 @@ function Bewerken({
                                     required
                                     value={form.data.subject}
                                     onChange={(e) =>
-                                        form.setData("subject", e.target.value)
+                                        form.setData('subject', e.target.value)
                                     }
                                     className={invoer}
                                 />
@@ -517,7 +529,7 @@ function Bewerken({
                                     rows={2}
                                     value={form.data.inapp}
                                     onChange={(e) =>
-                                        form.setData("inapp", e.target.value)
+                                        form.setData('inapp', e.target.value)
                                     }
                                     className={`${invoer} h-auto py-2`}
                                 />
@@ -525,13 +537,13 @@ function Bewerken({
                             <Veld
                                 label="E-mail: aanhef"
                                 htmlFor={`${id}-aanhef`}
-                                fout={errors["email.aanhef"]}
+                                fout={errors['email.aanhef']}
                             >
                                 <input
                                     id={`${id}-aanhef`}
                                     value={form.data.email.aanhef}
                                     onChange={(e) =>
-                                        form.setData("email", {
+                                        form.setData('email', {
                                             ...form.data.email,
                                             aanhef: e.target.value,
                                         })
@@ -562,7 +574,7 @@ function Bewerken({
                                             type="button"
                                             className="mt-7 rounded-md p-2 text-muted-foreground hover:text-rood"
                                             onClick={() =>
-                                                form.setData("email", {
+                                                form.setData('email', {
                                                     ...form.data.email,
                                                     alineas:
                                                         form.data.email.alineas.filter(
@@ -586,29 +598,29 @@ function Bewerken({
                                     variant="outline"
                                     size="sm"
                                     onClick={() =>
-                                        form.setData("email", {
+                                        form.setData('email', {
                                             ...form.data.email,
                                             alineas: [
                                                 ...form.data.email.alineas,
-                                                "",
+                                                '',
                                             ],
                                         })
                                     }
                                 >
-                                    <Plus className="size-4" aria-hidden />{" "}
+                                    <Plus className="size-4" aria-hidden />{' '}
                                     Alinea
                                 </Button>
                             )}
                             <Veld
                                 label="E-mail: tekst op de knop"
                                 htmlFor={`${id}-knop`}
-                                fout={errors["email.knop"]}
+                                fout={errors['email.knop']}
                             >
                                 <input
                                     id={`${id}-knop`}
                                     value={form.data.email.knop}
                                     onChange={(e) =>
-                                        form.setData("email", {
+                                        form.setData('email', {
                                             ...form.data.email,
                                             knop: e.target.value,
                                         })
@@ -656,7 +668,7 @@ function Bewerken({
                                     </div>
                                     <div className="space-y-3 p-4">
                                         <p className="text-xs text-[#5E5A78]">
-                                            Onderwerp:{" "}
+                                            Onderwerp:{' '}
                                             {vulIn(form.data.subject, vars)}
                                         </p>
                                         <p>
@@ -689,8 +701,8 @@ function Bewerken({
                 <div className="sticky bottom-20 z-10 flex flex-wrap items-center justify-end gap-2 rounded-xl border bg-card/95 p-3 shadow-sm backdrop-blur md:bottom-4">
                     <p className="mr-auto text-xs text-muted-foreground">
                         {form.isDirty
-                            ? "Niet opgeslagen wijzigingen."
-                            : "Alles is opgeslagen."}
+                            ? 'Niet opgeslagen wijzigingen.'
+                            : 'Alles is opgeslagen.'}
                     </p>
                     <Button
                         type="button"
@@ -720,6 +732,6 @@ function Bewerken({
 
 Berichtsjablonen.layout = {
     breadcrumbs: [
-        { title: "Berichtsjablonen", href: beheer.berichtsjablonen.url() },
+        { title: 'Berichtsjablonen', href: beheer.berichtsjablonen.url() },
     ],
 };

@@ -2,6 +2,7 @@
 
 use App\Jobs\MeldGebruiksrechten;
 use App\Jobs\VerversEigenKanalen;
+use App\Services\Dagoverzicht;
 use App\Services\Geld;
 use App\Services\Samenwerking;
 use App\Services\Score;
@@ -32,3 +33,6 @@ Schedule::call(fn () => app(Geld::class)->samenstellen(Geld::vrijdag()))->name('
 
 // Eigen kanalen (Instagram en TikTok van MEBRANDING): elk uur profiel, posts, cijfers en berichten ophalen, tokens op tijd verlengen.
 Schedule::job(new VerversEigenKanalen)->name('eigen-kanalen-verversen')->hourlyAt(23)->withoutOverlapping();
+
+// Dagoverzicht voor het team: signalen die op "samenvatting" staan, in één mail op werkdagen (besluit Dave 25-11-2026).
+Schedule::call(fn () => app(Dagoverzicht::class)->stuur())->name('team-dagoverzicht')->weekdays()->at('07:47')->timezone('Europe/Amsterdam')->withoutOverlapping();

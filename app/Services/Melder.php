@@ -34,6 +34,13 @@ class Melder
         }
     }
 
+    /** Beveiligingsmail na een nieuw wachtwoord (g-beveiliging), ook als de gebruiker het zelf deed. */
+    public function wachtwoordGewijzigd(User $user): void
+    {
+        $nu = now('Europe/Amsterdam');
+        $this->stuur('g-beveiliging', $user, ['datum' => $nu->translatedFormat('l j F'), 'tijd' => $nu->format('H:i')], route('security.edit'));
+    }
+
     /** Teamleden met een bepaald recht, plus Super Admins. */
     public function team(string $permission): Collection
     {

@@ -24,7 +24,7 @@ class BerichtsjablonenController extends Controller
     private const KANALEN = ['inapp', 'email', 'push'];
 
     /** Keuzes voor een kanaal dat niet vastligt. */
-    private const KEUZES = ['aan', 'uit', 'samenvatting'];
+    private const KEUZES = ['aan', 'uit', 'vangnet', 'samenvatting'];
 
     public function index(): Response
     {
@@ -114,7 +114,7 @@ class BerichtsjablonenController extends Controller
                         : 'Dit kanaal is verplicht voor deze melding en kan niet uit.']);
                 }
             } elseif (! in_array($gekozen, self::KEUZES, true)) {
-                throw ValidationException::withMessages(["channels.{$k}" => 'Kies aan, uit of samenvatting.']);
+                throw ValidationException::withMessages(["channels.{$k}" => 'Kies aan, uit, alleen zonder push of samenvatting.']);
             }
             $kanalen[$k] = $gekozen;
         }

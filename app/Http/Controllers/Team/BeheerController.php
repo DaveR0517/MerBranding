@@ -73,7 +73,7 @@ class BeheerController extends Controller
 
             $eigenaar = $this->account($data['owner_name'], $data['owner_email'], 'Ondernemer Eigenaar');
             $bedrijf->users()->syncWithoutDetaching([$eigenaar->id => ['role' => 'eigenaar']]);
-            $this->nodigUit($eigenaar, $request->user(), $bedrijf->name, 'eigenaar');
+            $this->uitnodiging->stuur($eigenaar, 'o-welkom', ['zaak' => $bedrijf->name]);
 
             if (! empty($data['lead_id'])) {
                 Lead::whereKey($data['lead_id'])->update(['status' => 'klant']);
@@ -113,13 +113,13 @@ class BeheerController extends Controller
             'lead_id' => ['nullable', 'exists:leads,id'],
         ], ['birthdate.before_or_equal' => 'Creators zijn minimaal 18 jaar.']);
 
-        DB::transaction(function () use ($data, $request) {
+        DB::transaction(function () use ($data) {
             $user = $this->account($data['name'], $data['email'], 'Creator');
             Creator::updateOrCreate(['user_id' => $user->id], [
                 'level' => $data['level'], 'birthdate' => $data['birthdate'], 'city' => $data['city'] ?? null,
                 'instagram' => $data['instagram'] ?? null, 'tiktok' => $data['tiktok'] ?? null, 'status' => 'actief',
             ]);
-            $this->nodigUit($user, $request->user(), 'MEBRANDING', 'creator');
+            $this->uitnodiging->stuur($user, 'c-welkom', ['niveau' => $user->creator()->first()->levelName()]);
             if (! empty($data['lead_id'])) {
                 Lead::whereKey($data['lead_id'])->update(['status' => 'creator']);
             }
@@ -134,11 +134,5 @@ class BeheerController extends Controller
         $user->assignRole($rol);
 
         return $user;
-    }
-
-    /** Uitnodiging per mail: de link laat de nieuwe gebruiker zelf een wachtwoord kiezen (7 dagen geldig). */
-    private function nodigUit(User $user, User $door, string $zaak, string $rol): void
-    {
-        $this->uitnodiging->stuur($user, 'g-uitnodiging', ['naam' => $door->name, 'zaak' => $zaak, 'rol' => $rol]);
     }
 }

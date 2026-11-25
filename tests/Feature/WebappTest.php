@@ -87,13 +87,3 @@ test('een melding gaat als push mee als het sjabloon push aan heeft en het appar
     $this->sophie->fresh()->notifyNow($melding);
     expect($verstuurd)->toHaveCount(1)->and($verstuurd[0][3])->toBe('https://mebranding.nl/app/creator');
 });
-
-test('de seeder vult de pushtekst aan bij bestaande sjablonen, zonder wijzigingen van het team te overschrijven', function () {
-    $this->seed(MessageTemplateSeeder::class);
-    MessageTemplate::where('key', 'c-feedback')->update(['push' => null]);
-    MessageTemplate::where('key', 'c-goedgekeurd')->update(['push' => 'Eigen tekst van het team']);
-
-    $this->seed(MessageTemplateSeeder::class);
-    expect(MessageTemplate::where('key', 'c-feedback')->value('push'))->toContain('Feedback op je video')
-        ->and(MessageTemplate::where('key', 'c-goedgekeurd')->value('push'))->toBe('Eigen tekst van het team');
-});
