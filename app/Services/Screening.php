@@ -84,7 +84,7 @@ class Screening
             $lead->update(['status' => 'creator']);
             $this->besluit($lead, $door, ScreeningAanmelding::GOEDGEKEURD, $reden, $niveau, $creator);
 
-            $this->uitnodiging->stuur($user, 'c-welkom', ['niveau' => $creator->levelName()]);
+            $this->uitnodiging->stuur($user, 'c-welkom', Uitnodiging::creatorVars($creator));
 
             return $creator;
         });

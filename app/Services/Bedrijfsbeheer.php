@@ -71,7 +71,11 @@ class Bedrijfsbeheer
         }
     }
 
-    /** Nieuwe gebruiker voor het bedrijf: account (of bestaand account), koppeling en een mail met een link om een wachtwoord te kiezen. */
+    /**
+     * Nieuwe gebruiker voor het bedrijf: account (of bestaand account), koppeling en een mail. Alleen een account dat nog
+     * niet in gebruik is, krijgt een link om een wachtwoord te kiezen; een bestaand account krijgt g-toegevoegd (Uitnodiging).
+     * Wie al bij dit bedrijf hoort, wordt niet opnieuw gekoppeld: een rol wijzigen (ook van een eigenaar) gaat alleen via rolWijzigen.
+     */
     public function uitnodigen(Company $bedrijf, ?string $naam, string $email, string $rol, User $door): User
     {
         $email = Str::lower(trim($email));
@@ -83,17 +87,21 @@ class Bedrijfsbeheer
             $user = User::firstOrCreate(['email' => $email], ['name' => $naam ?: Str::before($email, '@'), 'password' => Str::password(40)]);
             $bedrijf->users()->attach($user->id, ['role' => $rol]);
             self::syncRol($user);
-            $this->stuurUitnodiging($bedrijf, $user, $rol, $door);
-            $this->log($door, $bedrijf, 'gebruiker_uitgenodigd', null, ['user_id' => $user->id, 'email' => $email, 'rol' => $rol]);
+            $link = $this->stuurUitnodiging($bedrijf, $user, $rol, $door);
+            $this->log($door, $bedrijf, 'gebruiker_uitgenodigd', null, ['user_id' => $user->id, 'email' => $email, 'rol' => $rol, 'wachtwoordlink' => $link]);
             CompanyOnboarding::vink($bedrijf, 'team');
 
             return $user;
         });
     }
 
+    /** Verse wachtwoordlink voor wie de eerste uitnodiging nog niet gebruikte. Een account in gebruik logt gewoon in. */
     public function opnieuwUitnodigen(Company $bedrijf, User $user, User $door): void
     {
         $rol = $this->rolVan($bedrijf, $user);
+        if ($user->inGebruik()) {
+            throw ValidationException::withMessages(['email' => "{$user->name} gebruikt het account al en logt gewoon in. Wachtwoord kwijt? Dan via Wachtwoord vergeten op het inlogscherm."]);
+        }
         $this->stuurUitnodiging($bedrijf, $user, $rol, $door);
         $this->log($door, $bedrijf, 'uitnodiging_opnieuw', null, ['user_id' => $user->id, 'email' => $user->email]);
     }
@@ -188,9 +196,10 @@ class Bedrijfsbeheer
         }
     }
 
-    private function stuurUitnodiging(Company $bedrijf, User $user, string $rol, User $door): void
+    /** @return bool true als er een wachtwoordlink is verstuurd */
+    private function stuurUitnodiging(Company $bedrijf, User $user, string $rol, User $door): bool
     {
-        $this->uitnodiging->stuur($user, 'g-uitnodiging', ['naam' => $door->name, 'zaak' => $bedrijf->name, 'rol' => $rol]);
+        return $this->uitnodiging->stuur($user, 'g-uitnodiging', ['naam' => $door->name, 'zaak' => $bedrijf->name, 'rol' => $rol]);
     }
 
     private function nietLaatsteEigenaar(Company $bedrijf, string $melding): void

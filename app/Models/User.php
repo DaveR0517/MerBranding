@@ -96,6 +96,17 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
         return $this->hasOne(Creator::class);
     }
 
+    /**
+     * Account in gebruik: de eigenaar koos ooit een wachtwoord of logde ooit in. Een wachtwoord kiezen via een link
+     * bevestigt het e-mailadres (NaWachtwoordReset) en elke inlog legt het apparaat vast (MeldNieuwApparaat). Zolang
+     * geen van beide is gebeurd, heeft niemand het account ooit gebruikt en mag een uitnodiging een wachtwoordlink
+     * bevatten (App\Services\Uitnodiging). Een account in gebruik krijgt nooit een wachtwoordlink van een ander.
+     */
+    public function inGebruik(): bool
+    {
+        return $this->email_verified_at !== null || ! empty($this->apparaten);
+    }
+
     /** Teamleden: Super Admin of een van de rechtensjablonen. */
     public function isTeam(): bool
     {

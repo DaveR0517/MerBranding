@@ -66,6 +66,7 @@ class TeamController extends Controller
 
     public function samenwerkingen(Request $request): Response
     {
+        Gate::authorize('samenwerkingen.bekijken');
         $status = $request->query('status');
 
         return Inertia::render('team/samenwerkingen', [
@@ -80,6 +81,8 @@ class TeamController extends Controller
 
     public function samenwerking(Request $request, Collaboration $samenwerking): Response
     {
+        Gate::authorize('samenwerkingen.bekijken');
+
         return Inertia::render('team/samenwerking', [
             'collaboration' => SamenwerkingPresenter::vol($samenwerking, 'team', $request->user()),
             'matches' => in_array($samenwerking->status, [Status::Nieuw, Status::CreatorZoeken], true) ? $this->matchlijst->voorTeam($samenwerking) : [],
@@ -150,6 +153,8 @@ class TeamController extends Controller
 
     public function logboek(): Response
     {
+        Gate::authorize('logboek.bekijken');
+
         return Inertia::render('team/logboek', [
             'entries' => ActivityLog::with('user')->latest('id')->limit(300)->get()->map(fn (ActivityLog $l) => [
                 'at' => $l->created_at->toIso8601String(), 'user' => $l->user?->name ?? 'Systeem', 'event' => $l->event,

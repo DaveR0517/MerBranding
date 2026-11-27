@@ -57,7 +57,8 @@ class PortaalController extends Controller
     {
         $c = $versie->collaboration;
         $user = $request->user();
-        $magZien = $user->isTeam()
+        $team = $user->can('samenwerkingen.bekijken');
+        $magZien = $team
             || $c->creator?->user_id === $user->id
             || ($user->companies()->whereKey($c->company_id)->exists() && ($versie->outcome === 'goedgekeurd' || $c->status->value === 'ter_controle'));
         abort_unless($magZien, 403);
@@ -66,7 +67,7 @@ class PortaalController extends Controller
         abort_unless($disk->exists($versie->path), 404, 'Deze video is niet meer beschikbaar.');
         $naam = "{$c->number}-versie-{$versie->version}.".pathinfo($versie->path, PATHINFO_EXTENSION);
 
-        $download = $request->boolean('download') && ($user->isTeam() || $versie->outcome === 'goedgekeurd' || $c->creator?->user_id === $user->id);
+        $download = $request->boolean('download') && ($team || $versie->outcome === 'goedgekeurd' || $c->creator?->user_id === $user->id);
 
         // Lokale opslag: bestandsantwoord met ondersteuning voor spoelen (Range). Andere opslag (R2, later): streamen.
         if ($versie->disk === 'local') {

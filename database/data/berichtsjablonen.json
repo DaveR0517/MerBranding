@@ -72,7 +72,7 @@
    "Abonnement en geld",
    "Teamsignalen"
   ],
-  "aantal": 109,
+  "aantal": 110,
   "kanaalregel": {
    "verplicht": "Altijd per mail: vaste afspraken, bevestigingen, account, geld en juridisch (besluit Dave 25-11-2026).",
    "aan": "Per mail, de ontvanger kan het uitzetten.",
@@ -2564,6 +2564,44 @@
     "zaak": "Lunchroom Bloesem"
    },
    "vorm": "standaard"
+  },
+  {
+   "id": "g-toegevoegd",
+   "rol": "g",
+   "rolnaam": "Iedereen (account)",
+   "soort": "Account en beveiliging",
+   "gebeurtenis": "Bestaand account krijgt toegang tot een zaak of omgeving (geen nieuwe wachtwoordlink)",
+   "ontvanger": "Genodigde met een actief account",
+   "moment": "Bij uitnodigen",
+   "kanalen": {
+    "inapp": "verplicht",
+    "email": "verplicht",
+    "push": "nee"
+   },
+   "uitzetten": "Nee",
+   "onderwerp": "Je hebt toegang tot {zaak}",
+   "email": {
+    "aanhef": "Hoi {voornaam},",
+    "alineas": [
+     "Je account bij MEBRANDING heeft toegang gekregen tot {zaak} als {rol}.",
+     "Je logt in zoals je gewend bent, met {email} en je eigen wachtwoord. Aan je wachtwoord verandert niets."
+    ],
+    "knop": "Inloggen",
+    "deeplink": "Inloggen",
+    "naschrift": "Ken je deze uitnodiging niet? Beantwoord deze mail, dan halen we de toegang weg."
+   },
+   "push": "",
+   "inapp": "Je hebt toegang tot {zaak} als {rol}.",
+   "bron": "Beveiliging uitnodigen 27-11-2026",
+   "status": "nieuw",
+   "urgentie": null,
+   "voorbeeld": {
+    "voornaam": "Jorrit",
+    "zaak": "Lunchroom Bloesem",
+    "rol": "lid",
+    "email": "jorrit@voorbeeld.nl"
+   },
+   "vorm": "beveiliging"
   },
   {
    "id": "g-bevestig-email",
