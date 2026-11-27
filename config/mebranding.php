@@ -82,9 +82,11 @@ return [
     'video_max_mb' => (int) env('MEBRANDING_VIDEO_MAX_MB', 500),
 
     /*
-    | Versie van het contract per klus dat de creator tekent. Placeholder tot de juridische teksten er zijn.
+    | Versies van wat de creator tekent: de raamovereenkomst (eenmalig) en het kluscontract (per klus).
+    | Basisafspraken; een nieuwe versie vraagt een nieuwe handtekening.
     */
-    'contract_version' => '0.1-concept',
+    'framework_version' => '1.0',
+    'contract_version' => '1.0',
 
     /*
     | Vaste accounts voor de eigenaren van MEBRANDING, uit de .env op de server (nooit in Git):

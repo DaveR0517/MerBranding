@@ -51,7 +51,7 @@ class CreatorController extends Controller
             'invitation' => $uitnodiging?->isOpen() ? ['id' => $uitnodiging->id, 'expires_at' => $uitnodiging->expires_at->toIso8601String()] : null,
             'contract' => [
                 'version' => config('mebranding.contract_version'),
-                'text' => 'Concept '.config('mebranding.contract_version').'. Je bezoekt '.$samenwerking->company->name.' ('.$samenwerking->location->name.'), maakt een video volgens de briefing, levert die aan voor controle en plaatst hem op de afgesproken datum op je eigen account, met de reclamevermelding "Betaalde samenwerking". De definitieve voorwaarden volgen.',
+                'text' => 'Kluscontract (versie '.config('mebranding.contract_version').'). Je bezoekt '.$samenwerking->company->name.' ('.$samenwerking->location->name.'), maakt een video volgens de briefing, levert die aan voor controle en plaatst hem op de afgesproken datum op je eigen account, met de reclamevermelding "Betaalde samenwerking". Je komt op het afgesproken moment; kun je toch niet, meld het dan zo vroeg mogelijk. Daarnaast gelden de basisafspraken uit je raamovereenkomst.',
             ],
             'video_max_mb' => config('mebranding.video_max_mb'),
         ]);

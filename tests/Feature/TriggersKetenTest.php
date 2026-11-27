@@ -18,6 +18,7 @@ use Carbon\CarbonImmutable;
 use Database\Seeders\DemoSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Validation\ValidationException;
 
 /*
  * Triggers van de keten en het account: elk sjabloon gaat op het juiste moment naar de juiste ontvanger,
@@ -287,4 +288,20 @@ test('g-nieuw-apparaat: de eerste inlog legt vast, een ander apparaat meldt, het
     $inloggen($windows);
     expect(ketenAantal('g-nieuw-apparaat'))->toBe(1)
         ->and(collect($user->fresh()->apparaten)->pluck('apparaat')->sort()->values()->all())->toBe(['Chrome op Windows', 'Safari op iPhone']);
+});
+
+test('team bevestigt een bezoek zonder check-in: punten verbruikt, door naar content maken met deadline', function () {
+    $later = ketenSamenwerking($this->bloesem, $this->marit, Status::BezoekGepland, ['visit_at' => now()->addDays(2)]);
+    expect(fn () => $this->keten->bezoekBevestigen($later, $this->eva))->toThrow(ValidationException::class);
+
+    $c = ketenSamenwerking($this->bloesem, $this->marit, Status::BezoekGepland, ['visit_at' => now()->subHours(3)]);
+    config(['mebranding.team_2fa_verplicht' => false]);
+    $planner = User::factory()->create();
+    $planner->assignRole('Planning');
+    $this->actingAs($planner)->post("http://app.mebranding.test/team/samenwerkingen/{$c->id}/bezoek-bevestigen")->assertRedirect();
+
+    $c->refresh();
+    expect($c->status)->toBe(Status::ContentMaken)
+        ->and($c->visited_at)->not->toBeNull()
+        ->and($c->content_deadline_at)->not->toBeNull();
 });

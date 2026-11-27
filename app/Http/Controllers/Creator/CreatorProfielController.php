@@ -327,14 +327,13 @@ class CreatorProfielController extends Controller
     /** @return list<string> */
     private function raamTekst(): array
     {
-        $v = CreatorProfiel::raamVersie();
-
         return [
-            "Concept {$v}. Dit is een placeholder: de definitieve creatorovereenkomst volgt (open punt 11).",
+            'Dit zijn de basisafspraken tussen jou en MEBRANDING (versie '.CreatorProfiel::raamVersie().'). Komen er uitgebreide voorwaarden bij, dan krijg je bericht en teken je opnieuw.',
             'Je werkt als zelfstandige creator samen met MEBRANDING. Per samenwerking teken je daarnaast een eigen contract met de afspraken over het bezoek, de video en de publicatie.',
             'Je maakt reclame altijd herkenbaar: het platformlabel "Betaalde samenwerking", de vermelding aan het begin van je bijschrift en tekst in beeld.',
             'Bij Bronze, Silver en Gold krijg je een gratis bezoek. Vanaf Platinum krijg je ook een vergoeding in geld, uitbetaald in de betaalrun op vrijdag.',
             'Btw en KOR zijn je eigen verantwoordelijkheid. MEBRANDING rekent niet voor je en neemt je opgave over op de specificatie.',
+            'Neem je een klus aan, dan kom je ook. Niet verschijnen zonder af te melden kost punten in het klassement.',
             'Weigeren van een uitnodiging heeft geen gevolg voor je score. Besluiten over pauzeren of blokkeren neemt altijd een mens, met reden.',
         ];
     }

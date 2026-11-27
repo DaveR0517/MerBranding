@@ -54,10 +54,10 @@ class CreatorProfiel extends Model
         return $this->photo_path ? Storage::disk('public')->url($this->photo_path) : null;
     }
 
-    /** Versie van de raamovereenkomst. VOORSTEL: placeholder tot de juridische tekst er is (open punt 11). */
+    /** Versie van de raamovereenkomst (config mebranding.framework_version). Een nieuwe versie vraagt een nieuwe handtekening. */
     public static function raamVersie(): string
     {
-        return (string) config('mebranding.framework_version', '0.1-concept');
+        return (string) config('mebranding.framework_version');
     }
 
     public static function raamGetekend(User $user): ?Signature

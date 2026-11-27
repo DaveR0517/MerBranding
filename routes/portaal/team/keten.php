@@ -13,6 +13,7 @@ Route::post('samenwerkingen/{samenwerking}/uitnodigen', [TeamController::class, 
 Route::post('samenwerkingen/{samenwerking}/feedback', [TeamController::class, 'feedback'])->name('feedback');
 Route::post('samenwerkingen/{samenwerking}/goedkeuren', [TeamController::class, 'goedkeuren'])->name('goedkeuren');
 Route::post('samenwerkingen/{samenwerking}/annuleren', [TeamController::class, 'annuleren'])->name('annuleren');
+Route::post('samenwerkingen/{samenwerking}/bezoek-bevestigen', [TeamController::class, 'bezoekBevestigen'])->name('bezoek-bevestigen');
 Route::post('samenwerkingen/{samenwerking}/niet-verschenen', [TeamController::class, 'nietVerschenen'])->name('niet-verschenen');
 Route::get('bedrijven', [BeheerController::class, 'bedrijven'])->name('bedrijven');
 Route::post('bedrijven', [BeheerController::class, 'bedrijfOpslaan'])->name('bedrijven.opslaan');

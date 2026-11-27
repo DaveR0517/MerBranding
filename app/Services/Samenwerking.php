@@ -241,6 +241,28 @@ class Samenwerking
         });
     }
 
+    /**
+     * Team: het bezoek was er wel, maar de creator vergat in te checken. Zelfde boeking als inchecken,
+     * en direct door naar Content maken met de gewone deadline, zodat de klus niet blijft hangen.
+     */
+    public function bezoekBevestigen(Collaboration $c, User $door): void
+    {
+        $this->vereisStatus($c, [Status::BezoekGepland]);
+
+        if ($c->visit_at->isAfter(now()->endOfDay())) {
+            throw ValidationException::withMessages(['bezoek' => 'Een bezoek bevestigen kan pas op de dag van het bezoek ('.$c->visit_at->translatedFormat('j F').').']);
+        }
+
+        DB::transaction(function () use ($c, $door) {
+            $c->forceFill(['visited_at' => $c->visit_at]);
+            $this->naar($c, Status::BezoekGeweest, $door, 'Bezoek bevestigd door het team (creator checkte niet in)');
+            $this->boek($c, CreditLedger::VERBRUIKEN, 0, "Bezoek geweest: {$c->points} gereserveerde punten verbruikt", $door);
+
+            $c->forceFill(['content_deadline_at' => now()->addDays(config('mebranding.timers.content_deadline_days'))->setTime(23, 59)]);
+            $this->naar($c, Status::ContentMaken, $door);
+        });
+    }
+
     /* ----------------------------------------------------------------- 6. Content maken */
 
     public function klaarMetFilmen(Collaboration $c, User $door): void

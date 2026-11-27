@@ -131,6 +131,14 @@ class TeamController extends Controller
         return back()->with('melding', 'Samenwerking geannuleerd.');
     }
 
+    public function bezoekBevestigen(Request $request, Collaboration $samenwerking): RedirectResponse
+    {
+        Gate::authorize('samenwerkingen.plannen');
+        $this->dienst->bezoekBevestigen($samenwerking, $request->user());
+
+        return back()->with('melding', 'Bezoek bevestigd. De creator kan nu de video maken en aanleveren.');
+    }
+
     public function nietVerschenen(Request $request, Collaboration $samenwerking): RedirectResponse
     {
         Gate::authorize('samenwerkingen.plannen');
