@@ -73,7 +73,7 @@ class BeheerController extends Controller
 
             $eigenaar = $this->account($data['owner_name'], $data['owner_email'], 'Ondernemer Eigenaar');
             $bedrijf->users()->syncWithoutDetaching([$eigenaar->id => ['role' => 'eigenaar']]);
-            $this->uitnodiging->stuur($eigenaar, 'o-welkom', ['zaak' => $bedrijf->name]);
+            $this->uitnodiging->stuur($eigenaar, 'o-welkom', ['zaak' => $bedrijf->name, 'rol' => 'eigenaar']);
 
             if (! empty($data['lead_id'])) {
                 Lead::whereKey($data['lead_id'])->update(['status' => 'klant']);
@@ -119,7 +119,7 @@ class BeheerController extends Controller
                 'level' => $data['level'], 'birthdate' => $data['birthdate'], 'city' => $data['city'] ?? null,
                 'instagram' => $data['instagram'] ?? null, 'tiktok' => $data['tiktok'] ?? null, 'status' => 'actief',
             ]);
-            $this->uitnodiging->stuur($user, 'c-welkom', ['niveau' => $user->creator()->first()->levelName()]);
+            $this->uitnodiging->stuur($user, 'c-welkom', Uitnodiging::creatorVars($user->creator()->first()));
             if (! empty($data['lead_id'])) {
                 Lead::whereKey($data['lead_id'])->update(['status' => 'creator']);
             }

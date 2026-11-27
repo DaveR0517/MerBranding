@@ -62,7 +62,7 @@ class ScreeningController extends Controller
             'levels' => collect(config('mebranding.levels'))->map(fn ($l, $k) => ['value' => $k, 'name' => $l['name']])->values(),
             'open' => in_array($lead->status, ['nieuw', 'aanvulling'], true),
             // Opnieuw uitnodigen: per mail als die werkt, anders de link in beeld (App\Services\Uitnodiging).
-            'opnieuw' => $this->creatorAccount($lead) ? ['mail' => Uitnodiging::mailWerkt()] : null,
+            'opnieuw' => $this->ongebruiktAccount($lead) ? ['mail' => Uitnodiging::mailWerkt()] : null,
         ]);
     }
 
@@ -82,20 +82,22 @@ class ScreeningController extends Controller
     public function uitnodigingslink(Lead $lead): RedirectResponse
     {
         Gate::authorize('creators.screenen');
-        $user = $this->creatorAccount($lead);
+        $user = $this->ongebruiktAccount($lead);
         abort_unless($user, 404);
-        $this->uitnodiging->stuur($user, 'c-welkom', ['niveau' => $user->creator->levelName()]);
+        $this->uitnodiging->stuur($user, 'c-welkom', Uitnodiging::creatorVars($user->creator));
 
         return back()->with('melding', Uitnodiging::mailWerkt() ? "Uitnodiging opnieuw gemaild naar {$user->email}." : 'Nieuwe uitnodigingslink gemaakt. Eerdere links werken niet meer.');
     }
 
-    private function creatorAccount(Lead $lead): ?User
+    /** Account van de goedgekeurde creator, zolang dat nog niet in gebruik is: alleen dan heeft opnieuw uitnodigen zin (User::inGebruik). */
+    private function ongebruiktAccount(Lead $lead): ?User
     {
         if ($lead->type !== Lead::TYPE_CREATOR || $lead->status !== 'creator') {
             return null;
         }
+        $user = User::where('email', Str::lower($lead->email))->whereHas('creator')->first();
 
-        return User::where('email', Str::lower($lead->email))->whereHas('creator')->first();
+        return $user?->inGebruik() ? null : $user;
     }
 
     public function aanvulling(Request $request, Lead $lead): RedirectResponse

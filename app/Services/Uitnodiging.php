@@ -3,14 +3,20 @@
 namespace App\Services;
 
 use App\Models\ActivityLog;
+use App\Models\Creator;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Password;
 
 /**
- * Uitnodiging voor een nieuw account: een persoonlijke link waarmee iemand zelf een wachtwoord kiest (geldig volgens auth.passwords).
+ * Uitnodiging voor een account: een persoonlijke link waarmee iemand zelf een wachtwoord kiest (geldig volgens auth.passwords).
+ * Alleen een account dat nog niet in gebruik is (User::inGebruik) krijgt zo'n link. Een account in gebruik krijgt
+ * g-toegevoegd met een knop naar het inlogscherm: wie een bestaand adres uitnodigt, kan zo nooit een wachtwoord voor
+ * dat account laten kiezen en er zo in komen.
  * Zolang er geen maildienst is, komt de link in beeld bij wie uitnodigt (flash 'uitnodiging'), zodat die hem zelf doorstuurt.
+ * Dat mag alleen voor een account dat in deze aanvraag nieuw is aangemaakt, of als het team uitnodigt (opnieuw uitnodigen
+ * bij screening of bedrijfsbeheer). Anders zou bijvoorbeeld een ondernemer de link van andermans ongebruikte account zien.
  */
 class Uitnodiging
 {
@@ -19,9 +25,18 @@ class Uitnodiging
 
     public function __construct(private Melder $melder) {}
 
-    /** @param  array<string, mixed>  $vars */
-    public function stuur(User $user, string $sjabloon, array $vars): void
+    /**
+     * @param  array<string, mixed>  $vars  variabelen voor $sjabloon, altijd met zaak en rol (waartoe het account toegang krijgt, ook voor g-toegevoegd)
+     * @return bool true als er een wachtwoordlink is verstuurd; false als het account al in gebruik was (dan alleen g-toegevoegd)
+     */
+    public function stuur(User $user, string $sjabloon, array $vars): bool
     {
+        if ($user->inGebruik()) {
+            $this->melder->stuur('g-toegevoegd', $user, ['zaak' => $vars['zaak'], 'rol' => $vars['rol'], 'email' => $user->email], route('login'));
+
+            return false;
+        }
+
         $link = $this->link($user);
         // Inloggegevens: inloggen met dit e-mailadres, wachtwoord kiezen via de link (nooit een wachtwoord in de mail).
         $this->melder->stuur($sjabloon, $user, $vars + ['email' => $user->email], $link);
@@ -32,9 +47,17 @@ class Uitnodiging
             'data' => array_filter(['sjabloon' => $sjabloon, 'naam' => $vars['naam'] ?? null, 'zaak' => $vars['zaak'] ?? null]),
         ]);
 
-        if (! self::mailWerkt()) {
+        if (! self::mailWerkt() && ($user->wasRecentlyCreated || auth()->user()?->isTeam())) {
             session()->flash('uitnodiging', ['naam' => $user->name, 'email' => $user->email, 'link' => $link]);
         }
+
+        return true;
+    }
+
+    /** Variabelen voor c-welkom, met zaak en rol voor wie al een account had (g-toegevoegd). */
+    public static function creatorVars(Creator $creator): array
+    {
+        return ['niveau' => $creator->levelName(), 'zaak' => 'MEBRANDING', 'rol' => 'creator op niveau '.$creator->levelName()];
     }
 
     /** Nieuwe link; een eerdere link van deze gebruiker werkt daarna niet meer. */

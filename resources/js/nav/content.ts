@@ -42,6 +42,7 @@ const nav: NavModule = {
             href: () => team.radar.url(),
             icon: Radar,
             order: 80,
+            permission: 'sales.beheren',
         },
     ],
     creator: [

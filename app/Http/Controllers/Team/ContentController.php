@@ -251,8 +251,11 @@ class ContentController extends Controller
     }
 
     /** Fase 7, alleen na akkoord: placeholder met de bedrijven die interesse toonden. */
+    /** Interesse van zaken in Radar: dezelfde mensen als de taak radar_interesse (Ondernemer\ContentController::interesse). */
     public function radar(): Response
     {
+        Gate::authorize('sales.beheren');
+
         return Inertia::render('team/content/radar', [
             'interest' => Task::with('company')->open()->where('type', 'radar_interesse')->latest()->get()
                 ->map(fn ($t) => ['id' => $t->id, 'company' => $t->company?->name, 'at' => $t->created_at->toIso8601String()])->values(),
